@@ -1,6 +1,5 @@
 package org.bundolo.services;
 
-import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -50,19 +49,19 @@ public class ConnectionServiceImpl implements ConnectionService {
 	    connectionDB = connectionDAO.findById(connection.getConnectionId());
 	}
 	if (connectionDB == null) {
-	    if (connection.getDescriptionContent() != null) {
-		Long contentId = contentService.saveContent(connection.getDescriptionContent());
-		connectionDB = new Connection(connection.getConnectionId(), connection.getAuthorUsername(),
-			connection.getParentContentId(), contentId, connection.getKind(), new Date(),
-			connection.getConnectionStatus(), connection.getEmail(), connection.getUrl());
-		try {
-		    connectionDAO.persist(connectionDB);
-		} catch (Exception ex) {
-		    contentService.deleteContent(contentId);
-		    throw new Exception("db exception");
-		}
-		result = connectionDB.getConnectionId();
+	    // if (connection.getDescriptionContent() != null) {
+	    // Long contentId = contentService.saveContent(connection.getDescriptionContent());
+	    // connectionDB = new Connection(connection.getConnectionId(), connection.getAuthorUsername(),
+	    // connection.getParentContentId(), contentId, connection.getKind(), new Date(),
+	    // connection.getConnectionStatus(), connection.getEmail(), connection.getUrl());
+	    try {
+		connectionDAO.persist(connectionDB);
+	    } catch (Exception ex) {
+		// contentService.deleteContent(contentId);
+		throw new Exception("db exception");
 	    }
+	    result = connection.getConnectionId();
+	    // }
 	}
 	return result;
     }
@@ -108,6 +107,12 @@ public class ConnectionServiceImpl implements ConnectionService {
     @Override
     public Integer findItemListConnectionsCount(String query) throws Exception {
 	return connectionDAO.findItemListConnectionsCount(query);
+    }
+
+    @Override
+    public List<Connection> findConnections(Integer start, Integer end, String[] orderBy, String[] order,
+	    String[] filterBy, String[] filter) {
+	return connectionDAO.findConnections(start, end, orderBy, order, filterBy, filter);
     }
 
 }

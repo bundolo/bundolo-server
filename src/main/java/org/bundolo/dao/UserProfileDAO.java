@@ -1,11 +1,11 @@
 package org.bundolo.dao;
 
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.persistence.Query;
 
-import org.bundolo.Constants;
 import org.bundolo.model.UserProfile;
 import org.springframework.stereotype.Repository;
 
@@ -31,7 +31,7 @@ public class UserProfileDAO extends JpaDAO<Long, UserProfile> {
     public UserProfile findByField(final String field, final String value) {
 	String queryString = "SELECT u FROM " + entityClass.getName() + " u";
 	queryString += " WHERE " + field + " " + ((value == null) ? "IS NULL" : "='" + value + "'");
-	logger.log(Constants.SERVER_DEBUG_LOG_LEVEL, "queryString: " + queryString);
+	logger.log(Level.FINE, "queryString: " + queryString);
 
 	Query q = entityManager.createQuery(queryString);
 	q.setMaxResults(1);
@@ -47,7 +47,7 @@ public class UserProfileDAO extends JpaDAO<Long, UserProfile> {
     public List<UserProfile> findItemListUsers(final String queryString, final Integer start, final Integer end) {
 	// String modifiedQueryString = queryString + " LIMIT " + (end -
 	// start + 1) + " OFFSET " + start;
-	logger.log(Constants.SERVER_DEBUG_LOG_LEVEL, "queryString: " + queryString);
+	logger.log(Level.FINE, "queryString: " + queryString);
 	Query q = entityManager.createQuery(queryString);
 	q.setFirstResult(start);
 	q.setMaxResults(end - start + 1);
@@ -60,7 +60,7 @@ public class UserProfileDAO extends JpaDAO<Long, UserProfile> {
 	if (orderBySectionStart > -1) {
 	    modifiedQueryString = modifiedQueryString.substring(0, orderBySectionStart);
 	}
-	logger.log(Constants.SERVER_DEBUG_LOG_LEVEL, "queryString: " + modifiedQueryString);
+	logger.log(Level.FINE, "queryString: " + modifiedQueryString);
 
 	Query q = entityManager.createQuery(modifiedQueryString);
 	return (Integer) q.getSingleResult();

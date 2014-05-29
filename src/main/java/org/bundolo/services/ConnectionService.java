@@ -17,4 +17,7 @@ public interface ConnectionService {
     public List<Connection> findItemListConnections(String query, Integer start, Integer end) throws Exception;
 
     public Integer findItemListConnectionsCount(String query) throws Exception;
+
+    public List<Connection> findConnections(Integer start, Integer end, String[] orderBy, String[] order,
+	    String[] filterBy, String[] filter);
 }

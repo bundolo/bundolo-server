@@ -3,12 +3,12 @@ package org.bundolo.services;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
-import org.bundolo.Constants;
 import org.bundolo.GlobalStorage;
 import org.bundolo.SessionUtils;
 import org.bundolo.Utils;
@@ -152,7 +152,7 @@ public class ContentServiceImpl implements ContentService, ApplicationContextAwa
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public void updateContent(Content content) throws Exception {
-	logger.log(Constants.SERVER_WARN_LOG_LEVEL, "updateContent: " + content.getContentId());
+	logger.log(Level.FINE, "updateContent: " + content.getContentId());
 	Content contentDB = contentDAO.findById(content.getContentId());
 
 	if (contentDB != null) {
@@ -210,7 +210,7 @@ public class ContentServiceImpl implements ContentService, ApplicationContextAwa
 
     @Override
     public Map<String, String> getLabelsForLocale(String locale) {
-	logger.log(Constants.SERVER_DEBUG_LOG_LEVEL, "getLabelsForLocale: " + locale);
+	logger.log(Level.FINE, "getLabelsForLocale: " + locale);
 	SessionUtils.setAttribute("locale", locale);
 	GlobalStorage globalStorage = (GlobalStorage) applicationContext.getBean("globalStorage");
 	return globalStorage.getLabelsForLocale(locale);
@@ -229,7 +229,7 @@ public class ContentServiceImpl implements ContentService, ApplicationContextAwa
 
     @Override
     public Content getDescriptionContent(Long parentContentId, ContentKindType parentKind) {
-	logger.log(Constants.SERVER_DEBUG_LOG_LEVEL, "getDescriptionContent: " + parentContentId + ", " + parentKind);
+	logger.log(Level.FINE, "getDescriptionContent: " + parentContentId + ", " + parentKind);
 	Content result = null;
 	ContentKindType descriptionContentKind = Utils.getDescriptionContentKind(parentKind);
 	if (descriptionContentKind != null) {

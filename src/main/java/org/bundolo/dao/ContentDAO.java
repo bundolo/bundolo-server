@@ -1,11 +1,11 @@
 package org.bundolo.dao;
 
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.persistence.Query;
 
-import org.bundolo.Constants;
 import org.bundolo.Utils;
 import org.bundolo.model.Content;
 import org.bundolo.model.enumeration.ContentKindType;
@@ -23,7 +23,7 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	queryString += " AND kind " + ((kind == null) ? "IS NULL" : "='" + kind + "'");
 	queryString += " AND locale " + ((locale == null) ? "IS NULL" : "='" + locale + "'");
 	queryString += " ORDER BY creationDate";
-	logger.log(Constants.SERVER_DEBUG_LOG_LEVEL, "queryString: " + queryString);
+	logger.log(Level.FINE, "queryString: " + queryString);
 
 	Query q = entityManager.createQuery(queryString);
 	return q.getResultList();
@@ -35,7 +35,7 @@ public class ContentDAO extends JpaDAO<Long, Content> {
      */
     @SuppressWarnings("unchecked")
     public Content findContentForLocale(final Long contentId, final ContentKindType kind, final String locale) {
-	logger.log(Constants.SERVER_DEBUG_LOG_LEVEL, "locale: " + locale);
+	logger.log(Level.FINE, "locale: " + locale);
 	Content result = null;
 	if (contentId != null && Utils.hasText(locale)) {
 	    result = findById(contentId);
@@ -44,7 +44,7 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 		queryString += " WHERE parentContentId =" + contentId;
 		queryString += " AND kind " + ((kind == null) ? "IS NULL" : "='" + kind + "'");
 		queryString += " AND locale ='" + locale + "'";
-		logger.log(Constants.SERVER_DEBUG_LOG_LEVEL, "queryString: " + queryString);
+		logger.log(Level.FINE, "queryString: " + queryString);
 
 		Query q = entityManager.createQuery(queryString);
 		q.setMaxResults(1);
@@ -57,7 +57,7 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 		    queryString += " AND kind " + ((kind == null) ? "IS NULL" : "='" + kind + "'");
 		    // queryStringChild += " AND locale ='" + locale +
 		    // "'";
-		    logger.log(Constants.SERVER_DEBUG_LOG_LEVEL, "queryStringChild: " + queryStringChild);
+		    logger.log(Level.FINE, "queryStringChild: " + queryStringChild);
 
 		    Query qChild = entityManager.createQuery(queryStringChild);
 		    qChild.setMaxResults(1);
@@ -79,14 +79,14 @@ public class ContentDAO extends JpaDAO<Long, Content> {
      */
     @SuppressWarnings("unchecked")
     public Content findContentForLocale(final String contentName, final ContentKindType kind, final String locale) {
-	logger.log(Constants.SERVER_DEBUG_LOG_LEVEL, "locale: " + locale);
+	logger.log(Level.FINE, "locale: " + locale);
 	Content result = null;
 	if (Utils.hasText(contentName) && Utils.hasText(locale)) {
 	    String queryString = "SELECT c FROM " + entityClass.getName() + " c";
 	    queryString += " WHERE content_name ='" + contentName + "'";
 	    queryString += " AND kind " + ((kind == null) ? "IS NULL" : "='" + kind + "'");
 	    queryString += " AND locale ='" + locale + "'";
-	    logger.log(Constants.SERVER_DEBUG_LOG_LEVEL, "queryString: " + queryString);
+	    logger.log(Level.FINE, "queryString: " + queryString);
 
 	    Query q = entityManager.createQuery(queryString);
 	    q.setMaxResults(1);
@@ -109,7 +109,7 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	queryString += " WHERE content_name ='" + contentName + "'";
 	queryString += " AND kind " + ((kind == null) ? "IS NULL" : "='" + kind + "'");
 	queryString += " AND parentContentId IS NULL";
-	logger.log(Constants.SERVER_DEBUG_LOG_LEVEL, "queryString: " + queryString);
+	logger.log(Level.FINE, "queryString: " + queryString);
 
 	Query q = entityManager.createQuery(queryString);
 	q.setMaxResults(1);
@@ -126,7 +126,7 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	String queryString = "SELECT DISTINCT(c.locale) FROM " + entityClass.getName() + " c";
 	queryString += " WHERE parentContentId IS NULL";
 	queryString += " and kind='label'";
-	logger.log(Constants.SERVER_DEBUG_LOG_LEVEL, "queryString: " + queryString);
+	logger.log(Level.FINE, "queryString: " + queryString);
 
 	Query q = entityManager.createQuery(queryString);
 	q.setMaxResults(1);
@@ -142,7 +142,7 @@ public class ContentDAO extends JpaDAO<Long, Content> {
     public List<String> getNonDefaultLocales() {
 	String queryString = "SELECT DISTINCT(c.locale) FROM " + entityClass.getName() + " c";
 	queryString += " WHERE parentContentId IS NOT NULL";
-	logger.log(Constants.SERVER_DEBUG_LOG_LEVEL, "queryString: " + queryString);
+	logger.log(Level.FINE, "queryString: " + queryString);
 	Query q = entityManager.createQuery(queryString);
 	return q.getResultList();
     }
@@ -150,7 +150,7 @@ public class ContentDAO extends JpaDAO<Long, Content> {
     @SuppressWarnings("unchecked")
     public List<String> getLocales() {
 	String queryString = "SELECT DISTINCT(c.locale) FROM " + entityClass.getName() + " c";
-	logger.log(Constants.SERVER_DEBUG_LOG_LEVEL, "queryString: " + queryString);
+	logger.log(Level.FINE, "queryString: " + queryString);
 	Query q = entityManager.createQuery(queryString);
 	return q.getResultList();
     }
@@ -177,7 +177,7 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	queryString1 += " WHERE c1.parentContentId IS NOT NULL";
 	queryString1 += " AND c1.kind = 'label'";
 	queryString1 += " AND c1.locale ='" + locale + "'";
-	logger.log(Constants.SERVER_DEBUG_LOG_LEVEL, "queryString: " + queryString1);
+	logger.log(Level.FINE, "queryString: " + queryString1);
 
 	Query q1 = entityManager.createQuery(queryString1);
 
@@ -189,7 +189,7 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	queryString2 += " WHERE c1.parentContentId IS NOT NULL";
 	queryString2 += " AND c1.kind = 'label'";
 	queryString2 += " AND c1.locale ='" + locale + "')";
-	logger.log(Constants.SERVER_DEBUG_LOG_LEVEL, "queryString: " + queryString2);
+	logger.log(Level.FINE, "queryString: " + queryString2);
 
 	Query q2 = entityManager.createQuery(queryString2);
 
@@ -202,7 +202,7 @@ public class ContentDAO extends JpaDAO<Long, Content> {
     public List<Content> findItemListContents(final String queryString, final Integer start, final Integer end) {
 	// String modifiedQueryString = queryString + " LIMIT " + (end -
 	// start + 1) + " OFFSET " + start;
-	logger.log(Constants.SERVER_DEBUG_LOG_LEVEL, "queryString: " + queryString);
+	logger.log(Level.FINE, "queryString: " + queryString);
 	Query q = entityManager.createQuery(queryString);
 	q.setFirstResult(start);
 	q.setMaxResults(end - start + 1);
@@ -216,7 +216,7 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	if (orderBySectionStart > -1) {
 	    modifiedQueryString = modifiedQueryString.substring(0, orderBySectionStart);
 	}
-	logger.log(Constants.SERVER_DEBUG_LOG_LEVEL, "queryString: " + queryString);
+	logger.log(Level.FINE, "queryString: " + queryString);
 
 	Query q = entityManager.createQuery(modifiedQueryString);
 	return (Integer) q.getSingleResult();

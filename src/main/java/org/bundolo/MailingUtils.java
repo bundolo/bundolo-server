@@ -2,6 +2,7 @@ package org.bundolo;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Properties;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.mail.Authenticator;
@@ -29,8 +30,7 @@ public class MailingUtils {
 
     public void sendEmail(String body, String subject, String recipient) throws MessagingException,
 	    UnsupportedEncodingException {
-	logger.log(Constants.SERVER_WARN_LOG_LEVEL, "sendEmail\nrecipient: " + recipient + "\nsubject: " + subject
-		+ "\nbody: " + body);
+	logger.log(Level.FINE, "sendEmail\nrecipient: " + recipient + "\nsubject: " + subject + "\nbody: " + body);
 	if (Boolean.valueOf(properties.getProperty("mail.from"))) {
 	    Properties mailProps = new Properties();
 	    mailProps.put("mail.smtp.from", properties.getProperty("mail.from"));

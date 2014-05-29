@@ -1,11 +1,11 @@
 package org.bundolo.dao;
 
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.persistence.Query;
 
-import org.bundolo.Constants;
 import org.bundolo.model.ItemList;
 import org.springframework.stereotype.Repository;
 
@@ -20,7 +20,7 @@ public class ItemListDAO extends JpaDAO<Long, ItemList> {
 	queryString += " WHERE c.name " + ((name == null) ? "IS NULL" : "='" + name + "'");
 	queryString += " AND c.contentId = l.descriptionContentId";
 	queryString += " AND l.authorUsername " + ((authorUsername == null) ? "IS NULL" : "=" + authorUsername);
-	logger.log(Constants.SERVER_DEBUG_LOG_LEVEL, "queryString: " + queryString);
+	logger.log(Level.FINE, "queryString: " + queryString);
 
 	Query q = entityManager.createQuery(queryString);
 	q.setMaxResults(1);

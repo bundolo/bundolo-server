@@ -23,6 +23,21 @@ repositories {
     maven { url "http://repo.spring.io/libs-snapshot" }
 }
 
+// Test Structure
+sourceSets {
+    integration_test {
+        java.srcDir file('src/integration-test/java')
+        resources.srcDir file('src/integration-test/resources')
+    }
+}
+
+task integration_test(type: Test) {
+    testClassesDir = sourceSets.integration_test.output.classesDir
+    classpath = sourceSets.integration_test.runtimeClasspath
+}
+
+check.dependsOn integration_test
+
 dependencies {
     compile("org.springframework.boot:spring-boot-starter-web")
     compile("org.springframework:spring-tx")
@@ -43,9 +58,25 @@ dependencies {
 	
 	compile 'org.hibernate:hibernate-core:4.1.5.SP1'
     compile 'postgresql:postgresql:9.1-901.jdbc3'
+    compile 'org.apache.commons:commons-lang3:3.3.2'
+    
+    testCompile 'org.springframework:spring-test'
     testCompile("junit:junit")
+    
+    integration_testCompile sourceSets.main.output
+    integration_testCompile configurations.testCompile
+    integration_testCompile sourceSets.test.output
+    integration_testRuntime configurations.testRuntime
+}
+
+test {
+    testLogging {
+        // Show that tests are run in the command-line output
+        events 'started', 'passed'
+    }
 }
 
 task wrapper(type: Wrapper) {
     gradleVersion = '1.11'
 }
+

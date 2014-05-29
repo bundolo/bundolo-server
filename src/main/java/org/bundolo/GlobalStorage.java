@@ -3,6 +3,7 @@ package org.bundolo;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.bundolo.dao.ContentDAO;
@@ -27,11 +28,11 @@ public class GlobalStorage {
     // after they are updated
 
     public GlobalStorage() {
-	logger.log(Constants.SERVER_DEBUG_LOG_LEVEL, "constructor");
+	logger.log(Level.FINE, "constructor");
     }
 
     public synchronized Map<String, String> getLabelsForLocale(String locale) {
-	logger.log(Constants.SERVER_DEBUG_LOG_LEVEL, "getLabelsForLocale: " + locale);
+	logger.log(Level.FINE, "getLabelsForLocale: " + locale);
 	if (localeLabels == null) { // this is the first request so we have to
 				    // initialize locales
 	    localeLabels = new HashMap<String, Map<String, String>>(); // get
@@ -46,7 +47,7 @@ public class GlobalStorage {
 	    if ((locales != null) && (locales.size() > 0)) {
 		for (String tempLocale : locales) {
 		    Map<String, String> thisLocaleLabels = new HashMap<String, String>();
-		    logger.log(Constants.SERVER_DEBUG_LOG_LEVEL, "tempLocale: " + tempLocale);
+		    logger.log(Level.FINE, "tempLocale: " + tempLocale);
 		    List<Content> contents = contentDAO.getLabelsForLocale(tempLocale);
 		    for (Content content : contents) {
 			if (content.getParentContentId() == null) {
@@ -54,8 +55,7 @@ public class GlobalStorage {
 			} else {
 			    thisLocaleLabels.put(content.getName(), content.getText());
 			}
-			logger.log(Constants.SERVER_DEBUG_LOG_LEVEL, "tempLocale: " + tempLocale + ", label: "
-				+ content.getText());
+			logger.log(Level.FINE, "tempLocale: " + tempLocale + ", label: " + content.getText());
 		    }
 		    localeLabels.put(tempLocale, thisLocaleLabels);
 		}

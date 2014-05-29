@@ -6,12 +6,14 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 import org.bundolo.model.enumeration.ConnectionKindType;
 import org.bundolo.model.enumeration.ConnectionStatusType;
@@ -34,8 +36,8 @@ public class Connection implements java.io.Serializable {
     @Column(name = "parent_content_id")
     private Long parentContentId;
 
-    @Column(name = "description_content_id")
-    private Long descriptionContentId;
+    // @Column(name = "description_content_id")
+    // private Long descriptionContentId;
 
     @Column(name = "kind")
     @Enumerated(EnumType.STRING)
@@ -54,22 +56,23 @@ public class Connection implements java.io.Serializable {
     @Column(name = "url")
     private String url;
 
-    // @OneToOne(fetch = FetchType.EAGER)
-    // @JoinColumn(name = "description_content_id")
-    @Transient
+    @OneToOne(fetch = FetchType.EAGER, optional = true)
+    @JoinColumn(name = "description_content_id", nullable = true)
+    // @Transient
     private Content descriptionContent;
 
     public Connection() {
 	super();
     }
 
-    public Connection(Long connectionId, String authorUsername, Long parentContentId, Long descriptionContentId,
-	    ConnectionKindType kind, Date creationDate, ConnectionStatusType connectionStatus, String email, String url) {
+    public Connection(Long connectionId, String authorUsername, Long parentContentId, /*Long descriptionContentId,*/
+	    ConnectionKindType kind, Date creationDate, ConnectionStatusType connectionStatus, String email,
+	    String url, Content descriptionContent) {
 	super();
 	this.connectionId = connectionId;
 	this.authorUsername = authorUsername;
 	this.parentContentId = parentContentId;
-	this.descriptionContentId = descriptionContentId;
+	// this.descriptionContentId = descriptionContentId;
 	this.kind = kind;
 	this.creationDate = creationDate;
 	this.connectionStatus = connectionStatus;
@@ -93,13 +96,13 @@ public class Connection implements java.io.Serializable {
 	this.authorUsername = authorUsername;
     }
 
-    public Long getDescriptionContentId() {
-	return descriptionContentId;
-    }
-
-    public void setDescriptionContentId(Long descriptionContentId) {
-	this.descriptionContentId = descriptionContentId;
-    }
+    // public Long getDescriptionContentId() {
+    // return descriptionContentId;
+    // }
+    //
+    // public void setDescriptionContentId(Long descriptionContentId) {
+    // this.descriptionContentId = descriptionContentId;
+    // }
 
     public ConnectionKindType getKind() {
 	return kind;

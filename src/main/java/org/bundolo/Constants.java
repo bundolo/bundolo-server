@@ -1,13 +1,12 @@
 package org.bundolo;
 
-import java.util.logging.Level;
 
 public class Constants {
 
-    public static final Level SERVER_SEVERE_LOG_LEVEL = Level.SEVERE;
-    public static final Level SERVER_WARN_LOG_LEVEL = Level.WARNING;
-    public static final Level SERVER_INFO_LOG_LEVEL = Level.INFO;
-    public static final Level SERVER_DEBUG_LOG_LEVEL = Level.FINE;
+    // public static final Level SERVER_SEVERE_LOG_LEVEL = Level.SEVERE;
+    // public static final Level SERVER_WARN_LOG_LEVEL = Level.WARNING;
+    // public static final Level SERVER_INFO_LOG_LEVEL = Level.INFO;
+    // public static final Level SERVER_DEBUG_LOG_LEVEL = Level.FINE;
 
     public static final String DEFAULT_LOCALE = "sr";
     public static final int DEFAULT_PAGING_PAGE_SIZE = 20;
@@ -29,5 +28,21 @@ public class Constants {
 
     // TODO to be removed once db is updated
     public static final String OLD_DB_GUEST_USERNAME = "gost";
+
+    public static final String REST_PATH_OVERVIEW = "/overview";
+    public static final String REST_PATH_TEXTS = "/texts";
+    public static final String REST_PATH_TEXT = "/text";
+    public static final String REST_PATH_SERIALS = "/serials";
+    public static final String REST_PATH_SERIAL = "/serial";
+    public static final String REST_PATH_AUTHORS = "/authors";
+    public static final String REST_PATH_AUTHOR = "/author";
+    public static final String REST_PATH_ANNOUNCEMENTS = "/announcements";
+    public static final String REST_PATH_ANNOUNCEMENT = "/announcement";
+    public static final String REST_PATH_TOPICS = "/topics";
+    public static final String REST_PATH_TOPIC = "/topic";
+    public static final String REST_PATH_CONTESTS = "/contests";
+    public static final String REST_PATH_CONTEST = "/contest";
+    public static final String REST_PATH_CONNECTIONS = "/connections";
+    public static final String REST_PATH_CONNECTION = "/connection";
 
 }

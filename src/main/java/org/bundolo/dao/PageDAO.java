@@ -1,11 +1,11 @@
 package org.bundolo.dao;
 
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.persistence.Query;
 
-import org.bundolo.Constants;
 import org.bundolo.model.Page;
 import org.springframework.stereotype.Repository;
 
@@ -16,15 +16,14 @@ public class PageDAO extends JpaDAO<Long, Page> {
 
     @SuppressWarnings("unchecked")
     public List<Page> findPages(final Long parentPageId, final boolean justActive) {
-	logger.log(Constants.SERVER_DEBUG_LOG_LEVEL, "findPages parentPageId: " + parentPageId + ", justActive: "
-		+ justActive);
+	logger.log(Level.FINE, "findPages parentPageId: " + parentPageId + ", justActive: " + justActive);
 	String queryString = "SELECT p FROM " + entityClass.getName() + " p";
 	queryString += " WHERE parentPageId " + ((parentPageId == null) ? "IS NULL" : "=" + parentPageId);
 	if (justActive) {
 	    queryString += " AND pageStatus = 'active'";
 	}
 	queryString += " ORDER BY displayOrder";
-	logger.log(Constants.SERVER_DEBUG_LOG_LEVEL, "queryString: " + queryString);
+	logger.log(Level.FINE, "queryString: " + queryString);
 
 	Query q = entityManager.createQuery(queryString);
 	return q.getResultList();
@@ -33,7 +32,7 @@ public class PageDAO extends JpaDAO<Long, Page> {
     public Integer findPagesCount(final Long parentPageId) {
 	String queryString = "SELECT COUNT(p) FROM " + entityClass.getName() + " p";
 	queryString += " WHERE parentPageId " + ((parentPageId == null) ? "IS NULL" : "=" + parentPageId);
-	logger.log(Constants.SERVER_DEBUG_LOG_LEVEL, "queryString: " + queryString);
+	logger.log(Level.FINE, "queryString: " + queryString);
 	Query q = entityManager.createQuery(queryString);
 	return (Integer) q.getSingleResult();
     }
@@ -54,7 +53,7 @@ public class PageDAO extends JpaDAO<Long, Page> {
 	    queryString += " WHERE p.parentPageId IS NULL";
 	}
 	queryString += " ORDER BY p.displayOrder";
-	logger.log(Constants.SERVER_DEBUG_LOG_LEVEL, "queryString: " + queryString);
+	logger.log(Level.FINE, "queryString: " + queryString);
 
 	Query q = entityManager.createQuery(queryString);
 	q.setMaxResults(1);
@@ -68,11 +67,11 @@ public class PageDAO extends JpaDAO<Long, Page> {
 
     @SuppressWarnings("unchecked")
     public Page findHomePage() {
-	logger.log(Constants.SERVER_DEBUG_LOG_LEVEL, "findHomePage");
+	logger.log(Level.FINE, "findHomePage");
 	String queryString = "SELECT p FROM " + entityClass.getName() + " p";
 	queryString += " WHERE p.parentPageId IS NULL";
 	queryString += " ORDER BY p.displayOrder";
-	logger.log(Constants.SERVER_DEBUG_LOG_LEVEL, "queryString: " + queryString);
+	logger.log(Level.FINE, "queryString: " + queryString);
 
 	Query q = entityManager.createQuery(queryString);
 	q.setMaxResults(1);
