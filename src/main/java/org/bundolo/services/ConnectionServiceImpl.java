@@ -55,7 +55,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 	    // connection.getParentContentId(), contentId, connection.getKind(), new Date(),
 	    // connection.getConnectionStatus(), connection.getEmail(), connection.getUrl());
 	    try {
-		connectionDAO.persist(connectionDB);
+		connectionDAO.persist(connection);
 	    } catch (Exception ex) {
 		// contentService.deleteContent(contentId);
 		throw new Exception("db exception");

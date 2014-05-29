@@ -15,8 +15,11 @@ import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import org.bundolo.CustomDateSerializer;
 import org.bundolo.model.enumeration.ConnectionKindType;
 import org.bundolo.model.enumeration.ConnectionStatusType;
+
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @Entity
 @Table(name = "connection")
@@ -78,6 +81,7 @@ public class Connection implements java.io.Serializable {
 	this.connectionStatus = connectionStatus;
 	this.email = email;
 	this.url = url;
+	this.descriptionContent = descriptionContent;
     }
 
     public Long getConnectionId() {
@@ -112,6 +116,7 @@ public class Connection implements java.io.Serializable {
 	this.kind = kind;
     }
 
+    @JsonSerialize(using = CustomDateSerializer.class)
     public Date getCreationDate() {
 	return creationDate;
     }

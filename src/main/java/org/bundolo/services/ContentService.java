@@ -48,4 +48,7 @@ public interface ContentService {
     public Content getDescriptionContent(Long parentContentId, ContentKindType kind) throws Exception;
 
     public void saveLabels(Map<String, String> labels) throws Exception;
+
+    public List<Content> findTexts(Integer start, Integer end, String[] orderBy, String[] order, String[] filterBy,
+	    String[] filter);
 }

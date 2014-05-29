@@ -17,4 +17,7 @@ public interface ContestService {
     public List<Contest> findItemListContests(String query, Integer start, Integer end) throws Exception;
 
     public Integer findItemListContestsCount(String query) throws Exception;
+
+    public List<Contest> findContests(Integer start, Integer end, String[] orderBy, String[] order, String[] filterBy,
+	    String[] filter);
 }

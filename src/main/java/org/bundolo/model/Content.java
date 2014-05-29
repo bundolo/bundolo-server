@@ -13,8 +13,11 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.bundolo.CustomDateSerializer;
 import org.bundolo.model.enumeration.ContentKindType;
 import org.bundolo.model.enumeration.ContentStatusType;
+
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @Entity
 @Table(name = "content")
@@ -138,6 +141,7 @@ public class Content implements java.io.Serializable {
 	this.locale = locale;
     }
 
+    @JsonSerialize(using = CustomDateSerializer.class)
     public Date getCreationDate() {
 	return creationDate;
     }

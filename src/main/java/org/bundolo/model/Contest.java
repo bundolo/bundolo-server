@@ -6,15 +6,20 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
+import org.bundolo.CustomDateSerializer;
 import org.bundolo.model.enumeration.ContestKindType;
 import org.bundolo.model.enumeration.ContestStatusType;
+
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @Entity
 @Table(name = "contest")
@@ -31,8 +36,8 @@ public class Contest implements java.io.Serializable {
     @Column(name = "author_username")
     private String authorUsername;
 
-    @Column(name = "description_content_id")
-    private Long descriptionContentId;
+    // @Column(name = "description_content_id")
+    // private Long descriptionContentId;
 
     @Column(name = "kind")
     @Enumerated(EnumType.STRING)
@@ -48,25 +53,25 @@ public class Contest implements java.io.Serializable {
     @Enumerated(EnumType.STRING)
     private ContestStatusType contestStatus;
 
-    // @OneToOne(fetch = FetchType.EAGER)
-    // @JoinColumn(name = "description_content_id")
-    @Transient
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "description_content_id")
+    // @Transient
     private Content descriptionContent;
 
     public Contest() {
 	super();
     }
 
-    public Contest(Long contestId, String authorUsername, Long descriptionContentId, ContestKindType kind,
-	    Date creationDate, Date expirationDate, ContestStatusType contestStatus) {
+    public Contest(Long contestId, String authorUsername, /*Long descriptionContentId,*/ContestKindType kind,
+	    Date creationDate, Date expirationDate, ContestStatusType contestStatus, Content descriptionContent) {
 	super();
 	this.contestId = contestId;
 	this.authorUsername = authorUsername;
-	this.descriptionContentId = descriptionContentId;
 	this.kind = kind;
 	this.creationDate = creationDate;
 	this.expirationDate = expirationDate;
 	this.contestStatus = contestStatus;
+	this.descriptionContent = descriptionContent;
     }
 
     public Long getContestId() {
@@ -85,13 +90,13 @@ public class Contest implements java.io.Serializable {
 	this.authorUsername = authorUsername;
     }
 
-    public Long getDescriptionContentId() {
-	return descriptionContentId;
-    }
-
-    public void setDescriptionContentId(Long descriptionContentId) {
-	this.descriptionContentId = descriptionContentId;
-    }
+    // public Long getDescriptionContentId() {
+    // return descriptionContentId;
+    // }
+    //
+    // public void setDescriptionContentId(Long descriptionContentId) {
+    // this.descriptionContentId = descriptionContentId;
+    // }
 
     public ContestKindType getKind() {
 	return kind;
@@ -101,6 +106,7 @@ public class Contest implements java.io.Serializable {
 	this.kind = kind;
     }
 
+    @JsonSerialize(using = CustomDateSerializer.class)
     public Date getCreationDate() {
 	return creationDate;
     }
@@ -109,6 +115,7 @@ public class Contest implements java.io.Serializable {
 	this.creationDate = creationDate;
     }
 
+    @JsonSerialize(using = CustomDateSerializer.class)
     public Date getExpirationDate() {
 	return expirationDate;
     }

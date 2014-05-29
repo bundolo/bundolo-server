@@ -6,266 +6,287 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
+import org.bundolo.CustomDateSerializer;
 import org.bundolo.model.enumeration.UserProfileGenderType;
 import org.bundolo.model.enumeration.UserProfileStatusType;
+
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @Entity
 @Table(name = "user_profile")
 public class UserProfile implements java.io.Serializable {
 
-	private static final long serialVersionUID = -4042511031705727688L;
-	
-	@Id
-	@Column(name="user_id")
-	@GeneratedValue(strategy = GenerationType.IDENTITY, generator="user_id_seq")
-	@SequenceGenerator(name="user_id_seq", sequenceName="user_id_seq")
-	private Long userId;
-	
-	@Column(name="username")
-	@NotNull
-	private String username;
-	
-	@Column(name="password")
-	private String  password;
-	
-	@Column(name="salt")
-	private String  salt;
-	
-	@Column(name="first_name")
-	private String  firstName;
-	
-	@Column(name="last_name")
-	private String  lastName;
-	
-	@Column(name="birth_date")
-	private Date birthDate;
-	
-	@Column(name="gender")
-	@Enumerated(EnumType.STRING)
-	private UserProfileGenderType  gender;
-	
-	@Column(name="email")
-	private String email;
-	
-	@Column(name="show_personal")
-	private Boolean showPersonal;
-	
-	@Column(name="signup_date")
-	private Date signupDate;
-	
-	@Column(name="last_login_date")
-	private Date lastLoginDate;
-	
-	@Column(name="last_ip")
-	private String lastIp;
-	
-	@Column(name="user_profile_status")
-	@Enumerated(EnumType.STRING)
-	private UserProfileStatusType userProfileStatus;
-	
-	@Column(name="avatar_url")
-	private String avatarUrl;
-	
-	@Column(name="session_id")
-	private String sessionId;
-	
-	@Column(name="nonce")
-	private String nonce;
-	
-	@Column(name="new_email")
-	private String newEmail;
-	
-	@Column(name="description_content_id")
-	private Long descriptionContentId;
+    private static final long serialVersionUID = -4042511031705727688L;
 
-	public UserProfile() {
-		super();
-	}
+    @Id
+    @Column(name = "user_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "user_id_seq")
+    @SequenceGenerator(name = "user_id_seq", sequenceName = "user_id_seq")
+    private Long userId;
 
-	public UserProfile(Long userId, String username, String password, String salt,
-			String firstName, String lastName, Date birthDate,
-			UserProfileGenderType gender, String email,
-			Boolean showPersonal, Date signupDate, Date lastLoginDate,
-			String lastIp, UserProfileStatusType userProfileStatus,
-			String avatarUrl, String sessionId, String nonce, String newEmail, Long descriptionContentId) {
-		super();
-		this.userId = userId;
-		this.username = username;
-		this.password = password;
-		this.salt = salt;
-		this.firstName = firstName;
-		this.lastName = lastName;
-		this.birthDate = birthDate;
-		this.gender = gender;
-		this.email = email;
-		this.showPersonal = showPersonal;
-		this.signupDate = signupDate;
-		this.lastLoginDate = lastLoginDate;
-		this.lastIp = lastIp;
-		this.userProfileStatus = userProfileStatus;
-		this.avatarUrl = avatarUrl;
-		this.sessionId = sessionId;
-		this.nonce = nonce;
-		this.newEmail = newEmail;
-		this.descriptionContentId = descriptionContentId;
-	}
+    @Column(name = "username")
+    @NotNull
+    private String username;
 
-	public Long getUserId() {
-		return userId;
-	}
+    @Column(name = "password")
+    private String password;
 
-	public void setUserId(Long userId) {
-		this.userId = userId;
-	}
+    @Column(name = "salt")
+    private String salt;
 
-	public String getUsername() {
-		return username;
-	}
+    @Column(name = "first_name")
+    private String firstName;
 
-	public void setUsername(String username) {
-		this.username = username;
-	}
+    @Column(name = "last_name")
+    private String lastName;
 
-	public String getPassword() {
-		return password;
-	}
+    @Column(name = "birth_date")
+    private Date birthDate;
 
-	public void setPassword(String password) {
-		this.password = password;
-	}
+    @Column(name = "gender")
+    @Enumerated(EnumType.STRING)
+    private UserProfileGenderType gender;
 
-	public String getSalt() {
-		return salt;
-	}
+    @Column(name = "email")
+    private String email;
 
-	public void setSalt(String salt) {
-		this.salt = salt;
-	}
+    @Column(name = "show_personal")
+    private Boolean showPersonal;
 
-	public String getFirstName() {
-		return firstName;
-	}
+    @Column(name = "signup_date")
+    private Date signupDate;
 
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
+    @Column(name = "last_login_date")
+    private Date lastLoginDate;
 
-	public String getLastName() {
-		return lastName;
-	}
+    @Column(name = "last_ip")
+    private String lastIp;
 
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
+    @Column(name = "user_profile_status")
+    @Enumerated(EnumType.STRING)
+    private UserProfileStatusType userProfileStatus;
 
-	public UserProfileGenderType getGender() {
-		return gender;
-	}
+    @Column(name = "avatar_url")
+    private String avatarUrl;
 
-	public void setGender(UserProfileGenderType gender) {
-		this.gender = gender;
-	}
+    @Column(name = "session_id")
+    private String sessionId;
 
-	public String getEmail() {
-		return email;
-	}
+    @Column(name = "nonce")
+    private String nonce;
 
-	public void setEmail(String email) {
-		this.email = email;
-	}
+    @Column(name = "new_email")
+    private String newEmail;
 
-	public Boolean getShowPersonal() {
-		return showPersonal;
-	}
+    // @Column(name="description_content_id")
+    // @Transient
+    // private Long descriptionContentId;
 
-	public void setShowPersonal(Boolean showPersonal) {
-		this.showPersonal = showPersonal;
-	}
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "description_content_id")
+    // @Transient
+    private Content descriptionContent;
 
-	public Date getSignupDate() {
-		return signupDate;
-	}
+    public UserProfile() {
+	super();
+    }
 
-	public void setSignupDate(Date signupDate) {
-		this.signupDate = signupDate;
-	}
+    public UserProfile(Long userId, String username, String password, String salt, String firstName, String lastName,
+	    Date birthDate, UserProfileGenderType gender, String email, Boolean showPersonal, Date signupDate,
+	    Date lastLoginDate, String lastIp, UserProfileStatusType userProfileStatus, String avatarUrl,
+	    String sessionId, String nonce, String newEmail, Content descriptionContent) {
+	super();
+	this.userId = userId;
+	this.username = username;
+	this.password = password;
+	this.salt = salt;
+	this.firstName = firstName;
+	this.lastName = lastName;
+	this.birthDate = birthDate;
+	this.gender = gender;
+	this.email = email;
+	this.showPersonal = showPersonal;
+	this.signupDate = signupDate;
+	this.lastLoginDate = lastLoginDate;
+	this.lastIp = lastIp;
+	this.userProfileStatus = userProfileStatus;
+	this.avatarUrl = avatarUrl;
+	this.sessionId = sessionId;
+	this.nonce = nonce;
+	this.newEmail = newEmail;
+	this.descriptionContent = descriptionContent;
+    }
 
-	public Date getLastLoginDate() {
-		return lastLoginDate;
-	}
+    public Long getUserId() {
+	return userId;
+    }
 
-	public void setLastLoginDate(Date lastLoginDate) {
-		this.lastLoginDate = lastLoginDate;
-	}
+    public void setUserId(Long userId) {
+	this.userId = userId;
+    }
 
-	public String getLastIp() {
-		return lastIp;
-	}
+    public String getUsername() {
+	return username;
+    }
 
-	public void setLastIp(String lastIp) {
-		this.lastIp = lastIp;
-	}
+    public void setUsername(String username) {
+	this.username = username;
+    }
 
-	public UserProfileStatusType getUserProfileStatus() {
-		return userProfileStatus;
-	}
+    public String getPassword() {
+	return password;
+    }
 
-	public void setUserProfileStatus(UserProfileStatusType userProfileStatus) {
-		this.userProfileStatus = userProfileStatus;
-	}
+    public void setPassword(String password) {
+	this.password = password;
+    }
 
-	public String getAvatarUrl() {
-		return avatarUrl;
-	}
+    public String getSalt() {
+	return salt;
+    }
 
-	public void setAvatarUrl(String avatarUrl) {
-		this.avatarUrl = avatarUrl;
-	}
+    public void setSalt(String salt) {
+	this.salt = salt;
+    }
 
-	public Date getBirthDate() {
-		return birthDate;
-	}
+    public String getFirstName() {
+	return firstName;
+    }
 
-	public void setBirthDate(Date birthDate) {
-		this.birthDate = birthDate;
-	}
+    public void setFirstName(String firstName) {
+	this.firstName = firstName;
+    }
 
-	public String getSessionId() {
-		return sessionId;
-	}
+    public String getLastName() {
+	return lastName;
+    }
 
-	public void setSessionId(String sessionId) {
-		this.sessionId = sessionId;
-	}
+    public void setLastName(String lastName) {
+	this.lastName = lastName;
+    }
 
-	public String getNonce() {
-		return nonce;
-	}
+    public UserProfileGenderType getGender() {
+	return gender;
+    }
 
-	public void setNonce(String nonce) {
-		this.nonce = nonce;
-	}
+    public void setGender(UserProfileGenderType gender) {
+	this.gender = gender;
+    }
 
-	public String getNewEmail() {
-		return newEmail;
-	}
+    public String getEmail() {
+	return email;
+    }
 
-	public void setNewEmail(String newEmail) {
-		this.newEmail = newEmail;
-	}
+    public void setEmail(String email) {
+	this.email = email;
+    }
 
-	public Long getDescriptionContentId() {
-		return descriptionContentId;
-	}
+    public Boolean getShowPersonal() {
+	return showPersonal;
+    }
 
-	public void setDescriptionContentId(Long descriptionContentId) {
-		this.descriptionContentId = descriptionContentId;
-	}
+    public void setShowPersonal(Boolean showPersonal) {
+	this.showPersonal = showPersonal;
+    }
+
+    @JsonSerialize(using = CustomDateSerializer.class)
+    public Date getSignupDate() {
+	return signupDate;
+    }
+
+    public void setSignupDate(Date signupDate) {
+	this.signupDate = signupDate;
+    }
+
+    @JsonSerialize(using = CustomDateSerializer.class)
+    public Date getLastLoginDate() {
+	return lastLoginDate;
+    }
+
+    public void setLastLoginDate(Date lastLoginDate) {
+	this.lastLoginDate = lastLoginDate;
+    }
+
+    public String getLastIp() {
+	return lastIp;
+    }
+
+    public void setLastIp(String lastIp) {
+	this.lastIp = lastIp;
+    }
+
+    public UserProfileStatusType getUserProfileStatus() {
+	return userProfileStatus;
+    }
+
+    public void setUserProfileStatus(UserProfileStatusType userProfileStatus) {
+	this.userProfileStatus = userProfileStatus;
+    }
+
+    public String getAvatarUrl() {
+	return avatarUrl;
+    }
+
+    public void setAvatarUrl(String avatarUrl) {
+	this.avatarUrl = avatarUrl;
+    }
+
+    @JsonSerialize(using = CustomDateSerializer.class)
+    public Date getBirthDate() {
+	return birthDate;
+    }
+
+    public void setBirthDate(Date birthDate) {
+	this.birthDate = birthDate;
+    }
+
+    public String getSessionId() {
+	return sessionId;
+    }
+
+    public void setSessionId(String sessionId) {
+	this.sessionId = sessionId;
+    }
+
+    public String getNonce() {
+	return nonce;
+    }
+
+    public void setNonce(String nonce) {
+	this.nonce = nonce;
+    }
+
+    public String getNewEmail() {
+	return newEmail;
+    }
+
+    public void setNewEmail(String newEmail) {
+	this.newEmail = newEmail;
+    }
+
+    public Content getDescriptionContent() {
+	return descriptionContent;
+    }
+
+    public void setDescriptionContent(Content descriptionContent) {
+	this.descriptionContent = descriptionContent;
+    }
+
+    // public Long getDescriptionContentId() {
+    // return descriptionContentId;
+    // }
+    //
+    // public void setDescriptionContentId(Long descriptionContentId) {
+    // this.descriptionContentId = descriptionContentId;
+    // }
 }

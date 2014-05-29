@@ -1,18 +1,15 @@
 package org.bundolo.services;
 
-import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
-import org.bundolo.SessionUtils;
 import org.bundolo.dao.ContentDAO;
 import org.bundolo.dao.ContestDAO;
 import org.bundolo.model.Content;
 import org.bundolo.model.Contest;
-import org.bundolo.model.enumeration.ContentKindType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -55,18 +52,18 @@ public class ContestServiceImpl implements ContestService {
 	    contestDB = contestDAO.findById(contest.getContestId());
 	}
 	if (contestDB == null) {
-	    if (contest.getDescriptionContent() != null) {
-		Long contentId = contentService.saveContent(contest.getDescriptionContent());
-		contestDB = new Contest(contest.getContestId(), SessionUtils.getUsername(), contentId,
-			contest.getKind(), new Date(), contest.getExpirationDate(), contest.getContestStatus());
-		try {
-		    contestDAO.persist(contestDB);
-		} catch (Exception ex) {
-		    contentService.deleteContent(contentId);
-		    throw new Exception("db exception");
-		}
-		result = contestDB.getContestId();
+	    // if (contest.getDescriptionContent() != null) {
+	    // Long contentId = contentService.saveContent(contest.getDescriptionContent());
+	    // contestDB = new Contest(contest.getContestId(), SessionUtils.getUsername(), contentId,
+	    // contest.getKind(), new Date(), contest.getExpirationDate(), contest.getContestStatus());
+	    try {
+		contestDAO.persist(contest);
+	    } catch (Exception ex) {
+		// contentService.deleteContent(contentId);
+		throw new Exception("db exception");
 	    }
+	    result = contest.getContestId();
+	    // }
 	}
 	return result;
     }
@@ -109,21 +106,27 @@ public class ContestServiceImpl implements ContestService {
     @Override
     public List<Contest> findItemListContests(String query, Integer start, Integer end) throws Exception {
 	List<Contest> contests = contestDAO.findItemListContests(query, start, end);
-	if (contests != null) {
-	    for (Contest contest : contests) {
-		Content descriptionContent = contentDAO.findContentForLocale(contest.getDescriptionContentId(),
-			ContentKindType.contest_description, SessionUtils.getUserLocale());
-		if (descriptionContent != null) {
-		    contest.setDescriptionContent(descriptionContent);
-		}
-	    }
-	}
+	// if (contests != null) {
+	// for (Contest contest : contests) {
+	// Content descriptionContent = contentDAO.findContentForLocale(contest.getDescriptionContentId(),
+	// ContentKindType.contest_description, SessionUtils.getUserLocale());
+	// if (descriptionContent != null) {
+	// contest.setDescriptionContent(descriptionContent);
+	// }
+	// }
+	// }
 	return contests;
     }
 
     @Override
     public Integer findItemListContestsCount(String query) throws Exception {
 	return contestDAO.findItemListContestsCount(query);
+    }
+
+    @Override
+    public List<Contest> findContests(Integer start, Integer end, String[] orderBy, String[] order, String[] filterBy,
+	    String[] filter) {
+	return contestDAO.findContests(start, end, orderBy, order, filterBy, filter);
     }
 
 }

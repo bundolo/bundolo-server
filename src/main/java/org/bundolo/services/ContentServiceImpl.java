@@ -261,4 +261,10 @@ public class ContentServiceImpl implements ContentService, ApplicationContextAwa
 	    }
 	}
     }
+
+    @Override
+    public List<Content> findTexts(Integer start, Integer end, String[] orderBy, String[] order, String[] filterBy,
+	    String[] filter) {
+	return contentDAO.findTexts(start, end, orderBy, order, filterBy, filter);
+    }
 }
