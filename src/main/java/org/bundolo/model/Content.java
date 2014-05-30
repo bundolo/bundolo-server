@@ -1,7 +1,9 @@
 package org.bundolo.model;
 
+import java.util.Collection;
 import java.util.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -9,6 +11,9 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -16,10 +21,16 @@ import javax.persistence.Transient;
 import org.bundolo.CustomDateSerializer;
 import org.bundolo.model.enumeration.ContentKindType;
 import org.bundolo.model.enumeration.ContentStatusType;
+import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.FilterDef;
+import org.hibernate.annotations.ParamDef;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @Entity
+@FilterDef(name = "descriptionFilter", parameters = @ParamDef(name = "kind", type = "java.lang.String"))
 @Table(name = "content")
 public class Content implements java.io.Serializable {
 
@@ -36,7 +47,8 @@ public class Content implements java.io.Serializable {
     @Column(name = "author_username")
     private String authorUsername;
 
-    @Column(name = "parent_content_id")
+    // @Column(name = "parent_content_id")
+    @Transient
     private Long parentContentId;
 
     @Column(name = "kind")
@@ -71,8 +83,18 @@ public class Content implements java.io.Serializable {
     // @OneToOne(fetch = FetchType.EAGER)
     // @JoinColumn(name = "parent_content_id", referencedColumnName =
     // "content_id")
-    @Transient
+    // @Transient
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "parent_content_id", referencedColumnName = "content_id")
+    @JsonBackReference
+    // prevent circular
     private Content parentContent;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "parentContent")
+    // @Filter(name = "description", condition = ":kind = 'text_description'")
+    @Filter(name = "descriptionFilter", condition = "kind = :kind")
+    @JsonManagedReference
+    private Collection<Content> children;
 
     public Content() {
 	super();
@@ -188,5 +210,13 @@ public class Content implements java.io.Serializable {
 
     public void setParentContent(Content parentContent) {
 	this.parentContent = parentContent;
+    }
+
+    public Collection<Content> getChildren() {
+	return children;
+    }
+
+    public void setChildren(Collection<Content> children) {
+	this.children = children;
     }
 }

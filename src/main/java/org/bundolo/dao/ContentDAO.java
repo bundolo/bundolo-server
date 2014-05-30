@@ -10,6 +10,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.bundolo.Utils;
 import org.bundolo.model.Content;
 import org.bundolo.model.enumeration.ContentKindType;
+import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
 
 @Repository("contentDAO")
@@ -226,6 +227,8 @@ public class ContentDAO extends JpaDAO<Long, Content> {
     @SuppressWarnings("unchecked")
     public List<Content> findTexts(Integer start, Integer end, String[] orderBy, String[] order, String[] filterBy,
 	    String[] filter) {
+	Session session = entityManager.unwrap(Session.class);
+	session.enableFilter("descriptionFilter").setParameter("kind", "text_description");
 	StringBuilder queryString = new StringBuilder();
 	queryString.append("SELECT c FROM Content c WHERE kind='text' AND content_status='active'");
 	if (ArrayUtils.isNotEmpty(filterBy)) {
@@ -253,7 +256,128 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 		prefix = nextPrefix;
 	    }
 	}
-	logger.log(Level.WARNING, "queryString: " + queryString.toString());
+	logger.log(Level.WARNING, "queryString: " + queryString.toString() + ", start: " + start + ", max results: "
+		+ (end - start + 1));
+	Query q = entityManager.createQuery(queryString.toString());
+	q.setFirstResult(start);
+	q.setMaxResults(end - start + 1);
+	return q.getResultList();
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<Content> findAnnouncements(Integer start, Integer end, String[] orderBy, String[] order,
+	    String[] filterBy, String[] filter) {
+	Session session = entityManager.unwrap(Session.class);
+	session.enableFilter("descriptionFilter").setParameter("kind", "");
+	StringBuilder queryString = new StringBuilder();
+	queryString.append("SELECT c FROM Content c WHERE kind='news' AND content_status='active'");
+	if (ArrayUtils.isNotEmpty(filterBy)) {
+	    String prefix = " AND LOWER(";
+	    String suffix = ") LIKE '%";
+	    String postfix = "%'";
+	    for (int i = 0; i < filterBy.length; i++) {
+		queryString.append(prefix);
+		queryString.append(filterBy[i]);
+		queryString.append(suffix);
+		queryString.append(filter[i].toLowerCase());
+		queryString.append(postfix);
+	    }
+	}
+	if (ArrayUtils.isNotEmpty(orderBy) && ArrayUtils.isSameLength(orderBy, order)) {
+	    String firstPrefix = " ORDER BY ";
+	    String nextPrefix = ", ";
+	    String prefix = firstPrefix;
+	    String suffix = " ";
+	    for (int i = 0; i < orderBy.length; i++) {
+		queryString.append(prefix);
+		queryString.append(orderBy[i]);
+		queryString.append(suffix);
+		queryString.append(order[i]);
+		prefix = nextPrefix;
+	    }
+	}
+	logger.log(Level.WARNING, "queryString: " + queryString.toString() + ", start: " + start + ", max results: "
+		+ (end - start + 1));
+	Query q = entityManager.createQuery(queryString.toString());
+	q.setFirstResult(start);
+	q.setMaxResults(end - start + 1);
+	return q.getResultList();
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<Content> findSerials(Integer start, Integer end, String[] orderBy, String[] order, String[] filterBy,
+	    String[] filter) {
+	Session session = entityManager.unwrap(Session.class);
+	session.enableFilter("descriptionFilter").setParameter("kind", "");
+	StringBuilder queryString = new StringBuilder();
+	queryString.append("SELECT c FROM Content c WHERE kind='episode_group' AND content_status='active'");
+	if (ArrayUtils.isNotEmpty(filterBy)) {
+	    String prefix = " AND LOWER(";
+	    String suffix = ") LIKE '%";
+	    String postfix = "%'";
+	    for (int i = 0; i < filterBy.length; i++) {
+		queryString.append(prefix);
+		queryString.append(filterBy[i]);
+		queryString.append(suffix);
+		queryString.append(filter[i].toLowerCase());
+		queryString.append(postfix);
+	    }
+	}
+	if (ArrayUtils.isNotEmpty(orderBy) && ArrayUtils.isSameLength(orderBy, order)) {
+	    String firstPrefix = " ORDER BY ";
+	    String nextPrefix = ", ";
+	    String prefix = firstPrefix;
+	    String suffix = " ";
+	    for (int i = 0; i < orderBy.length; i++) {
+		queryString.append(prefix);
+		queryString.append(orderBy[i]);
+		queryString.append(suffix);
+		queryString.append(order[i]);
+		prefix = nextPrefix;
+	    }
+	}
+	logger.log(Level.WARNING, "queryString: " + queryString.toString() + ", start: " + start + ", max results: "
+		+ (end - start + 1));
+	Query q = entityManager.createQuery(queryString.toString());
+	q.setFirstResult(start);
+	q.setMaxResults(end - start + 1);
+	return q.getResultList();
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<Content> findTopics(Integer start, Integer end, String[] orderBy, String[] order, String[] filterBy,
+	    String[] filter) {
+	Session session = entityManager.unwrap(Session.class);
+	session.enableFilter("descriptionFilter").setParameter("kind", "");
+	StringBuilder queryString = new StringBuilder();
+	queryString.append("SELECT c FROM Content c WHERE kind='forum_topic' AND content_status='active'");
+	if (ArrayUtils.isNotEmpty(filterBy)) {
+	    String prefix = " AND LOWER(";
+	    String suffix = ") LIKE '%";
+	    String postfix = "%'";
+	    for (int i = 0; i < filterBy.length; i++) {
+		queryString.append(prefix);
+		queryString.append(filterBy[i]);
+		queryString.append(suffix);
+		queryString.append(filter[i].toLowerCase());
+		queryString.append(postfix);
+	    }
+	}
+	if (ArrayUtils.isNotEmpty(orderBy) && ArrayUtils.isSameLength(orderBy, order)) {
+	    String firstPrefix = " ORDER BY ";
+	    String nextPrefix = ", ";
+	    String prefix = firstPrefix;
+	    String suffix = " ";
+	    for (int i = 0; i < orderBy.length; i++) {
+		queryString.append(prefix);
+		queryString.append(orderBy[i]);
+		queryString.append(suffix);
+		queryString.append(order[i]);
+		prefix = nextPrefix;
+	    }
+	}
+	logger.log(Level.WARNING, "queryString: " + queryString.toString() + ", start: " + start + ", max results: "
+		+ (end - start + 1));
 	Query q = entityManager.createQuery(queryString.toString());
 	q.setFirstResult(start);
 	q.setMaxResults(end - start + 1);

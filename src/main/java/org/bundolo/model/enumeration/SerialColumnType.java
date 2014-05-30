@@ -1,21 +1,20 @@
 package org.bundolo.model.enumeration;
 
 public enum SerialColumnType {
-    author("author_username"), email("email"), url("url"), date("creation_date"), description("descriptionContent.text"), name(
-	    "descriptionContent.name");
+    author("author_username"), content_name("content_name"), content_text("content_text"), date("creation_date");
 
-    private final String connectionColumnName;
+    private final String serialColumnName;
 
-    private SerialColumnType(String connectionColumnName) {
-	this.connectionColumnName = connectionColumnName;
+    private SerialColumnType(String serialColumnName) {
+	this.serialColumnName = serialColumnName;
     }
 
-    public String getConnectionColumnName() {
-	return connectionColumnName;
+    public String getSerialColumnName() {
+	return serialColumnName;
     }
 
     @Override
     public String toString() {
-	return name() + ": " + getConnectionColumnName();
+	return name() + ": " + getSerialColumnName();
     }
 }

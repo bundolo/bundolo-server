@@ -51,4 +51,13 @@ public interface ContentService {
 
     public List<Content> findTexts(Integer start, Integer end, String[] orderBy, String[] order, String[] filterBy,
 	    String[] filter);
+
+    public List<Content> findAnnouncements(Integer start, Integer end, String[] orderBy, String[] order,
+	    String[] filterBy, String[] filter);
+
+    public List<Content> findSerials(Integer start, Integer end, String[] orderBy, String[] order, String[] filterBy,
+	    String[] filter);
+
+    public List<Content> findTopics(Integer start, Integer end, String[] orderBy, String[] order, String[] filterBy,
+	    String[] filter);
 }

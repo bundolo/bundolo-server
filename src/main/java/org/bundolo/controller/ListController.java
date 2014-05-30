@@ -8,9 +8,12 @@ import org.bundolo.model.Connection;
 import org.bundolo.model.Content;
 import org.bundolo.model.Contest;
 import org.bundolo.model.UserProfile;
+import org.bundolo.model.enumeration.AnnouncementColumnType;
 import org.bundolo.model.enumeration.ConnectionColumnType;
 import org.bundolo.model.enumeration.ContestColumnType;
+import org.bundolo.model.enumeration.SerialColumnType;
 import org.bundolo.model.enumeration.TextColumnType;
+import org.bundolo.model.enumeration.TopicColumnType;
 import org.bundolo.model.enumeration.UserProfileColumnType;
 import org.bundolo.services.ConnectionService;
 import org.bundolo.services.ContentService;
@@ -154,6 +157,96 @@ public class ListController {
 	    }
 	}
 	return contentService.findTexts(start, end, orderByColumns.toArray(new String[orderByColumns.size()]),
+		orderByDirections.toArray(new String[orderByDirections.size()]),
+		filterByColumns.toArray(new String[filterByColumns.size()]),
+		filterByTexts.toArray(new String[filterByTexts.size()]));
+    }
+
+    @RequestMapping(Constants.REST_PATH_ANNOUNCEMENTS)
+    public @ResponseBody
+    List<Content> announcements(@RequestParam(required = false, defaultValue = "0") Integer start,
+	    @RequestParam(required = false, defaultValue = "0") Integer end,
+	    @RequestParam(required = false) String orderBy, @RequestParam(required = false) String filterBy) {
+	// TODO check param validity
+	List<String> orderByColumns = new ArrayList<String>();
+	List<String> orderByDirections = new ArrayList<String>();
+	if (StringUtils.hasText(orderBy)) {
+	    String[] params = orderBy.split(",");
+	    for (int i = 0; i < params.length; i += 2) {
+		orderByColumns.add(AnnouncementColumnType.valueOf(params[i]).getAnnouncementColumnName());
+		orderByDirections.add(params[i + 1]);
+	    }
+	}
+	List<String> filterByColumns = new ArrayList<String>();
+	List<String> filterByTexts = new ArrayList<String>();
+	if (StringUtils.hasText(filterBy)) {
+	    String[] params = filterBy.split(",");
+	    for (int i = 0; i < params.length; i += 2) {
+		filterByColumns.add(AnnouncementColumnType.valueOf(params[i]).getAnnouncementColumnName());
+		filterByTexts.add(params[i + 1]);
+	    }
+	}
+	return contentService.findAnnouncements(start, end, orderByColumns.toArray(new String[orderByColumns.size()]),
+		orderByDirections.toArray(new String[orderByDirections.size()]),
+		filterByColumns.toArray(new String[filterByColumns.size()]),
+		filterByTexts.toArray(new String[filterByTexts.size()]));
+    }
+
+    @RequestMapping(Constants.REST_PATH_SERIALS)
+    public @ResponseBody
+    List<Content> serials(@RequestParam(required = false, defaultValue = "0") Integer start,
+	    @RequestParam(required = false, defaultValue = "0") Integer end,
+	    @RequestParam(required = false) String orderBy, @RequestParam(required = false) String filterBy) {
+	// TODO check param validity
+	List<String> orderByColumns = new ArrayList<String>();
+	List<String> orderByDirections = new ArrayList<String>();
+	if (StringUtils.hasText(orderBy)) {
+	    String[] params = orderBy.split(",");
+	    for (int i = 0; i < params.length; i += 2) {
+		orderByColumns.add(SerialColumnType.valueOf(params[i]).getSerialColumnName());
+		orderByDirections.add(params[i + 1]);
+	    }
+	}
+	List<String> filterByColumns = new ArrayList<String>();
+	List<String> filterByTexts = new ArrayList<String>();
+	if (StringUtils.hasText(filterBy)) {
+	    String[] params = filterBy.split(",");
+	    for (int i = 0; i < params.length; i += 2) {
+		filterByColumns.add(SerialColumnType.valueOf(params[i]).getSerialColumnName());
+		filterByTexts.add(params[i + 1]);
+	    }
+	}
+	return contentService.findSerials(start, end, orderByColumns.toArray(new String[orderByColumns.size()]),
+		orderByDirections.toArray(new String[orderByDirections.size()]),
+		filterByColumns.toArray(new String[filterByColumns.size()]),
+		filterByTexts.toArray(new String[filterByTexts.size()]));
+    }
+
+    @RequestMapping(Constants.REST_PATH_TOPICS)
+    public @ResponseBody
+    List<Content> topics(@RequestParam(required = false, defaultValue = "0") Integer start,
+	    @RequestParam(required = false, defaultValue = "0") Integer end,
+	    @RequestParam(required = false) String orderBy, @RequestParam(required = false) String filterBy) {
+	// TODO check param validity
+	List<String> orderByColumns = new ArrayList<String>();
+	List<String> orderByDirections = new ArrayList<String>();
+	if (StringUtils.hasText(orderBy)) {
+	    String[] params = orderBy.split(",");
+	    for (int i = 0; i < params.length; i += 2) {
+		orderByColumns.add(TopicColumnType.valueOf(params[i]).getTopicColumnName());
+		orderByDirections.add(params[i + 1]);
+	    }
+	}
+	List<String> filterByColumns = new ArrayList<String>();
+	List<String> filterByTexts = new ArrayList<String>();
+	if (StringUtils.hasText(filterBy)) {
+	    String[] params = filterBy.split(",");
+	    for (int i = 0; i < params.length; i += 2) {
+		filterByColumns.add(TopicColumnType.valueOf(params[i]).getTopicColumnName());
+		filterByTexts.add(params[i + 1]);
+	    }
+	}
+	return contentService.findTopics(start, end, orderByColumns.toArray(new String[orderByColumns.size()]),
 		orderByDirections.toArray(new String[orderByDirections.size()]),
 		filterByColumns.toArray(new String[filterByColumns.size()]),
 		filterByTexts.toArray(new String[filterByTexts.size()]));
