@@ -97,7 +97,8 @@ public class UserProfileDAO extends JpaDAO<Long, UserProfile> {
 		prefix = nextPrefix;
 	    }
 	}
-	logger.log(Level.WARNING, "queryString: " + queryString.toString());
+	logger.log(Level.WARNING, "queryString: " + queryString.toString() + ", start: " + start + ", max results: "
+		+ (end - start + 1));
 	Query q = entityManager.createQuery(queryString.toString());
 	q.setFirstResult(start);
 	q.setMaxResults(end - start + 1);

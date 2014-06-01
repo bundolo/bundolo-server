@@ -8,7 +8,7 @@ import org.bundolo.model.enumeration.ContentKindType;
 
 public interface ContentService {
 
-    public Content findContent(Long contentId) throws Exception;
+    public Content findContent(Long contentId);
 
     // public void saveContent(Long contentId, Long authorUserId, Long
     // parentPageId, Long parentContentId, ContentKindType kind, String text,

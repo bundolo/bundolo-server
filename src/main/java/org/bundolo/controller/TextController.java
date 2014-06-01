@@ -1,8 +1,8 @@
 package org.bundolo.controller;
 
 import org.bundolo.Constants;
-import org.bundolo.model.Connection;
-import org.bundolo.services.ConnectionService;
+import org.bundolo.model.Content;
+import org.bundolo.services.ContentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,16 +11,16 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
-public class ConnectionController {
+public class TextController {
 
     @Autowired
-    private ConnectionService connectionService;
+    private ContentService contentService;
 
-    @RequestMapping(value = Constants.REST_PATH_CONNECTION + "/{id}", method = RequestMethod.GET)
+    @RequestMapping(value = Constants.REST_PATH_TEXT + "/{id}", method = RequestMethod.GET)
     public @ResponseBody
-    Connection connection(@PathVariable Long id) {
+    Content text(@PathVariable Long id) {
 	// TODO check param validity
-	return connectionService.findConnection(id);
+	return contentService.findContent(id);
     }
 
 }
