@@ -7,18 +7,12 @@ import org.bundolo.model.UserProfile;
 
 public interface UserProfileService {
 
-    // TODO this method should not be public. users on client side should be in
-    // UserDTO object
     public UserProfile findUserProfile(Long userId);
 
     public void saveUserProfile(UserProfile userProfile) throws Exception;
 
-    // public UserDTO updateUserProfile(UserProfileDTO userProfileDTO) throws
-    // Exception;
     public User updateUserProfile(UserProfile userProfile) throws Exception;
 
-    // public void saveOrUpdateUserProfile(UserProfileDTO userProfileDTO) throws
-    // Exception;
     public void deleteUserProfile(Long userId) throws Exception;
 
     // public User login(String username, String password, Boolean rememberMe) throws Exception;
@@ -41,4 +35,5 @@ public interface UserProfileService {
 
     public List<UserProfile> findUserProfiles(Integer start, Integer end, String[] orderBy, String[] order,
 	    String[] filterBy, String[] filter);
+
 }

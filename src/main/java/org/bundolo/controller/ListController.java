@@ -7,7 +7,7 @@ import org.bundolo.Constants;
 import org.bundolo.model.Connection;
 import org.bundolo.model.Content;
 import org.bundolo.model.Contest;
-import org.bundolo.model.UserProfile;
+import org.bundolo.model.User;
 import org.bundolo.model.enumeration.AnnouncementColumnType;
 import org.bundolo.model.enumeration.ConnectionColumnType;
 import org.bundolo.model.enumeration.ContestColumnType;
@@ -18,7 +18,7 @@ import org.bundolo.model.enumeration.UserProfileColumnType;
 import org.bundolo.services.ConnectionService;
 import org.bundolo.services.ContentService;
 import org.bundolo.services.ContestService;
-import org.bundolo.services.UserProfileService;
+import org.bundolo.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
@@ -36,7 +36,7 @@ public class ListController {
     private ContestService contestService;
 
     @Autowired
-    private UserProfileService userProfileService;
+    private UserService userService;
 
     @Autowired
     private ContentService contentService;
@@ -103,7 +103,7 @@ public class ListController {
 
     @RequestMapping(Constants.REST_PATH_AUTHORS)
     public @ResponseBody
-    List<UserProfile> authors(@RequestParam(required = false, defaultValue = "0") Integer start,
+    List<User> authors(@RequestParam(required = false, defaultValue = "0") Integer start,
 	    @RequestParam(required = false, defaultValue = "0") Integer end,
 	    @RequestParam(required = false) String orderBy, @RequestParam(required = false) String filterBy) {
 	// TODO check param validity
@@ -125,8 +125,7 @@ public class ListController {
 		filterByTexts.add(params[i + 1]);
 	    }
 	}
-	return userProfileService.findUserProfiles(start, end,
-		orderByColumns.toArray(new String[orderByColumns.size()]),
+	return userService.findUsers(start, end, orderByColumns.toArray(new String[orderByColumns.size()]),
 		orderByDirections.toArray(new String[orderByDirections.size()]),
 		filterByColumns.toArray(new String[filterByColumns.size()]),
 		filterByTexts.toArray(new String[filterByTexts.size()]));

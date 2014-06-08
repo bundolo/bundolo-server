@@ -7,12 +7,17 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
+import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
+import org.bundolo.CustomDateSerializer;
 import org.bundolo.model.enumeration.UserProfileGenderType;
+
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @Entity
 @Table(name = "user_profile")
@@ -20,6 +25,7 @@ public class User implements java.io.Serializable {
 
     private static final long serialVersionUID = -4042511031705727688L;
 
+    @Id
     @Column(name = "username")
     @NotNull
     private String username;
@@ -52,6 +58,7 @@ public class User implements java.io.Serializable {
     @Column(name = "session_id")
     private String sessionId;
 
+    @Transient
     private String rememberMeCookie;
 
     @OneToOne(fetch = FetchType.EAGER)
@@ -86,6 +93,7 @@ public class User implements java.io.Serializable {
 	this.lastName = lastName;
     }
 
+    @JsonSerialize(using = CustomDateSerializer.class)
     public Date getBirthDate() {
 	return birthDate;
     }
@@ -110,6 +118,7 @@ public class User implements java.io.Serializable {
 	this.showPersonal = showPersonal;
     }
 
+    @JsonSerialize(using = CustomDateSerializer.class)
     public Date getSignupDate() {
 	return signupDate;
     }
@@ -118,6 +127,7 @@ public class User implements java.io.Serializable {
 	this.signupDate = signupDate;
     }
 
+    @JsonSerialize(using = CustomDateSerializer.class)
     public Date getLastLoginDate() {
 	return lastLoginDate;
     }

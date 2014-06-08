@@ -1,6 +1,5 @@
 package org.bundolo;
 
-
 public class Constants {
 
     // public static final Level SERVER_SEVERE_LOG_LEVEL = Level.SEVERE;
@@ -44,5 +43,6 @@ public class Constants {
     public static final String REST_PATH_CONTEST = "/contest";
     public static final String REST_PATH_CONNECTIONS = "/connections";
     public static final String REST_PATH_CONNECTION = "/connection";
+    public static final String REST_PATH_COMMENTS = "/comments";
 
 }

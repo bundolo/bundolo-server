@@ -14,6 +14,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -21,9 +22,6 @@ import javax.persistence.Transient;
 import org.bundolo.CustomDateSerializer;
 import org.bundolo.model.enumeration.ContentKindType;
 import org.bundolo.model.enumeration.ContentStatusType;
-import org.hibernate.annotations.Filter;
-import org.hibernate.annotations.FilterDef;
-import org.hibernate.annotations.ParamDef;
 import org.hibernate.annotations.Where;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -31,9 +29,8 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @Entity
-@FilterDef(name = "descriptionFilter", parameters = @ParamDef(name = "kind", type = "java.lang.String"))
 @Table(name = "content")
-public class Content implements java.io.Serializable {
+public class Comment implements java.io.Serializable {
 
     private static final long serialVersionUID = 7440297955003302414L;
 
@@ -48,16 +45,9 @@ public class Content implements java.io.Serializable {
     @Column(name = "author_username")
     private String authorUsername;
 
-    // @Column(name = "parent_content_id")
-    @Transient
-    private Long parentContentId;
-
     @Column(name = "kind")
     @Enumerated(EnumType.STRING)
     private ContentKindType kind;
-
-    @Column(name = "content_name")
-    private String name;
 
     @Column(name = "content_text")
     private String text;
@@ -77,44 +67,19 @@ public class Content implements java.io.Serializable {
     @Transient
     private Rating rating;
 
-    // @OneToOne(mappedBy = "parentContent", fetch = FetchType.EAGER)
-    @Transient
-    private Content descriptionContent;
-
-    // @OneToOne(fetch = FetchType.EAGER)
-    // @JoinColumn(name = "parent_content_id", referencedColumnName =
-    // "content_id")
-    // @Transient
     @ManyToOne(optional = true)
     @JoinColumn(name = "parent_content_id", referencedColumnName = "content_id")
     @JsonBackReference
-    // prevent circular
-    private Content parentContent;
+    private Comment parentContent;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "parentContent")
-    // @Filter(name = "description", condition = ":kind = 'text_description'")
-    @Filter(name = "descriptionFilter", condition = "kind = :kind")
     @JsonManagedReference
-    @Where(clause = "kind like '%_description'")
-    private Collection<Content> description;
+    @Where(clause = "kind like '%_comment'")
+    @OrderBy("creationDate")
+    private Collection<Comment> comments;
 
-    public Content() {
+    public Comment() {
 	super();
-    }
-
-    public Content(Long contentId, String authorUsername, Long parentContentId, ContentKindType kind, String name,
-	    String text, String locale, Date creationDate, ContentStatusType contentStatus, Rating rating) {
-	super();
-	this.contentId = contentId;
-	this.authorUsername = authorUsername;
-	this.parentContentId = parentContentId;
-	this.kind = kind;
-	this.name = name;
-	this.text = text;
-	this.locale = locale;
-	this.creationDate = creationDate;
-	this.contentStatus = contentStatus;
-	this.rating = rating;
     }
 
     public Long getContentId() {
@@ -131,14 +96,6 @@ public class Content implements java.io.Serializable {
 
     public void setAuthorUsername(String authorUsername) {
 	this.authorUsername = authorUsername;
-    }
-
-    public Long getParentContentId() {
-	return parentContentId;
-    }
-
-    public void setParentContentId(Long parentContentId) {
-	this.parentContentId = parentContentId;
     }
 
     public ContentKindType getKind() {
@@ -182,14 +139,6 @@ public class Content implements java.io.Serializable {
 	this.contentStatus = contentStatus;
     }
 
-    public String getName() {
-	return name;
-    }
-
-    public void setName(String name) {
-	this.name = name;
-    }
-
     public Rating getRating() {
 	return rating;
     }
@@ -198,27 +147,19 @@ public class Content implements java.io.Serializable {
 	this.rating = rating;
     }
 
-    public Content getDescriptionContent() {
-	return descriptionContent;
-    }
-
-    public void setDescriptionContent(Content descriptionContent) {
-	this.descriptionContent = descriptionContent;
-    }
-
-    public Content getParentContent() {
+    public Comment getParentContent() {
 	return parentContent;
     }
 
-    public void setParentContent(Content parentContent) {
+    public void setParentContent(Comment parentContent) {
 	this.parentContent = parentContent;
     }
 
-    public Collection<Content> getDescription() {
-	return description;
+    public Collection<Comment> getComments() {
+	return comments;
     }
 
-    public void setDescription(Collection<Content> description) {
-	this.description = description;
+    public void setComments(Collection<Comment> comments) {
+	this.comments = comments;
     }
 }

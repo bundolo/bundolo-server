@@ -12,6 +12,8 @@
 		 <class>org.bundolo.model.Page</class>
 		 <class>org.bundolo.model.Rating</class>
 		 <class>org.bundolo.model.UserProfile</class>
+		 <class>org.bundolo.model.User</class>
+		 <class>org.bundolo.model.Comment</class>
 		 <exclude-unlisted-classes>true</exclude-unlisted-classes>
 		 <properties>
 			<property name="hibernate.hbm2ddl.auto" value="validate" />
