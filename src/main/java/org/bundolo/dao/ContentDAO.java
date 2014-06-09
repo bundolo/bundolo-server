@@ -10,7 +10,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.bundolo.Utils;
 import org.bundolo.model.Content;
 import org.bundolo.model.enumeration.ContentKindType;
-import org.hibernate.Session;
+import org.bundolo.model.enumeration.PageKindType;
 import org.springframework.stereotype.Repository;
 
 @Repository("contentDAO")
@@ -227,8 +227,6 @@ public class ContentDAO extends JpaDAO<Long, Content> {
     @SuppressWarnings("unchecked")
     public List<Content> findTexts(Integer start, Integer end, String[] orderBy, String[] order, String[] filterBy,
 	    String[] filter) {
-	Session session = entityManager.unwrap(Session.class);
-	session.enableFilter("descriptionFilter").setParameter("kind", "text_description");
 	StringBuilder queryString = new StringBuilder();
 	queryString.append("SELECT c FROM Content c WHERE kind='text' AND content_status='active'");
 	if (ArrayUtils.isNotEmpty(filterBy)) {
@@ -267,8 +265,6 @@ public class ContentDAO extends JpaDAO<Long, Content> {
     @SuppressWarnings("unchecked")
     public List<Content> findAnnouncements(Integer start, Integer end, String[] orderBy, String[] order,
 	    String[] filterBy, String[] filter) {
-	Session session = entityManager.unwrap(Session.class);
-	session.enableFilter("descriptionFilter").setParameter("kind", "");
 	StringBuilder queryString = new StringBuilder();
 	queryString.append("SELECT c FROM Content c WHERE kind='news' AND content_status='active'");
 	if (ArrayUtils.isNotEmpty(filterBy)) {
@@ -307,8 +303,6 @@ public class ContentDAO extends JpaDAO<Long, Content> {
     @SuppressWarnings("unchecked")
     public List<Content> findSerials(Integer start, Integer end, String[] orderBy, String[] order, String[] filterBy,
 	    String[] filter) {
-	Session session = entityManager.unwrap(Session.class);
-	session.enableFilter("descriptionFilter").setParameter("kind", "");
 	StringBuilder queryString = new StringBuilder();
 	queryString.append("SELECT c FROM Content c WHERE kind='episode_group' AND content_status='active'");
 	if (ArrayUtils.isNotEmpty(filterBy)) {
@@ -347,8 +341,6 @@ public class ContentDAO extends JpaDAO<Long, Content> {
     @SuppressWarnings("unchecked")
     public List<Content> findTopics(Integer start, Integer end, String[] orderBy, String[] order, String[] filterBy,
 	    String[] filter) {
-	Session session = entityManager.unwrap(Session.class);
-	session.enableFilter("descriptionFilter").setParameter("kind", "");
 	StringBuilder queryString = new StringBuilder();
 	queryString.append("SELECT c FROM Content c WHERE kind='forum_topic' AND content_status='active'");
 	if (ArrayUtils.isNotEmpty(filterBy)) {
@@ -382,6 +374,25 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	q.setFirstResult(start);
 	q.setMaxResults(end - start + 1);
 	return q.getResultList();
+    }
+
+    @SuppressWarnings("unchecked")
+    public Content getPageDescriptionContent(PageKindType pageKind) {
+	Content result = null;
+	if (pageKind != null) {
+	    String queryString = "SELECT c FROM Content c, Page p";
+	    queryString += " WHERE p.kind ='" + pageKind + "'";
+	    queryString += " AND p.descriptionContentId = c.contentId";
+	    logger.log(Level.WARNING, "queryString: " + queryString);
+
+	    Query q = entityManager.createQuery(queryString);
+	    q.setMaxResults(1);
+	    List<Content> resultList = q.getResultList();
+	    if (resultList != null && resultList.size() > 0) {
+		result = resultList.get(0);
+	    }
+	}
+	return result;
     }
 
 }

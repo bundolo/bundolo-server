@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.bundolo.model.Content;
 import org.bundolo.model.enumeration.ContentKindType;
+import org.bundolo.model.enumeration.PageKindType;
 
 public interface ContentService {
 
@@ -60,4 +61,7 @@ public interface ContentService {
 
     public List<Content> findTopics(Integer start, Integer end, String[] orderBy, String[] order, String[] filterBy,
 	    String[] filter);
+
+    public Content getPageDescriptionContent(PageKindType pageKind); // to simplify things, pages are out of scope in
+								     // first release
 }

@@ -17,6 +17,7 @@ import org.bundolo.model.Content;
 import org.bundolo.model.Rating;
 import org.bundolo.model.enumeration.ContentKindType;
 import org.bundolo.model.enumeration.ContentStatusType;
+import org.bundolo.model.enumeration.PageKindType;
 import org.bundolo.model.enumeration.RatingKindType;
 import org.bundolo.model.enumeration.RatingStatusType;
 import org.springframework.beans.BeansException;
@@ -284,5 +285,10 @@ public class ContentServiceImpl implements ContentService, ApplicationContextAwa
     public List<Content> findTopics(Integer start, Integer end, String[] orderBy, String[] order, String[] filterBy,
 	    String[] filter) {
 	return contentDAO.findTopics(start, end, orderBy, order, filterBy, filter);
+    }
+
+    @Override
+    public Content getPageDescriptionContent(PageKindType pageKind) {
+	return contentDAO.getPageDescriptionContent(pageKind);
     }
 }
