@@ -2,14 +2,12 @@ package org.bundolo.services;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
-import org.bundolo.GlobalStorage;
 import org.bundolo.SessionUtils;
 import org.bundolo.Utils;
 import org.bundolo.dao.ContentDAO;
@@ -59,44 +57,6 @@ public class ContentServiceImpl implements ContentService, ApplicationContextAwa
 	if (content != null) {
 	    contentDAO.remove(content);
 	}
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.bundolo.services.ContentService#findContents(java.lang.Long,
-     * org.bundolo.model.enumeration.ContentKindType)
-     */
-    @Override
-    public List<Content> findContents(Long parentContentId, ContentKindType kind) throws Exception {
-	// switch (kind) {
-	// case text_comment:
-	// contentDTOs.add(getDescriptionContent(parentContentId,
-	// ContentKindType.text_description));
-	// break;
-	// case episode_group_comment:
-	// //TODO see about this, retrieving description here instead from list,
-	// to improve performance
-	// // contentDTOs.add(getDescriptionContent(parentContentId));
-	// break;
-	// default:
-	// break;
-	// }
-
-	List<Content> contents = contentDAO.findContents(parentContentId, kind, SessionUtils.getUserLocale());
-	if (Utils.hasElements(contents)) {
-	    for (Content content : contents) {
-		List<Content> childContents = findContents(content.getContentId(), kind);
-		if (Utils.hasElements(childContents)) {
-		    // TODO 20140527
-		    // content.setContentChildren(childContents);
-		}
-		// contentDTO.setDescriptionContent(getDescriptionContent(content.getContentId(),
-		// content.getKind()));
-		contents.add(content);
-	    }
-	}
-	return contents;
     }
 
     @Override
@@ -183,11 +143,12 @@ public class ContentServiceImpl implements ContentService, ApplicationContextAwa
 		throw new Exception("db exception");
 	    }
 
+	    // TODO
 	    ContentKindType descriptionContentKind = Utils.getDescriptionContentKind(content.getKind());
 	    if (content.getDescriptionContent() != null && descriptionContentKind != null) {
 		Content descriptionContent = null;
 		if (content.getContentId() != null) {
-		    descriptionContent = getDescriptionContent(content.getContentId(), content.getKind());
+		    // descriptionContent = getDescriptionContent(content.getContentId(), content.getKind());
 		}
 		if (descriptionContent != null) {
 		    descriptionContent.setText(content.getDescriptionContent().getText());
@@ -207,60 +168,6 @@ public class ContentServiceImpl implements ContentService, ApplicationContextAwa
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 	this.applicationContext = applicationContext;
-    }
-
-    @Override
-    public Map<String, String> getLabelsForLocale(String locale) {
-	logger.log(Level.FINE, "getLabelsForLocale: " + locale);
-	SessionUtils.setAttribute("locale", locale);
-	GlobalStorage globalStorage = (GlobalStorage) applicationContext.getBean("globalStorage");
-	return globalStorage.getLabelsForLocale(locale);
-    }
-
-    @Override
-    public List<Content> findItemListContents(String query, Integer start, Integer end) throws Exception {
-	List<Content> contents = contentDAO.findItemListContents(query, start, end);
-	return contents;
-    }
-
-    @Override
-    public Integer findItemListContentsCount(String query) throws Exception {
-	return contentDAO.findItemListContentsCount(query);
-    }
-
-    @Override
-    public Content getDescriptionContent(Long parentContentId, ContentKindType parentKind) {
-	logger.log(Level.FINE, "getDescriptionContent: " + parentContentId + ", " + parentKind);
-	Content result = null;
-	ContentKindType descriptionContentKind = Utils.getDescriptionContentKind(parentKind);
-	if (descriptionContentKind != null) {
-	    List<Content> descriptionContents = contentDAO.findContents(parentContentId, descriptionContentKind,
-		    SessionUtils.getUserLocale());
-	    if (Utils.hasElements(descriptionContents)) {
-		result = descriptionContents.get(0);
-	    }
-	}
-	return result;
-    }
-
-    @Override
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public void saveLabels(Map<String, String> localeLabels) throws Exception {
-	for (String labelName : localeLabels.keySet()) {
-	    Content content = contentDAO.findContentForLocale(labelName, ContentKindType.label,
-		    SessionUtils.getUserLocale());
-	    if (content == null) {
-		Content contentDB = new Content(null, SessionUtils.getUsername(), contentDAO.findParentContentId(
-			labelName, ContentKindType.label), ContentKindType.label, labelName,
-			localeLabels.get(labelName), SessionUtils.getUserLocale(), new Date(),
-			ContentStatusType.active, null);
-		saveContent(contentDB);
-	    } else {
-		content.setAuthorUsername(SessionUtils.getUsername());
-		content.setText(localeLabels.get(labelName));
-		updateContent(content);
-	    }
-	}
     }
 
     @Override

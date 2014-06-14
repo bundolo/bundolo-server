@@ -8,7 +8,7 @@
 		 <class>org.bundolo.model.Contest</class>
 		 <class>org.bundolo.model.Connection</class>
 		 <class>org.bundolo.model.Content</class>
-		 <class>org.bundolo.model.ItemList</class>
+		 <!-- <class>org.bundolo.model.ItemList</class>-->
 		 <class>org.bundolo.model.Page</class>
 		 <class>org.bundolo.model.Rating</class>
 		 <class>org.bundolo.model.UserProfile</class>

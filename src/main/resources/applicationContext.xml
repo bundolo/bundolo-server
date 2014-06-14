@@ -50,7 +50,7 @@
 		<property name="entityManagerFactory" ref="entityManagerFactory" />
 	</bean>
 	
-	<bean id="globalStorage" class="org.bundolo.GlobalStorage"/>
+	<!-- <bean id="globalStorage" class="org.bundolo.GlobalStorage"/> -->
 	<bean id="mailingUtils" class="org.bundolo.MailingUtils"/>
 
 </beans>
