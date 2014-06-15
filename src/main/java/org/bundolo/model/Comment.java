@@ -8,6 +8,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -72,7 +73,7 @@ public class Comment implements java.io.Serializable {
     @JsonBackReference
     private Comment parentContent;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "parentContent")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "parentContent", fetch = FetchType.EAGER)
     @JsonManagedReference
     @Where(clause = "kind like '%_comment'")
     @OrderBy("creationDate")
@@ -162,4 +163,12 @@ public class Comment implements java.io.Serializable {
     public void setComments(Collection<Comment> comments) {
 	this.comments = comments;
     }
+
+    @Override
+    public String toString() {
+	return "Comment [contentId=" + contentId + ", authorUsername=" + authorUsername + ", kind=" + kind + ", text="
+		+ text + ", locale=" + locale + ", creationDate=" + creationDate + ", contentStatus=" + contentStatus
+		+ ", rating=" + rating + ", parentContent=" + parentContent + ", comments=" + comments + "]";
+    }
+
 }

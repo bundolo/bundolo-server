@@ -21,7 +21,6 @@ import javax.persistence.Transient;
 import org.bundolo.CustomDateSerializer;
 import org.bundolo.model.enumeration.ContentKindType;
 import org.bundolo.model.enumeration.ContentStatusType;
-import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.FilterDef;
 import org.hibernate.annotations.ParamDef;
 import org.hibernate.annotations.Where;
@@ -77,10 +76,6 @@ public class Content implements java.io.Serializable {
     @Transient
     private Rating rating;
 
-    // @OneToOne(mappedBy = "parentContent", fetch = FetchType.EAGER)
-    @Transient
-    private Content descriptionContent;
-
     // @OneToOne(fetch = FetchType.EAGER)
     // @JoinColumn(name = "parent_content_id", referencedColumnName =
     // "content_id")
@@ -92,8 +87,6 @@ public class Content implements java.io.Serializable {
     private Content parentContent;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "parentContent")
-    // @Filter(name = "description", condition = ":kind = 'text_description'")
-    @Filter(name = "descriptionFilter", condition = "kind = :kind")
     @JsonManagedReference
     @Where(clause = "kind like '%_description'")
     private Collection<Content> description;
@@ -196,14 +189,6 @@ public class Content implements java.io.Serializable {
 
     public void setRating(Rating rating) {
 	this.rating = rating;
-    }
-
-    public Content getDescriptionContent() {
-	return descriptionContent;
-    }
-
-    public void setDescriptionContent(Content descriptionContent) {
-	this.descriptionContent = descriptionContent;
     }
 
     public Content getParentContent() {

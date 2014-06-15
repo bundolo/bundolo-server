@@ -8,4 +8,6 @@ public interface CommentService {
 
     public List<Comment> findCommentsByParentId(Long parentId);
 
+    public Long saveComment(Comment comment);
+
 }

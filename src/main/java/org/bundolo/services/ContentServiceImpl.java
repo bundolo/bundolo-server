@@ -9,12 +9,9 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import org.bundolo.SessionUtils;
-import org.bundolo.Utils;
 import org.bundolo.dao.ContentDAO;
 import org.bundolo.model.Content;
 import org.bundolo.model.Rating;
-import org.bundolo.model.enumeration.ContentKindType;
-import org.bundolo.model.enumeration.ContentStatusType;
 import org.bundolo.model.enumeration.PageKindType;
 import org.bundolo.model.enumeration.RatingKindType;
 import org.bundolo.model.enumeration.RatingStatusType;
@@ -94,17 +91,17 @@ public class ContentServiceImpl implements ContentService, ApplicationContextAwa
 		// exception here and throw appropriate validation exception
 		throw new Exception("db exception");
 	    }
-
-	    ContentKindType descriptionContentKind = Utils.getDescriptionContentKind(content.getKind());
-	    if (descriptionContentKind != null) {
-		Content descriptionContent = new Content(null, SessionUtils.getUsername(), contentDB.getContentId(),
-			descriptionContentKind, null, null, SessionUtils.getUserLocale(), new Date(),
-			ContentStatusType.active, null);
-		if (content.getDescriptionContent() != null) {
-		    descriptionContent.setText(content.getDescriptionContent().getText());
-		}
-		contentDAO.persist(descriptionContent);
-	    }
+	    /*
+	    	    ContentKindType descriptionContentKind = Utils.getDescriptionContentKind(content.getKind());
+	    	    if (descriptionContentKind != null) {
+	    		Content descriptionContent = new Content(null, SessionUtils.getUsername(), contentDB.getContentId(),
+	    			descriptionContentKind, null, null, SessionUtils.getUserLocale(), new Date(),
+	    			ContentStatusType.active, null);
+	    		if (content.getDescriptionContent() != null) {
+	    		    descriptionContent.setText(content.getDescriptionContent().getText());
+	    		}
+	    		contentDAO.persist(descriptionContent);
+	    	    }*/
 	    result = contentDB.getContentId();
 	}
 	return result;
@@ -144,23 +141,23 @@ public class ContentServiceImpl implements ContentService, ApplicationContextAwa
 	    }
 
 	    // TODO
-	    ContentKindType descriptionContentKind = Utils.getDescriptionContentKind(content.getKind());
-	    if (content.getDescriptionContent() != null && descriptionContentKind != null) {
-		Content descriptionContent = null;
-		if (content.getContentId() != null) {
-		    // descriptionContent = getDescriptionContent(content.getContentId(), content.getKind());
-		}
-		if (descriptionContent != null) {
-		    descriptionContent.setText(content.getDescriptionContent().getText());
-		    updateContent(descriptionContent);
-		} else { // just for db inconsistencies
-		    Content newDescriptionContent = new Content(null, SessionUtils.getUsername(),
-			    contentDB.getContentId(), descriptionContentKind, null, content.getDescriptionContent()
-				    .getText(), SessionUtils.getUserLocale(), new Date(), ContentStatusType.active,
-			    null);
-		    contentDAO.persist(newDescriptionContent);
-		}
-	    }
+	    /*	    ContentKindType descriptionContentKind = Utils.getDescriptionContentKind(content.getKind());
+	    	    if (content.getDescriptionContent() != null && descriptionContentKind != null) {
+	    		Content descriptionContent = null;
+	    		if (content.getContentId() != null) {
+	    		    // descriptionContent = getDescriptionContent(content.getContentId(), content.getKind());
+	    		}
+	    		if (descriptionContent != null) {
+	    		    descriptionContent.setText(content.getDescriptionContent().getText());
+	    		    updateContent(descriptionContent);
+	    		} else { // just for db inconsistencies
+	    		    Content newDescriptionContent = new Content(null, SessionUtils.getUsername(),
+	    			    contentDB.getContentId(), descriptionContentKind, null, content.getDescriptionContent()
+	    				    .getText(), SessionUtils.getUserLocale(), new Date(), ContentStatusType.active,
+	    			    null);
+	    		    contentDAO.persist(newDescriptionContent);
+	    		}
+	    	    }*/
 	}
 
     }
