@@ -29,6 +29,7 @@ public class CommentController {
     List<Comment> comments(@PathVariable Long parentId) {
 	// TODO check param validity
 	return commentService.findCommentsByParentId(parentId);
+
     }
 
     // TODO this should eventually become put method, to avoid saving the same comment twice, but it's going to be a

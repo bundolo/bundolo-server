@@ -25,8 +25,6 @@ import org.bundolo.model.enumeration.ContentKindType;
 import org.bundolo.model.enumeration.ContentStatusType;
 import org.hibernate.annotations.Where;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @Entity
@@ -70,11 +68,11 @@ public class Comment implements java.io.Serializable {
 
     @ManyToOne(optional = true)
     @JoinColumn(name = "parent_content_id", referencedColumnName = "content_id")
-    @JsonBackReference
-    private Comment parentContent;
+    // @JsonBackReference
+    private Content parentContent;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "parentContent", fetch = FetchType.EAGER)
-    @JsonManagedReference
+    // @JsonManagedReference
     @Where(clause = "kind like '%_comment'")
     @OrderBy("creationDate")
     private Collection<Comment> comments;
@@ -148,11 +146,11 @@ public class Comment implements java.io.Serializable {
 	this.rating = rating;
     }
 
-    public Comment getParentContent() {
+    public Content getParentContent() {
 	return parentContent;
     }
 
-    public void setParentContent(Comment parentContent) {
+    public void setParentContent(Content parentContent) {
 	this.parentContent = parentContent;
     }
 

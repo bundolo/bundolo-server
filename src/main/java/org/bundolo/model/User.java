@@ -11,7 +11,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
 import org.bundolo.CustomDateSerializer;
@@ -55,11 +54,11 @@ public class User implements java.io.Serializable {
     @Column(name = "avatar_url")
     private String avatarUrl;
 
-    @Column(name = "session_id")
-    private String sessionId;
+    // @Column(name = "session_id")
+    // private String sessionId;
 
-    @Transient
-    private String rememberMeCookie;
+    // @Transient
+    // private String rememberMeCookie;
 
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "description_content_id")
@@ -144,21 +143,21 @@ public class User implements java.io.Serializable {
 	this.avatarUrl = avatarUrl;
     }
 
-    public String getSessionId() {
-	return sessionId;
-    }
+    // public String getSessionId() {
+    // return sessionId;
+    // }
+    //
+    // public void setSessionId(String sessionId) {
+    // this.sessionId = sessionId;
+    // }
 
-    public void setSessionId(String sessionId) {
-	this.sessionId = sessionId;
-    }
-
-    public String getRememberMeCookie() {
-	return rememberMeCookie;
-    }
-
-    public void setRememberMeCookie(String rememberMeCookie) {
-	this.rememberMeCookie = rememberMeCookie;
-    }
+    // public String getRememberMeCookie() {
+    // return rememberMeCookie;
+    // }
+    //
+    // public void setRememberMeCookie(String rememberMeCookie) {
+    // this.rememberMeCookie = rememberMeCookie;
+    // }
 
     public Content getDescriptionContent() {
 	return descriptionContent;

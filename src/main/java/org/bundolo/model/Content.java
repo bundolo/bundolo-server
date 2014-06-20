@@ -48,8 +48,8 @@ public class Content implements java.io.Serializable {
     private String authorUsername;
 
     // @Column(name = "parent_content_id")
-    @Transient
-    private Long parentContentId;
+    // @Transient
+    // private Long parentContentId;
 
     @Column(name = "kind")
     @Enumerated(EnumType.STRING)
@@ -95,12 +95,11 @@ public class Content implements java.io.Serializable {
 	super();
     }
 
-    public Content(Long contentId, String authorUsername, Long parentContentId, ContentKindType kind, String name,
-	    String text, String locale, Date creationDate, ContentStatusType contentStatus, Rating rating) {
+    public Content(Long contentId, String authorUsername, ContentKindType kind, String name, String text,
+	    String locale, Date creationDate, ContentStatusType contentStatus, Rating rating) {
 	super();
 	this.contentId = contentId;
 	this.authorUsername = authorUsername;
-	this.parentContentId = parentContentId;
 	this.kind = kind;
 	this.name = name;
 	this.text = text;
@@ -124,14 +123,6 @@ public class Content implements java.io.Serializable {
 
     public void setAuthorUsername(String authorUsername) {
 	this.authorUsername = authorUsername;
-    }
-
-    public Long getParentContentId() {
-	return parentContentId;
-    }
-
-    public void setParentContentId(Long parentContentId) {
-	this.parentContentId = parentContentId;
     }
 
     public ContentKindType getKind() {

@@ -4,6 +4,7 @@ import org.bundolo.Constants;
 import org.bundolo.model.Content;
 import org.bundolo.services.ContentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;

@@ -46,5 +46,7 @@ public class Constants {
     public static final String REST_PATH_COMMENTS = "/comments";
     public static final String REST_PATH_COMMENT = "/comment";
     public static final String REST_PATH_PAGE = "/page";
+    public static final String REST_PATH_AUTH = "/auth";
+
 
 }

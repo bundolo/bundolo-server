@@ -186,5 +186,4 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	}
 	return result;
     }
-
 }

@@ -80,8 +80,8 @@ public class ContentServiceImpl implements ContentService, ApplicationContextAwa
 		rating = new Rating(null, SessionUtils.getUsername(), RatingKindType.general, new Date(),
 			RatingStatusType.active, 0L);
 	    }
-	    contentDB = new Content(content.getContentId(), SessionUtils.getUsername(), content.getParentContentId(),
-		    content.getKind(), content.getName(), content.getText(), SessionUtils.getUserLocale(), new Date(),
+	    contentDB = new Content(content.getContentId(), SessionUtils.getUsername(), content.getKind(),
+		    content.getName(), content.getText(), SessionUtils.getUserLocale(), new Date(),
 		    content.getContentStatus(), rating);
 	    rating.setParentContent(contentDB);
 	    try {
@@ -116,7 +116,6 @@ public class ContentServiceImpl implements ContentService, ApplicationContextAwa
 	if (contentDB != null) {
 	    // content.setAuthorUsername(getUsername()); //we want to keep the
 	    // original author
-	    contentDB.setParentContentId(content.getParentContentId());
 	    contentDB.setKind(content.getKind());
 	    contentDB.setName(content.getName());
 	    contentDB.setText(content.getText());
