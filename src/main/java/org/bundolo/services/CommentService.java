@@ -10,4 +10,6 @@ public interface CommentService {
 
     public Long saveComment(Comment comment);
 
+    public void clearSession();
+
 }

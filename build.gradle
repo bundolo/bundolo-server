@@ -65,7 +65,7 @@ dependencies {
     compile 'postgresql:postgresql:9.1-901.jdbc3'
     compile 'org.apache.commons:commons-lang3:3.3.2'
     
-    compile 'net.sf.dozer:dozer:5.5.1'
+    //compile 'net.sf.dozer:dozer:5.5.1'
     
     testCompile 'org.springframework:spring-test'
     testCompile("junit:junit")

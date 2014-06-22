@@ -40,7 +40,11 @@ public class CommentController {
     Long save(@RequestBody final Comment comment) {
 	logger.fine("saving comment: " + comment);
 	// TODO check param validity
-	return commentService.saveComment(comment);
+	Long result = commentService.saveComment(comment);
+	if (result != null) {
+	    commentService.clearSession();
+	}
+	return result;
     }
 
 }

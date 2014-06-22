@@ -3,6 +3,7 @@ package org.bundolo.services;
 import java.util.List;
 
 import org.bundolo.model.User;
+import org.bundolo.model.UserProfile;
 
 public interface UserService {
 
@@ -13,10 +14,14 @@ public interface UserService {
 
     public Boolean authenticateUser(String username, String password);
 
-    public Boolean activateUserProfileEmailAddress(String email, String nonce);
+    public Boolean activateUserEmailAddress(String email, String nonce);
 
     public Boolean sendMessage(String title, String text, String recipientUsername);
 
-    public Boolean sendNewPassword(String email);
+    public Boolean sendNewPassword(String username, String email);
+
+    public Boolean saveOrUpdateUser(UserProfile userProfile);
+
+    public void clearSession();
 
 }

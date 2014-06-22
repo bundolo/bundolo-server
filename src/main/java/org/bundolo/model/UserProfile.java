@@ -2,6 +2,7 @@ package org.bundolo.model;
 
 import java.util.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -20,6 +21,7 @@ import org.bundolo.CustomDateSerializer;
 import org.bundolo.model.enumeration.UserProfileGenderType;
 import org.bundolo.model.enumeration.UserProfileStatusType;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @Entity
@@ -50,6 +52,7 @@ public class UserProfile implements java.io.Serializable {
     @Column(name = "last_name")
     private String lastName;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd.MM.yyyy.")
     @Column(name = "birth_date")
     private Date birthDate;
 
@@ -79,8 +82,8 @@ public class UserProfile implements java.io.Serializable {
     @Column(name = "avatar_url")
     private String avatarUrl;
 
-    @Column(name = "session_id")
-    private String sessionId;
+    // @Column(name = "session_id")
+    // private String sessionId;
 
     @Column(name = "nonce")
     private String nonce;
@@ -92,7 +95,7 @@ public class UserProfile implements java.io.Serializable {
     // @Transient
     // private Long descriptionContentId;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "description_content_id")
     // @Transient
     private Content descriptionContent;
@@ -103,8 +106,8 @@ public class UserProfile implements java.io.Serializable {
 
     public UserProfile(Long userId, String username, String password, String salt, String firstName, String lastName,
 	    Date birthDate, UserProfileGenderType gender, String email, Boolean showPersonal, Date signupDate,
-	    Date lastLoginDate, String lastIp, UserProfileStatusType userProfileStatus, String avatarUrl,
-	    String sessionId, String nonce, String newEmail, Content descriptionContent) {
+	    Date lastLoginDate, String lastIp, UserProfileStatusType userProfileStatus, String avatarUrl, String nonce,
+	    String newEmail, Content descriptionContent) {
 	super();
 	this.userId = userId;
 	this.username = username;
@@ -121,7 +124,6 @@ public class UserProfile implements java.io.Serializable {
 	this.lastIp = lastIp;
 	this.userProfileStatus = userProfileStatus;
 	this.avatarUrl = avatarUrl;
-	this.sessionId = sessionId;
 	this.nonce = nonce;
 	this.newEmail = newEmail;
 	this.descriptionContent = descriptionContent;
@@ -250,13 +252,13 @@ public class UserProfile implements java.io.Serializable {
 	this.birthDate = birthDate;
     }
 
-    public String getSessionId() {
-	return sessionId;
-    }
-
-    public void setSessionId(String sessionId) {
-	this.sessionId = sessionId;
-    }
+    // public String getSessionId() {
+    // return sessionId;
+    // }
+    //
+    // public void setSessionId(String sessionId) {
+    // this.sessionId = sessionId;
+    // }
 
     public String getNonce() {
 	return nonce;
@@ -280,6 +282,16 @@ public class UserProfile implements java.io.Serializable {
 
     public void setDescriptionContent(Content descriptionContent) {
 	this.descriptionContent = descriptionContent;
+    }
+
+    @Override
+    public String toString() {
+	return "UserProfile [userId=" + userId + ", username=" + username + ", password=" + password + ", salt=" + salt
+		+ ", firstName=" + firstName + ", lastName=" + lastName + ", birthDate=" + birthDate + ", gender="
+		+ gender + ", email=" + email + ", showPersonal=" + showPersonal + ", signupDate=" + signupDate
+		+ ", lastLoginDate=" + lastLoginDate + ", lastIp=" + lastIp + ", userProfileStatus="
+		+ userProfileStatus + ", avatarUrl=" + avatarUrl + ", nonce=" + nonce + ", newEmail=" + newEmail
+		+ ", descriptionContent=" + descriptionContent + "]";
     }
 
     // public Long getDescriptionContentId() {

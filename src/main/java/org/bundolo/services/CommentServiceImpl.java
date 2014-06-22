@@ -23,7 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service("commentService")
 public class CommentServiceImpl implements CommentService {
 
-    private static final Logger logger = Logger.getLogger(UserProfileServiceImpl.class.getName());
+    private static final Logger logger = Logger.getLogger(CommentServiceImpl.class.getName());
 
     @Autowired
     private CommentDAO commentDAO;
@@ -55,6 +55,7 @@ public class CommentServiceImpl implements CommentService {
 	comment.setLocale("sr");
 	Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
+	// TODO this is probably not safe enough. somebody could send some dummy username. check user role instead
 	if (StringUtils.isNotBlank((String) authentication.getPrincipal())) {
 	    comment.setAuthorUsername((String) authentication.getPrincipal());
 	} else {
@@ -65,6 +66,11 @@ public class CommentServiceImpl implements CommentService {
 	commentDAO.persist(comment);
 	result = comment.getContentId();
 	return result;
+    }
+
+    @Override
+    public void clearSession() {
+	commentDAO.clear();
     }
 
 }

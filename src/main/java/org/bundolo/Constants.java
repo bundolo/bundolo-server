@@ -47,6 +47,8 @@ public class Constants {
     public static final String REST_PATH_COMMENT = "/comment";
     public static final String REST_PATH_PAGE = "/page";
     public static final String REST_PATH_AUTH = "/auth";
-
+    public static final String REST_PATH_PASSWORD = "/password";
+    public static final String REST_PATH_VALIDATE = "/validate";
+    public static final String REST_PATH_STATISTICS = "/statistics";
 
 }

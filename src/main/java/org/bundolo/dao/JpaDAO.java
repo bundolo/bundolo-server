@@ -8,6 +8,8 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceContextType;
 import javax.persistence.Query;
 
+import org.hibernate.Session;
+
 public abstract class JpaDAO<K, E> {
 
     @PersistenceContext(unitName = "BundoloPostgresPersistenceUnit", type = PersistenceContextType.EXTENDED)
@@ -55,6 +57,13 @@ public abstract class JpaDAO<K, E> {
     public Integer removeAll() {
 	Query q = entityManager.createQuery("DELETE FROM " + entityClass.getName() + " h");
 	return q.executeUpdate();
+    }
+
+    public void clear() {
+	// clear() forces reading from database instead of cache
+	// it can be optimised to clear only when needed
+	Session session = entityManager.unwrap(Session.class);
+	session.clear();
     }
 
 }
