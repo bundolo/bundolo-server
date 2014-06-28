@@ -8,6 +8,7 @@ import javax.persistence.Query;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.bundolo.model.Content;
+import org.bundolo.model.enumeration.ContentKindType;
 import org.bundolo.model.enumeration.PageKindType;
 import org.springframework.stereotype.Repository;
 
@@ -185,5 +186,22 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	    }
 	}
 	return result;
+    }
+
+    @SuppressWarnings("unchecked")
+    public Content findAnnouncement(String title) {
+	String queryString = "SELECT c FROM Content c";
+	queryString += " WHERE kind = '" + ContentKindType.news + "'";
+	queryString += " AND content_name " + ((title == null) ? "IS NULL" : "='" + title + "'");
+	logger.log(Level.WARNING, "queryString: " + queryString);
+
+	Query q = entityManager.createQuery(queryString);
+	q.setMaxResults(1);
+	List<Content> resultList = q.getResultList();
+	if (resultList != null && resultList.size() > 0) {
+	    return resultList.get(0);
+	} else {
+	    return null;
+	}
     }
 }

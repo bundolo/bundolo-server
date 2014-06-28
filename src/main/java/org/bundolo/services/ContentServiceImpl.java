@@ -194,4 +194,10 @@ public class ContentServiceImpl implements ContentService, ApplicationContextAwa
     public Content getPageDescriptionContent(PageKindType pageKind) {
 	return contentDAO.getPageDescriptionContent(pageKind);
     }
+
+    @Override
+    public Content findAnnouncement(String title) {
+	// TODO Auto-generated method stub
+	return contentDAO.findAnnouncement(title);
+    }
 }

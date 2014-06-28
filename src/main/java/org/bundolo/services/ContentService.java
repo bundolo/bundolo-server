@@ -29,4 +29,6 @@ public interface ContentService {
 
     public Content getPageDescriptionContent(PageKindType pageKind); // to simplify things, pages are out of scope in
 								     // first release
+
+    public Content findAnnouncement(String title);
 }

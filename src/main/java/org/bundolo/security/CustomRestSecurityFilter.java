@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -54,7 +55,7 @@ public class CustomRestSecurityFilter extends GenericFilterBean {
 
 	String[] credentials = decodeHeader(authorization);
 	if (credentials.length == 2) {
-	    Authentication authentication = new RestToken(credentials[0], credentials[1]);
+	    Authentication authentication = new UsernamePasswordAuthenticationToken(credentials[0], credentials[1]);
 
 	    try {
 		// Request the authentication manager to authenticate the token
