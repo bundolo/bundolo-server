@@ -23,13 +23,6 @@ public class AnnouncementController {
     @Autowired
     private ContentService contentService;
 
-    // @RequestMapping(value = Constants.REST_PATH_ANNOUNCEMENT + "/{title}", method = RequestMethod.GET)
-    // public @ResponseBody
-    // Content announcement(@PathVariable String title) {
-    // // TODO check param validity
-    // return contentService.findAnnouncement(title);
-    // }
-
     @RequestMapping(value = Constants.REST_PATH_ANNOUNCEMENT + "/**", method = RequestMethod.GET)
     public @ResponseBody
     Content announcement(HttpServletRequest request) {

@@ -1,5 +1,8 @@
 package org.bundolo.controller;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.bundolo.Constants;
@@ -7,6 +10,8 @@ import org.bundolo.model.Contest;
 import org.bundolo.services.ContestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -14,6 +19,8 @@ import org.springframework.web.servlet.HandlerMapping;
 
 @Controller
 public class ContestController {
+
+    private static final Logger logger = Logger.getLogger(ContestController.class.getName());
 
     @Autowired
     private ContestService contestService;
@@ -24,6 +31,18 @@ public class ContestController {
 	String restOfTheUrl = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
 	// TODO check param validity
 	return contestService.findContest(restOfTheUrl.substring(Constants.REST_PATH_CONTEST.length() + 1));
+    }
+
+    @RequestMapping(value = Constants.REST_PATH_CONTEST + "/{title}", method = RequestMethod.PUT)
+    public @ResponseBody
+    Boolean saveOrUpdate(@PathVariable String title, @RequestBody final Contest contest) {
+	logger.log(Level.WARNING, "saveOrUpdate, contest: " + contest);
+	// TODO check param validity
+	Boolean result = contestService.saveOrUpdateContest(contest);
+	if (result) {
+	    contestService.clearSession();
+	}
+	return result;
     }
 
 }

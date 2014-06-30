@@ -2,6 +2,7 @@ package org.bundolo.model;
 
 import java.util.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -19,6 +20,7 @@ import org.bundolo.CustomDateSerializer;
 import org.bundolo.model.enumeration.ContestKindType;
 import org.bundolo.model.enumeration.ContestStatusType;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @Entity
@@ -46,6 +48,7 @@ public class Contest implements java.io.Serializable {
     @Column(name = "creation_date")
     private Date creationDate;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd.MM.yyyy.")
     @Column(name = "expiration_date")
     private Date expirationDate;
 
@@ -53,7 +56,7 @@ public class Contest implements java.io.Serializable {
     @Enumerated(EnumType.STRING)
     private ContestStatusType contestStatus;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "description_content_id")
     // @Transient
     private Content descriptionContent;
@@ -138,5 +141,12 @@ public class Contest implements java.io.Serializable {
 
     public void setDescriptionContent(Content descriptionContent) {
 	this.descriptionContent = descriptionContent;
+    }
+
+    @Override
+    public String toString() {
+	return "Contest [contestId=" + contestId + ", authorUsername=" + authorUsername + ", kind=" + kind
+		+ ", creationDate=" + creationDate + ", expirationDate=" + expirationDate + ", contestStatus="
+		+ contestStatus + ", descriptionContent=" + descriptionContent + "]";
     }
 }

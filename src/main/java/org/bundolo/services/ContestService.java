@@ -10,12 +10,12 @@ public interface ContestService {
 
     public Contest findContest(String title);
 
-    public Long saveContest(Contest contest) throws Exception;
+    // public void deleteContest(Long contestId) throws Exception;
 
-    public void updateContest(Contest contest) throws Exception;
-
-    public void deleteContest(Long contestId) throws Exception;
+    public Boolean saveOrUpdateContest(Contest contest);
 
     public List<Contest> findContests(Integer start, Integer end, String[] orderBy, String[] order, String[] filterBy,
 	    String[] filter);
+
+    public void clearSession();
 }
