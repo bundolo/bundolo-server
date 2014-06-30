@@ -104,29 +104,14 @@ public class ContestServiceImpl implements ContestService {
     }
 
     @Override
-    public List<Contest> findItemListContests(String query, Integer start, Integer end) throws Exception {
-	List<Contest> contests = contestDAO.findItemListContests(query, start, end);
-	// if (contests != null) {
-	// for (Contest contest : contests) {
-	// Content descriptionContent = contentDAO.findContentForLocale(contest.getDescriptionContentId(),
-	// ContentKindType.contest_description, SessionUtils.getUserLocale());
-	// if (descriptionContent != null) {
-	// contest.setDescriptionContent(descriptionContent);
-	// }
-	// }
-	// }
-	return contests;
-    }
-
-    @Override
-    public Integer findItemListContestsCount(String query) throws Exception {
-	return contestDAO.findItemListContestsCount(query);
-    }
-
-    @Override
     public List<Contest> findContests(Integer start, Integer end, String[] orderBy, String[] order, String[] filterBy,
 	    String[] filter) {
 	return contestDAO.findContests(start, end, orderBy, order, filterBy, filter);
+    }
+
+    @Override
+    public Contest findContest(String title) {
+	return contestDAO.findByTitle(title);
     }
 
 }

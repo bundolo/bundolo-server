@@ -189,10 +189,48 @@ public class ContentDAO extends JpaDAO<Long, Content> {
     }
 
     @SuppressWarnings("unchecked")
-    public Content findAnnouncement(String title) {
+    public Content findByTitle(String title, ContentKindType kind) {
 	String queryString = "SELECT c FROM Content c";
-	queryString += " WHERE kind = '" + ContentKindType.news + "'";
+	queryString += " WHERE kind = '" + kind + "'";
 	queryString += " AND content_name " + ((title == null) ? "IS NULL" : "='" + title + "'");
+	queryString += " AND content_status='active'";
+	logger.log(Level.WARNING, "queryString: " + queryString);
+
+	Query q = entityManager.createQuery(queryString);
+	q.setMaxResults(1);
+	List<Content> resultList = q.getResultList();
+	if (resultList != null && resultList.size() > 0) {
+	    return resultList.get(0);
+	} else {
+	    return null;
+	}
+    }
+
+    @SuppressWarnings("unchecked")
+    public Content findByText(String text, ContentKindType kind) {
+	String queryString = "SELECT c FROM Content c";
+	queryString += " WHERE kind = '" + kind + "'";
+	queryString += " AND content_text " + ((text == null) ? "IS NULL" : "='" + text + "'");
+	queryString += " AND content_status='active'";
+	logger.log(Level.WARNING, "queryString: " + queryString);
+
+	Query q = entityManager.createQuery(queryString);
+	q.setMaxResults(1);
+	List<Content> resultList = q.getResultList();
+	if (resultList != null && resultList.size() > 0) {
+	    return resultList.get(0);
+	} else {
+	    return null;
+	}
+    }
+
+    @SuppressWarnings("unchecked")
+    public Content findText(String username, String title) {
+	String queryString = "SELECT c FROM Content c";
+	queryString += " WHERE kind = '" + ContentKindType.text + "'";
+	queryString += " AND author_username " + ((username == null) ? "IS NULL" : "='" + username + "'");
+	queryString += " AND content_name " + ((title == null) ? "IS NULL" : "='" + title + "'");
+	queryString += " AND content_status='active'";
 	logger.log(Level.WARNING, "queryString: " + queryString);
 
 	Query q = entityManager.createQuery(queryString);

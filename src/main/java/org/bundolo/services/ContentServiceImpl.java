@@ -12,6 +12,7 @@ import org.bundolo.SessionUtils;
 import org.bundolo.dao.ContentDAO;
 import org.bundolo.model.Content;
 import org.bundolo.model.Rating;
+import org.bundolo.model.enumeration.ContentKindType;
 import org.bundolo.model.enumeration.PageKindType;
 import org.bundolo.model.enumeration.RatingKindType;
 import org.bundolo.model.enumeration.RatingStatusType;
@@ -197,7 +198,21 @@ public class ContentServiceImpl implements ContentService, ApplicationContextAwa
 
     @Override
     public Content findAnnouncement(String title) {
-	// TODO Auto-generated method stub
-	return contentDAO.findAnnouncement(title);
+	return contentDAO.findByTitle(title, ContentKindType.news);
+    }
+
+    @Override
+    public Content findSerial(String title) {
+	return contentDAO.findByTitle(title, ContentKindType.episode_group);
+    }
+
+    @Override
+    public Content findText(String username, String title) {
+	return contentDAO.findText(username, title);
+    }
+
+    @Override
+    public Content findTopic(String title) {
+	return contentDAO.findByText(title, ContentKindType.forum_topic);
     }
 }

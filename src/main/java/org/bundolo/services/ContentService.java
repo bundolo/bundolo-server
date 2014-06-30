@@ -31,4 +31,10 @@ public interface ContentService {
 								     // first release
 
     public Content findAnnouncement(String title);
+
+    public Content findSerial(String title);
+
+    public Content findText(String username, String title);
+
+    public Content findTopic(String title);
 }

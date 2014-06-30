@@ -1,16 +1,19 @@
 package org.bundolo.controller;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.bundolo.Constants;
 import org.bundolo.model.Content;
 import org.bundolo.services.ContentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.HandlerMapping;
 
 @Controller
 public class AnnouncementController {
@@ -20,11 +23,21 @@ public class AnnouncementController {
     @Autowired
     private ContentService contentService;
 
-    @RequestMapping(value = Constants.REST_PATH_ANNOUNCEMENT + "/{title}", method = RequestMethod.GET)
+    // @RequestMapping(value = Constants.REST_PATH_ANNOUNCEMENT + "/{title}", method = RequestMethod.GET)
+    // public @ResponseBody
+    // Content announcement(@PathVariable String title) {
+    // // TODO check param validity
+    // return contentService.findAnnouncement(title);
+    // }
+
+    @RequestMapping(value = Constants.REST_PATH_ANNOUNCEMENT + "/**", method = RequestMethod.GET)
     public @ResponseBody
-    Content announcement(@PathVariable String title) {
+    Content announcement(HttpServletRequest request) {
+	String restOfTheUrl = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
+	logger.log(Level.WARNING, "connection, restOfTheUrl: " + restOfTheUrl);
+
 	// TODO check param validity
-	return contentService.findAnnouncement(title);
+	return contentService.findAnnouncement(restOfTheUrl.substring(Constants.REST_PATH_ANNOUNCEMENT.length() + 1));
     }
 
     /*

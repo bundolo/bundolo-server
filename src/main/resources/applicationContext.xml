@@ -57,8 +57,7 @@
 	<!-- Creates the springSecurityFilterChain with the customer filter customRestFilter injected.  -->
     <security:http create-session="stateless" entry-point-ref="authenticationEntryPoint" authentication-manager-ref="authenticationManager">
         <security:custom-filter ref="customRestFilter" position="BASIC_AUTH_FILTER" />
-        <security:intercept-url pattern="/text/**" access="ROLE_USER" />
-        <security:intercept-url pattern="/page/**" method="POST" access="ROLE_USER" />
+        <security:intercept-url pattern="/page/**" method="POST" access="ROLE_USER" /> <!-- just an example -->
     </security:http>
 
     <bean id="authenticationEntryPoint" class="org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint">

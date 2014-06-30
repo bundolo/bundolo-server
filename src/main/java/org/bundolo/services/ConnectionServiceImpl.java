@@ -99,20 +99,14 @@ public class ConnectionServiceImpl implements ConnectionService {
     }
 
     @Override
-    public List<Connection> findItemListConnections(String query, Integer start, Integer end) throws Exception {
-	List<Connection> connections = connectionDAO.findItemListConnections(query, start, end);
-	return connections;
-    }
-
-    @Override
-    public Integer findItemListConnectionsCount(String query) throws Exception {
-	return connectionDAO.findItemListConnectionsCount(query);
-    }
-
-    @Override
     public List<Connection> findConnections(Integer start, Integer end, String[] orderBy, String[] order,
 	    String[] filterBy, String[] filter) {
 	return connectionDAO.findConnections(start, end, orderBy, order, filterBy, filter);
+    }
+
+    @Override
+    public Connection findConnection(String title) {
+	return connectionDAO.findByTitle(title);
     }
 
 }
