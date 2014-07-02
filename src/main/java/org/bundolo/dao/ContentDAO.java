@@ -242,4 +242,14 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	    return null;
 	}
     }
+
+    @SuppressWarnings("unchecked")
+    public List<Content> findConnectionGroups() {
+	StringBuilder queryString = new StringBuilder();
+	queryString
+		.append("SELECT c FROM Content c WHERE kind='connection_group' AND content_status='active' ORDER BY creation_date ASC");
+	logger.log(Level.WARNING, "queryString: " + queryString.toString());
+	Query q = entityManager.createQuery(queryString.toString());
+	return q.getResultList();
+    }
 }

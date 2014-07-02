@@ -2,6 +2,7 @@ package org.bundolo.model;
 
 import java.util.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -59,7 +60,8 @@ public class Connection implements java.io.Serializable {
     @Column(name = "url")
     private String url;
 
-    @OneToOne(fetch = FetchType.EAGER, optional = true)
+    // TODO check why this is optional
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, optional = true)
     @JoinColumn(name = "description_content_id", nullable = true)
     // @Transient
     private Content descriptionContent;

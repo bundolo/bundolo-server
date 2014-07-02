@@ -215,4 +215,10 @@ public class ContentServiceImpl implements ContentService, ApplicationContextAwa
     public Content findTopic(String title) {
 	return contentDAO.findByText(title, ContentKindType.forum_topic);
     }
+
+    @Override
+    public List<Content> findConnectionGroups() {
+	// TODO Auto-generated method stub
+	return contentDAO.findConnectionGroups();
+    }
 }

@@ -10,12 +10,12 @@ public interface ConnectionService {
 
     public Connection findConnection(String title);
 
-    public Long saveConnection(Connection connection) throws Exception;
+    // public void deleteConnection(Long connectionId);
 
-    public void updateConnection(Connection connection) throws Exception;
-
-    public void deleteConnection(Long connectionId) throws Exception;
+    public Boolean saveOrUpdateConnection(Connection connection);
 
     public List<Connection> findConnections(Integer start, Integer end, String[] orderBy, String[] order,
 	    String[] filterBy, String[] filter);
+
+    public void clearSession();
 }
