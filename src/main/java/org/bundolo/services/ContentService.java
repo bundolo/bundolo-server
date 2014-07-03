@@ -9,11 +9,7 @@ public interface ContentService {
 
     public Content findContent(Long contentId);
 
-    public Long saveContent(Content content) throws Exception;
-
-    public void updateContent(Content content) throws Exception;
-
-    public void deleteContent(Long contentId) throws Exception;
+    // public void deleteContent(Long contentId) throws Exception;
 
     public List<Content> findTexts(Integer start, Integer end, String[] orderBy, String[] order, String[] filterBy,
 	    String[] filter);
@@ -39,4 +35,8 @@ public interface ContentService {
     public Content findText(String username, String title);
 
     public Content findTopic(String title);
+
+    public Boolean saveOrUpdateContent(Content content);
+
+    public void clearSession();
 }

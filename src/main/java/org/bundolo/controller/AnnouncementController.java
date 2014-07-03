@@ -7,9 +7,12 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.bundolo.Constants;
 import org.bundolo.model.Content;
+import org.bundolo.model.enumeration.ContentKindType;
 import org.bundolo.services.ContentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -33,19 +36,17 @@ public class AnnouncementController {
 	return contentService.findAnnouncement(restOfTheUrl.substring(Constants.REST_PATH_ANNOUNCEMENT.length() + 1));
     }
 
-    /*
-    @RequestMapping(value = Constants.REST_PATH_ANNOUNCEMENT + "/{id}", method = RequestMethod.PUT)
+    @RequestMapping(value = Constants.REST_PATH_ANNOUNCEMENT + "/{title}", method = RequestMethod.PUT)
     public @ResponseBody
-    Boolean saveOrUpdate(@PathVariable String id, @RequestBody final UserProfile userProfile) {
-    logger.log(Level.WARNING, "saveOrUpdate, userProfile: " + userProfile);
-    // TODO check param validity
-    // TODO security checks
-    userProfile.setUsername(username);
-    Boolean result = userService.saveOrUpdateUser(userProfile);
-    if (result) {
-        userService.clearSession();
+    Boolean saveOrUpdate(@PathVariable String title, @RequestBody final Content announcement) {
+	logger.log(Level.WARNING, "saveOrUpdate, announcement: " + announcement);
+	// TODO check param validity
+	announcement.setKind(ContentKindType.news);
+	Boolean result = contentService.saveOrUpdateContent(announcement);
+	if (result) {
+	    contentService.clearSession();
+	}
+	return result;
     }
-    return result;
-    }*/
 
 }
