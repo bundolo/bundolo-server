@@ -39,6 +39,7 @@ public class Constants {
     public static final String REST_PATH_ANNOUNCEMENT = "/announcement";
     public static final String REST_PATH_TOPICS = "/topics";
     public static final String REST_PATH_TOPIC = "/topic";
+    public static final String REST_PATH_TOPIC_GROUPS = "/topic_groups";
     public static final String REST_PATH_CONTESTS = "/contests";
     public static final String REST_PATH_CONTEST = "/contest";
     public static final String REST_PATH_CONNECTIONS = "/connections";

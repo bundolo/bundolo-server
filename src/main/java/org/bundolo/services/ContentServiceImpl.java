@@ -100,7 +100,7 @@ public class ContentServiceImpl implements ContentService {
 
     @Override
     public Content findTopic(String title) {
-	return contentDAO.findByText(title, ContentKindType.forum_topic);
+	return contentDAO.findByTitle(title, ContentKindType.forum_topic);
     }
 
     @Override
@@ -175,5 +175,10 @@ public class ContentServiceImpl implements ContentService {
     @Override
     public void clearSession() {
 	contentDAO.clear();
+    }
+
+    @Override
+    public List<Content> findTopicGroups() {
+	return contentDAO.findTopicGroups();
     }
 }

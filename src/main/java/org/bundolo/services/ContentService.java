@@ -28,6 +28,8 @@ public interface ContentService {
 
     public List<Content> findConnectionGroups();
 
+    public List<Content> findTopicGroups();
+
     public Content findAnnouncement(String title);
 
     public Content findSerial(String title);
