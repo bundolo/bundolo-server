@@ -197,4 +197,12 @@ public class Content implements java.io.Serializable {
     public void setDescription(Collection<Content> description) {
 	this.description = description;
     }
+
+    // @Override
+    // public String toString() {
+    // return "Content [contentId=" + contentId + ", authorUsername=" + authorUsername + ", kind=" + kind + ", name="
+    // + name + ", text=" + text + ", locale=" + locale + ", creationDate=" + creationDate
+    // + ", contentStatus=" + contentStatus + ", rating=" + rating + ", parentContent=" + parentContent
+    // + ", description=" + description + "]";
+    // }
 }

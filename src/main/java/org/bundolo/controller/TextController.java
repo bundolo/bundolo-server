@@ -39,10 +39,11 @@ public class TextController {
     @RequestMapping(value = Constants.REST_PATH_TEXT + "/{username}/{title}", method = RequestMethod.PUT)
     public @ResponseBody
     Boolean saveOrUpdate(@PathVariable String username, @PathVariable String title, @RequestBody final Content text) {
-	logger.log(Level.WARNING, "saveOrUpdate, text: " + text);
+	logger.log(Level.WARNING, "saveOrUpdate, title: " + title + ", text: " + text);
 	// TODO check param validity
 	text.setKind(ContentKindType.text);
-	Boolean result = contentService.saveOrUpdateContent(text);
+	text.setName(title);
+	Boolean result = contentService.saveOrUpdateContent(text, false);
 	if (result) {
 	    contentService.clearSession();
 	}

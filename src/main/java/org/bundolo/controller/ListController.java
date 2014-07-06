@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -41,7 +42,7 @@ public class ListController {
     @Autowired
     private ContentService contentService;
 
-    @RequestMapping(Constants.REST_PATH_CONNECTIONS)
+    @RequestMapping(value = Constants.REST_PATH_CONNECTIONS, method = RequestMethod.GET)
     public @ResponseBody
     List<Connection> connections(@RequestParam(required = false, defaultValue = "0") Integer start,
 	    @RequestParam(required = false, defaultValue = "0") Integer end,
@@ -71,7 +72,7 @@ public class ListController {
 		filterByTexts.toArray(new String[filterByTexts.size()]));
     }
 
-    @RequestMapping(Constants.REST_PATH_CONTESTS)
+    @RequestMapping(value = Constants.REST_PATH_CONTESTS, method = RequestMethod.GET)
     public @ResponseBody
     List<Contest> contests(@RequestParam(required = false, defaultValue = "0") Integer start,
 	    @RequestParam(required = false, defaultValue = "0") Integer end,
@@ -101,7 +102,7 @@ public class ListController {
 		filterByTexts.toArray(new String[filterByTexts.size()]));
     }
 
-    @RequestMapping(Constants.REST_PATH_AUTHORS)
+    @RequestMapping(value = Constants.REST_PATH_AUTHORS, method = RequestMethod.GET)
     public @ResponseBody
     List<User> authors(@RequestParam(required = false, defaultValue = "0") Integer start,
 	    @RequestParam(required = false, defaultValue = "0") Integer end,
@@ -131,7 +132,7 @@ public class ListController {
 		filterByTexts.toArray(new String[filterByTexts.size()]));
     }
 
-    @RequestMapping(Constants.REST_PATH_TEXTS)
+    @RequestMapping(value = Constants.REST_PATH_TEXTS, method = RequestMethod.GET)
     public @ResponseBody
     List<Content> texts(@RequestParam(required = false, defaultValue = "0") Integer start,
 	    @RequestParam(required = false, defaultValue = "0") Integer end,
@@ -161,7 +162,7 @@ public class ListController {
 		filterByTexts.toArray(new String[filterByTexts.size()]));
     }
 
-    @RequestMapping(Constants.REST_PATH_ANNOUNCEMENTS)
+    @RequestMapping(value = Constants.REST_PATH_ANNOUNCEMENTS, method = RequestMethod.GET)
     public @ResponseBody
     List<Content> announcements(@RequestParam(required = false, defaultValue = "0") Integer start,
 	    @RequestParam(required = false, defaultValue = "0") Integer end,
@@ -191,7 +192,7 @@ public class ListController {
 		filterByTexts.toArray(new String[filterByTexts.size()]));
     }
 
-    @RequestMapping(Constants.REST_PATH_SERIALS)
+    @RequestMapping(value = Constants.REST_PATH_SERIALS, method = RequestMethod.GET)
     public @ResponseBody
     List<Content> serials(@RequestParam(required = false, defaultValue = "0") Integer start,
 	    @RequestParam(required = false, defaultValue = "0") Integer end,
@@ -221,7 +222,7 @@ public class ListController {
 		filterByTexts.toArray(new String[filterByTexts.size()]));
     }
 
-    @RequestMapping(Constants.REST_PATH_TOPICS)
+    @RequestMapping(value = Constants.REST_PATH_TOPICS, method = RequestMethod.GET)
     public @ResponseBody
     List<Content> topics(@RequestParam(required = false, defaultValue = "0") Integer start,
 	    @RequestParam(required = false, defaultValue = "0") Integer end,

@@ -41,8 +41,9 @@ public class AnnouncementController {
     Boolean saveOrUpdate(@PathVariable String title, @RequestBody final Content announcement) {
 	logger.log(Level.WARNING, "saveOrUpdate, announcement: " + announcement);
 	// TODO check param validity
+	announcement.setName(title);
 	announcement.setKind(ContentKindType.news);
-	Boolean result = contentService.saveOrUpdateContent(announcement);
+	Boolean result = contentService.saveOrUpdateContent(announcement, false);
 	if (result) {
 	    contentService.clearSession();
 	}

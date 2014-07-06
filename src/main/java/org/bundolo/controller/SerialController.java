@@ -1,5 +1,6 @@
 package org.bundolo.controller;
 
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.HandlerMapping;
 
@@ -40,7 +42,41 @@ public class SerialController {
 	logger.log(Level.WARNING, "saveOrUpdate, serial: " + serial);
 	// TODO check param validity
 	serial.setKind(ContentKindType.episode_group);
-	Boolean result = contentService.saveOrUpdateContent(serial);
+	serial.setName(title);
+	Boolean result = contentService.saveOrUpdateContent(serial, false);
+	if (result) {
+	    contentService.clearSession();
+	}
+	return result;
+    }
+
+    @RequestMapping(Constants.REST_PATH_EPISODES)
+    public @ResponseBody
+    List<Content> episodes(@RequestParam(required = true) Long parentId,
+	    @RequestParam(required = false, defaultValue = "0") Integer start,
+	    @RequestParam(required = false, defaultValue = "-1") Integer end) {
+	// TODO check param validity
+	return contentService.findEpisodes(parentId, start, end);
+    }
+
+    @RequestMapping(value = Constants.REST_PATH_EPISODE + "/{serialTitle}/**", method = RequestMethod.GET)
+    public @ResponseBody
+    Content episode(@PathVariable String serialTitle, HttpServletRequest request) {
+	String restOfTheUrl = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
+	restOfTheUrl = restOfTheUrl.substring(restOfTheUrl.indexOf(serialTitle));
+	// TODO check param validity
+	return contentService.findEpisode(serialTitle, restOfTheUrl.substring(serialTitle.length() + 1));
+    }
+
+    @RequestMapping(value = Constants.REST_PATH_EPISODE + "/{serialTitle}/{title}", method = RequestMethod.PUT)
+    public @ResponseBody
+    Boolean saveOrUpdateEpisode(@PathVariable String serialTitle, @PathVariable String title,
+	    @RequestBody final Content episode) {
+	logger.log(Level.WARNING, "saveOrUpdate, episode: " + episode);
+	// TODO check param validity
+	episode.setKind(ContentKindType.episode);
+	episode.setName(title);
+	Boolean result = contentService.saveOrUpdateContent(episode, false);
 	if (result) {
 	    contentService.clearSession();
 	}

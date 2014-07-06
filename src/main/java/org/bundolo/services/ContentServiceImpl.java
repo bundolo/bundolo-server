@@ -8,7 +8,6 @@ import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
-import org.apache.commons.lang3.StringUtils;
 import org.bundolo.Constants;
 import org.bundolo.dao.ContentDAO;
 import org.bundolo.model.Content;
@@ -133,16 +132,22 @@ public class ContentServiceImpl implements ContentService {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public Boolean saveOrUpdateContent(Content content) {
+    public Boolean saveOrUpdateContent(Content content, boolean anonymousAllowed) {
 	try {
-	    if (content == null || StringUtils.isBlank(content.getName())) {
+	    if (content == null) {
 		return false;
 	    }
 	    UsernamePasswordAuthenticationToken authentication = (UsernamePasswordAuthenticationToken) SecurityContextHolder
 		    .getContext().getAuthentication();
-	    if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_USER"))) {
+
+	    logger.log(Level.WARNING, "saveOrUpdateContent authentication: " + authentication);
+	    if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_USER")) || anonymousAllowed) {
 		if (content.getContentId() == null) {
-		    content.setAuthorUsername((String) authentication.getPrincipal());
+		    if (!authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_USER"))) {
+			content.setAuthorUsername(null);
+		    } else {
+			content.setAuthorUsername((String) authentication.getPrincipal());
+		    }
 		    return saveContent(content);
 		} else {
 		    Content contentDB = contentDAO.findById(content.getContentId());
@@ -180,5 +185,20 @@ public class ContentServiceImpl implements ContentService {
     @Override
     public List<Content> findTopicGroups() {
 	return contentDAO.findTopicGroups();
+    }
+
+    @Override
+    public List<Content> findPosts(Long parentId, Integer start, Integer end) {
+	return contentDAO.findPosts(parentId, start, end);
+    }
+
+    @Override
+    public List<Content> findEpisodes(Long parentId, Integer start, Integer end) {
+	return contentDAO.findEpisodes(parentId, start, end);
+    }
+
+    @Override
+    public Content findEpisode(String serialTitle, String title) {
+	return contentDAO.findEpisode(serialTitle, title);
     }
 }

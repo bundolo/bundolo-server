@@ -34,11 +34,19 @@ public interface ContentService {
 
     public Content findSerial(String title);
 
+    public List<Content> findEpisodes(Long parentId, Integer start, Integer end);
+
+    public Content findEpisode(String serialTitle, String title);
+
     public Content findText(String username, String title);
 
     public Content findTopic(String title);
 
-    public Boolean saveOrUpdateContent(Content content);
+    public List<Content> findPosts(Long parentId, Integer start, Integer end);
+
+    // public Boolean saveOrUpdateContent(Content content);
+
+    public Boolean saveOrUpdateContent(Content content, boolean anonymousAllowed);
 
     public void clearSession();
 }

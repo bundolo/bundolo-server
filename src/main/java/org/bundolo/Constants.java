@@ -33,6 +33,8 @@ public class Constants {
     public static final String REST_PATH_TEXT = "/text";
     public static final String REST_PATH_SERIALS = "/serials";
     public static final String REST_PATH_SERIAL = "/serial";
+    public static final String REST_PATH_EPISODES = "/episodes";
+    public static final String REST_PATH_EPISODE = "/episode";
     public static final String REST_PATH_AUTHORS = "/authors";
     public static final String REST_PATH_AUTHOR = "/author";
     public static final String REST_PATH_ANNOUNCEMENTS = "/announcements";
@@ -40,6 +42,8 @@ public class Constants {
     public static final String REST_PATH_TOPICS = "/topics";
     public static final String REST_PATH_TOPIC = "/topic";
     public static final String REST_PATH_TOPIC_GROUPS = "/topic_groups";
+    public static final String REST_PATH_POSTS = "/posts";
+    public static final String REST_PATH_POST = "/post";
     public static final String REST_PATH_CONTESTS = "/contests";
     public static final String REST_PATH_CONTEST = "/contest";
     public static final String REST_PATH_CONNECTIONS = "/connections";

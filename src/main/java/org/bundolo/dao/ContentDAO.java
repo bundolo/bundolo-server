@@ -262,4 +262,51 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	Query q = entityManager.createQuery(queryString.toString());
 	return q.getResultList();
     }
+
+    @SuppressWarnings("unchecked")
+    public List<Content> findPosts(Long parentId, Integer start, Integer end) {
+	String queryString = "SELECT c FROM Content c WHERE kind='forum_post' AND content_status='active'";
+	queryString += " AND parent_content_id =" + parentId;
+	queryString += " ORDER BY creationDate";
+	logger.log(Level.WARNING, "queryString: " + queryString.toString() + ", start: " + start + ", max results: "
+		+ (end - start + 1));
+	Query q = entityManager.createQuery(queryString.toString());
+	q.setFirstResult(start);
+	q.setMaxResults(end - start + 1);
+	return q.getResultList();
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<Content> findEpisodes(Long parentId, Integer start, Integer end) {
+	String queryString = "SELECT c FROM Content c WHERE kind='episode' AND (content_status='active' OR content_status='pending')";
+	queryString += " AND parent_content_id =" + parentId;
+	queryString += " ORDER BY creationDate";
+	logger.log(Level.WARNING, "queryString: " + queryString.toString() + ", start: " + start + ", max results: "
+		+ (end - start + 1));
+	Query q = entityManager.createQuery(queryString.toString());
+	q.setFirstResult(start);
+	if (end != null && end >= 0) {
+	    q.setMaxResults(end - start + 1);
+	}
+	return q.getResultList();
+    }
+
+    @SuppressWarnings("unchecked")
+    public Content findEpisode(String serialTitle, String title) {
+	String queryString = "SELECT c FROM Content c";
+	queryString += " WHERE c.kind = '" + ContentKindType.episode + "'";
+	queryString += " AND parentContent.name " + ((serialTitle == null) ? "IS NULL" : "='" + serialTitle + "'");
+	queryString += " AND c.name " + ((title == null) ? "IS NULL" : "='" + title + "'");
+	queryString += " AND (c.contentStatus='active' OR c.contentStatus='pending')";
+	logger.log(Level.WARNING, "queryString: " + queryString);
+
+	Query q = entityManager.createQuery(queryString);
+	q.setMaxResults(1);
+	List<Content> resultList = q.getResultList();
+	if (resultList != null && resultList.size() > 0) {
+	    return resultList.get(0);
+	} else {
+	    return null;
+	}
+    }
 }

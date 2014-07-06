@@ -47,6 +47,7 @@ public class ConnectionController {
     Boolean saveOrUpdate(@PathVariable String title, @RequestBody final Connection connection) {
 	logger.log(Level.WARNING, "saveOrUpdate, connection: " + connection);
 	// TODO check param validity
+	connection.getDescriptionContent().setName(title);
 	Boolean result = connectionService.saveOrUpdateConnection(connection);
 	if (result) {
 	    connectionService.clearSession();
