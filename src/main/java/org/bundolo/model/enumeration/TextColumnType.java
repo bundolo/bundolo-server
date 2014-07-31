@@ -2,7 +2,8 @@ package org.bundolo.model.enumeration;
 
 public enum TextColumnType {
     // TODO description
-    author("author_username"), content_name("content_name"), content_text("content_text"), date("creation_date");
+    author("author_username"), title("content_name"), text("content_text"), date("creation_date"), activity(
+	    "last_activity");
 
     private final String textColumnName;
 

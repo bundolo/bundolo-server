@@ -1,21 +1,22 @@
 package org.bundolo.model.enumeration;
 
 public enum AuthorColumnType {
-    author("author_username"), email("email"), url("url"), date("creation_date"), description("descriptionContent.text"), name(
-	    "descriptionContent.name");
+    author("username"), firstName("first_name"), lastName("last_name"), gender("gender"), birthDate("birth_date"), date(
+	    "signup_date"), lastLoginDate("last_login_date"), description("descriptionContent.text"), name(
+	    "descriptionContent.name"), activity("descriptionContent.lastActivity");
 
-    private final String connectionColumnName;
+    private final String authorColumnName;
 
-    private AuthorColumnType(String connectionColumnName) {
-	this.connectionColumnName = connectionColumnName;
+    private AuthorColumnType(String authorColumnName) {
+	this.authorColumnName = authorColumnName;
     }
 
-    public String getConnectionColumnName() {
-	return connectionColumnName;
+    public String getAuthorColumnName() {
+	return authorColumnName;
     }
 
     @Override
     public String toString() {
-	return name() + ": " + getConnectionColumnName();
+	return name() + ": " + getAuthorColumnName();
     }
 }

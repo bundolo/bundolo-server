@@ -67,6 +67,9 @@ public class Content implements java.io.Serializable {
     @Column(name = "creation_date")
     private Date creationDate;
 
+    @Column(name = "last_activity")
+    private Date lastActivity;
+
     @Column(name = "content_status")
     @Enumerated(EnumType.STRING)
     private ContentStatusType contentStatus;
@@ -96,7 +99,7 @@ public class Content implements java.io.Serializable {
     }
 
     public Content(Long contentId, String authorUsername, ContentKindType kind, String name, String text,
-	    String locale, Date creationDate, ContentStatusType contentStatus, Rating rating) {
+	    String locale, Date creationDate, Date lastActivity, ContentStatusType contentStatus, Rating rating) {
 	super();
 	this.contentId = contentId;
 	this.authorUsername = authorUsername;
@@ -105,6 +108,7 @@ public class Content implements java.io.Serializable {
 	this.text = text;
 	this.locale = locale;
 	this.creationDate = creationDate;
+	this.lastActivity = lastActivity;
 	this.contentStatus = contentStatus;
 	this.rating = rating;
     }
@@ -196,6 +200,15 @@ public class Content implements java.io.Serializable {
 
     public void setDescription(Collection<Content> description) {
 	this.description = description;
+    }
+
+    @JsonSerialize(using = CustomDateSerializer.class)
+    public Date getLastActivity() {
+	return lastActivity;
+    }
+
+    public void setLastActivity(Date lastActivity) {
+	this.lastActivity = lastActivity;
     }
 
     // @Override

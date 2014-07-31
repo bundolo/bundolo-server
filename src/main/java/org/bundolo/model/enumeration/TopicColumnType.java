@@ -1,7 +1,7 @@
 package org.bundolo.model.enumeration;
 
 public enum TopicColumnType {
-    author("author_username"), content_text("content_text"), date("creation_date");
+    author("author_username"), title("content_name"), date("creation_date"), activity("last_activity");
 
     private final String topicColumnName;
 

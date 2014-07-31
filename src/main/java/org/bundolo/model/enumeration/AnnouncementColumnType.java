@@ -1,7 +1,8 @@
 package org.bundolo.model.enumeration;
 
 public enum AnnouncementColumnType {
-    author("author_username"), title("content_name"), text("content_text"), date("creation_date");
+    author("author_username"), title("content_name"), text("content_text"), date("creation_date"), activity(
+	    "last_activity");
 
     private final String announcementColumnName;
 

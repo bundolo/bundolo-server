@@ -9,12 +9,12 @@ import org.bundolo.model.Content;
 import org.bundolo.model.Contest;
 import org.bundolo.model.User;
 import org.bundolo.model.enumeration.AnnouncementColumnType;
+import org.bundolo.model.enumeration.AuthorColumnType;
 import org.bundolo.model.enumeration.ConnectionColumnType;
 import org.bundolo.model.enumeration.ContestColumnType;
 import org.bundolo.model.enumeration.SerialColumnType;
 import org.bundolo.model.enumeration.TextColumnType;
 import org.bundolo.model.enumeration.TopicColumnType;
-import org.bundolo.model.enumeration.UserProfileColumnType;
 import org.bundolo.services.ConnectionService;
 import org.bundolo.services.ContentService;
 import org.bundolo.services.ContestService;
@@ -113,7 +113,7 @@ public class ListController {
 	if (StringUtils.hasText(orderBy)) {
 	    String[] params = orderBy.split(",");
 	    for (int i = 0; i < params.length; i += 2) {
-		orderByColumns.add(UserProfileColumnType.valueOf(params[i]).getUserProfileColumnName());
+		orderByColumns.add(AuthorColumnType.valueOf(params[i]).getAuthorColumnName());
 		orderByDirections.add(params[i + 1]);
 	    }
 	}
@@ -122,7 +122,7 @@ public class ListController {
 	if (StringUtils.hasText(filterBy)) {
 	    String[] params = filterBy.split(",");
 	    for (int i = 0; i < params.length; i += 2) {
-		filterByColumns.add(UserProfileColumnType.valueOf(params[i]).getUserProfileColumnName());
+		filterByColumns.add(AuthorColumnType.valueOf(params[i]).getAuthorColumnName());
 		filterByTexts.add(params[i + 1]);
 	    }
 	}

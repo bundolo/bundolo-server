@@ -1,8 +1,8 @@
 package org.bundolo.model.enumeration;
 
 public enum ConnectionColumnType {
-    author("author_username"), email("email"), url("url"), date("creation_date"), description("descriptionContent.text"), name(
-	    "descriptionContent.name");
+    author("author_username"), email("email"), url("url"), date("creation_date"), description("descriptionContent.text"), title(
+	    "descriptionContent.name"), activity("descriptionContent.lastActivity");
 
     private final String connectionColumnName;
 

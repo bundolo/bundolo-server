@@ -2,7 +2,7 @@ package org.bundolo.model.enumeration;
 
 public enum ContestColumnType {
     author("author_username"), date("creation_date"), url("url"), expirationDate("expiration_date"), description(
-	    "descriptionContent.text"), name("descriptionContent.name");
+	    "descriptionContent.text"), title("descriptionContent.name"), activity("descriptionContent.lastActivity");
 
     private final String contestColumnName;
 

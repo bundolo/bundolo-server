@@ -37,7 +37,7 @@ public class ConnectionServiceImplTest {
 		null,
 		null,
 		new String[] { ConnectionColumnType.url.getConnectionColumnName(),
-			ConnectionColumnType.name.getConnectionColumnName() }, new String[] { ".hr", "borg" });
+			ConnectionColumnType.title.getConnectionColumnName() }, new String[] { ".hr", "borg" });
 	assertEquals("Filtering returned unexpected number of results", connections.size(), 1);
     }
 

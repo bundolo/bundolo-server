@@ -197,8 +197,9 @@ public class UserServiceImpl implements UserService {
 		userProfile.setSignupDate(new Date());
 		userProfile.setLastIp(SessionUtils.getRemoteHost());
 
+		Date creationDate = new Date();
 		Content descriptionContent = new Content(null, null, ContentKindType.user_description, null, "",
-			Constants.DEFAULT_LOCALE, new Date(), ContentStatusType.active, null);
+			Constants.DEFAULT_LOCALE, creationDate, creationDate, ContentStatusType.active, null);
 		userProfile.setDescriptionContent(descriptionContent);
 
 		List<String> hashResult = SecurityUtils.getHashWithSalt(password);
@@ -253,8 +254,9 @@ public class UserServiceImpl implements UserService {
 
 	    Content descriptionContent = userProfileDB.getDescriptionContent();
 	    if (descriptionContent == null) {
+		Date creationDate = new Date();
 		descriptionContent = new Content(null, null, ContentKindType.user_description, null, "",
-			Constants.DEFAULT_LOCALE, new Date(), ContentStatusType.active, null);
+			Constants.DEFAULT_LOCALE, creationDate, creationDate, ContentStatusType.active, null);
 
 	    }
 	    if (StringUtils.isNotBlank(userProfile.getDescriptionContent().getText())) {
