@@ -31,13 +31,9 @@ public class ConnectionServiceImplTest {
     public void findConnections() {
 	// ConnectionService connectionService = (ConnectionService) applicationContext.getBean("connectionService");
 
-	List<Connection> connections = connectionService.findConnections(
-		0,
-		4,
-		null,
-		null,
-		new String[] { ConnectionColumnType.url.getConnectionColumnName(),
-			ConnectionColumnType.title.getConnectionColumnName() }, new String[] { ".hr", "borg" });
+	List<Connection> connections = connectionService.findConnections(0, 4, null, null, new String[] {
+		ConnectionColumnType.url.getColumnName(), ConnectionColumnType.title.getColumnName() }, new String[] {
+		".hr", "borg" });
 	assertEquals("Filtering returned unexpected number of results", connections.size(), 1);
     }
 

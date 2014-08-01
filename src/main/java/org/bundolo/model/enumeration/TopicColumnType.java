@@ -1,20 +1,27 @@
 package org.bundolo.model.enumeration;
 
 public enum TopicColumnType {
-    author("author_username"), title("content_name"), date("creation_date"), activity("last_activity");
+    author("author_username", ColumnDataType.text), title("content_name", ColumnDataType.text), date("creation_date",
+	    ColumnDataType.date), activity("last_activity", ColumnDataType.date);
 
-    private final String topicColumnName;
+    private final String columnName;
+    private final ColumnDataType columnDataType;
 
-    private TopicColumnType(String topicColumnName) {
-	this.topicColumnName = topicColumnName;
+    private TopicColumnType(String columnName, ColumnDataType columnDataType) {
+	this.columnName = columnName;
+	this.columnDataType = columnDataType;
     }
 
-    public String getTopicColumnName() {
-	return topicColumnName;
+    public String getColumnName() {
+	return columnName;
+    }
+
+    public ColumnDataType getColumnDataType() {
+	return columnDataType;
     }
 
     @Override
     public String toString() {
-	return name() + ": " + getTopicColumnName();
+	return name() + ": " + getColumnName();
     }
 }

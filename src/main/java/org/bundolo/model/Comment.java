@@ -57,6 +57,9 @@ public class Comment implements java.io.Serializable {
     @Column(name = "creation_date")
     private Date creationDate;
 
+    @Column(name = "last_activity")
+    private Date lastActivity;
+
     @Column(name = "content_status")
     @Enumerated(EnumType.STRING)
     private ContentStatusType contentStatus;
@@ -162,11 +165,21 @@ public class Comment implements java.io.Serializable {
 	this.comments = comments;
     }
 
+    @JsonSerialize(using = CustomDateSerializer.class)
+    public Date getLastActivity() {
+	return lastActivity;
+    }
+
+    public void setLastActivity(Date lastActivity) {
+	this.lastActivity = lastActivity;
+    }
+
     @Override
     public String toString() {
 	return "Comment [contentId=" + contentId + ", authorUsername=" + authorUsername + ", kind=" + kind + ", text="
-		+ text + ", locale=" + locale + ", creationDate=" + creationDate + ", contentStatus=" + contentStatus
-		+ ", rating=" + rating + ", parentContent=" + parentContent + ", comments=" + comments + "]";
+		+ text + ", locale=" + locale + ", creationDate=" + creationDate + ", lastActivity=" + lastActivity
+		+ ", contentStatus=" + contentStatus + ", rating=" + rating + ", parentContent=" + parentContent
+		+ ", comments=" + comments + "]";
     }
 
 }

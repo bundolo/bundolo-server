@@ -1,22 +1,31 @@
 package org.bundolo.model.enumeration;
 
 public enum AuthorColumnType {
-    author("username"), firstName("first_name"), lastName("last_name"), gender("gender"), birthDate("birth_date"), date(
-	    "signup_date"), lastLoginDate("last_login_date"), description("descriptionContent.text"), name(
-	    "descriptionContent.name"), activity("descriptionContent.lastActivity");
+    author("username", ColumnDataType.text), firstName("first_name", ColumnDataType.text), lastName("last_name",
+	    ColumnDataType.text), gender("gender", ColumnDataType.text), birthDate("birth_date", ColumnDataType.date), date(
+	    "signup_date", ColumnDataType.date), lastLoginDate("last_login_date", ColumnDataType.date), description(
+	    "descriptionContent.text", ColumnDataType.text), name("descriptionContent.name", ColumnDataType.text), activity(
+	    "descriptionContent.lastActivity", ColumnDataType.date);
+    // TODO check why descriptionContent.name is here
 
-    private final String authorColumnName;
+    private final String columnName;
+    private final ColumnDataType columnDataType;
 
-    private AuthorColumnType(String authorColumnName) {
-	this.authorColumnName = authorColumnName;
+    private AuthorColumnType(String columnName, ColumnDataType columnDataType) {
+	this.columnName = columnName;
+	this.columnDataType = columnDataType;
     }
 
-    public String getAuthorColumnName() {
-	return authorColumnName;
+    public String getColumnName() {
+	return columnName;
+    }
+
+    public ColumnDataType getColumnDataType() {
+	return columnDataType;
     }
 
     @Override
     public String toString() {
-	return name() + ": " + getAuthorColumnName();
+	return name() + ": " + getColumnName();
     }
 }

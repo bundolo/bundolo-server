@@ -10,6 +10,7 @@ import org.bundolo.model.Contest;
 import org.bundolo.model.User;
 import org.bundolo.model.enumeration.AnnouncementColumnType;
 import org.bundolo.model.enumeration.AuthorColumnType;
+import org.bundolo.model.enumeration.ColumnDataType;
 import org.bundolo.model.enumeration.ConnectionColumnType;
 import org.bundolo.model.enumeration.ContestColumnType;
 import org.bundolo.model.enumeration.SerialColumnType;
@@ -53,7 +54,7 @@ public class ListController {
 	if (StringUtils.hasText(orderBy)) {
 	    String[] params = orderBy.split(",");
 	    for (int i = 0; i < params.length; i += 2) {
-		orderByColumns.add(ConnectionColumnType.valueOf(params[i]).getConnectionColumnName());
+		orderByColumns.add(ConnectionColumnType.valueOf(params[i]).getColumnName());
 		orderByDirections.add(params[i + 1]);
 	    }
 	}
@@ -62,7 +63,9 @@ public class ListController {
 	if (StringUtils.hasText(filterBy)) {
 	    String[] params = filterBy.split(",");
 	    for (int i = 0; i < params.length; i += 2) {
-		filterByColumns.add(ConnectionColumnType.valueOf(params[i]).getConnectionColumnName());
+		ConnectionColumnType connectionColumnType = ConnectionColumnType.valueOf(params[i]);
+		filterByColumns.add(getFilterByColumn(connectionColumnType.getColumnName(),
+			connectionColumnType.getColumnDataType()));
 		filterByTexts.add(params[i + 1]);
 	    }
 	}
@@ -83,7 +86,7 @@ public class ListController {
 	if (StringUtils.hasText(orderBy)) {
 	    String[] params = orderBy.split(",");
 	    for (int i = 0; i < params.length; i += 2) {
-		orderByColumns.add(ContestColumnType.valueOf(params[i]).getContestColumnName());
+		orderByColumns.add(ContestColumnType.valueOf(params[i]).getColumnName());
 		orderByDirections.add(params[i + 1]);
 	    }
 	}
@@ -92,7 +95,9 @@ public class ListController {
 	if (StringUtils.hasText(filterBy)) {
 	    String[] params = filterBy.split(",");
 	    for (int i = 0; i < params.length; i += 2) {
-		filterByColumns.add(ContestColumnType.valueOf(params[i]).getContestColumnName());
+		ContestColumnType contestColumnType = ContestColumnType.valueOf(params[i]);
+		filterByColumns.add(getFilterByColumn(contestColumnType.getColumnName(),
+			contestColumnType.getColumnDataType()));
 		filterByTexts.add(params[i + 1]);
 	    }
 	}
@@ -113,7 +118,7 @@ public class ListController {
 	if (StringUtils.hasText(orderBy)) {
 	    String[] params = orderBy.split(",");
 	    for (int i = 0; i < params.length; i += 2) {
-		orderByColumns.add(AuthorColumnType.valueOf(params[i]).getAuthorColumnName());
+		orderByColumns.add(AuthorColumnType.valueOf(params[i]).getColumnName());
 		orderByDirections.add(params[i + 1]);
 	    }
 	}
@@ -122,7 +127,9 @@ public class ListController {
 	if (StringUtils.hasText(filterBy)) {
 	    String[] params = filterBy.split(",");
 	    for (int i = 0; i < params.length; i += 2) {
-		filterByColumns.add(AuthorColumnType.valueOf(params[i]).getAuthorColumnName());
+		AuthorColumnType authorColumnType = AuthorColumnType.valueOf(params[i]);
+		filterByColumns.add(getFilterByColumn(authorColumnType.getColumnName(),
+			authorColumnType.getColumnDataType()));
 		filterByTexts.add(params[i + 1]);
 	    }
 	}
@@ -143,7 +150,7 @@ public class ListController {
 	if (StringUtils.hasText(orderBy)) {
 	    String[] params = orderBy.split(",");
 	    for (int i = 0; i < params.length; i += 2) {
-		orderByColumns.add(TextColumnType.valueOf(params[i]).getTextColumnName());
+		orderByColumns.add(TextColumnType.valueOf(params[i]).getColumnName());
 		orderByDirections.add(params[i + 1]);
 	    }
 	}
@@ -152,7 +159,9 @@ public class ListController {
 	if (StringUtils.hasText(filterBy)) {
 	    String[] params = filterBy.split(",");
 	    for (int i = 0; i < params.length; i += 2) {
-		filterByColumns.add(TextColumnType.valueOf(params[i]).getTextColumnName());
+		TextColumnType textColumnType = TextColumnType.valueOf(params[i]);
+		filterByColumns.add(getFilterByColumn(textColumnType.getColumnName(),
+			textColumnType.getColumnDataType()));
 		filterByTexts.add(params[i + 1]);
 	    }
 	}
@@ -173,7 +182,7 @@ public class ListController {
 	if (StringUtils.hasText(orderBy)) {
 	    String[] params = orderBy.split(",");
 	    for (int i = 0; i < params.length; i += 2) {
-		orderByColumns.add(AnnouncementColumnType.valueOf(params[i]).getAnnouncementColumnName());
+		orderByColumns.add(AnnouncementColumnType.valueOf(params[i]).getColumnName());
 		orderByDirections.add(params[i + 1]);
 	    }
 	}
@@ -182,7 +191,9 @@ public class ListController {
 	if (StringUtils.hasText(filterBy)) {
 	    String[] params = filterBy.split(",");
 	    for (int i = 0; i < params.length; i += 2) {
-		filterByColumns.add(AnnouncementColumnType.valueOf(params[i]).getAnnouncementColumnName());
+		AnnouncementColumnType announcementColumnType = AnnouncementColumnType.valueOf(params[i]);
+		filterByColumns.add(getFilterByColumn(announcementColumnType.getColumnName(),
+			announcementColumnType.getColumnDataType()));
 		filterByTexts.add(params[i + 1]);
 	    }
 	}
@@ -203,7 +214,7 @@ public class ListController {
 	if (StringUtils.hasText(orderBy)) {
 	    String[] params = orderBy.split(",");
 	    for (int i = 0; i < params.length; i += 2) {
-		orderByColumns.add(SerialColumnType.valueOf(params[i]).getSerialColumnName());
+		orderByColumns.add(SerialColumnType.valueOf(params[i]).getColumnName());
 		orderByDirections.add(params[i + 1]);
 	    }
 	}
@@ -212,7 +223,9 @@ public class ListController {
 	if (StringUtils.hasText(filterBy)) {
 	    String[] params = filterBy.split(",");
 	    for (int i = 0; i < params.length; i += 2) {
-		filterByColumns.add(SerialColumnType.valueOf(params[i]).getSerialColumnName());
+		SerialColumnType serialColumnType = SerialColumnType.valueOf(params[i]);
+		filterByColumns.add(getFilterByColumn(serialColumnType.getColumnName(),
+			serialColumnType.getColumnDataType()));
 		filterByTexts.add(params[i + 1]);
 	    }
 	}
@@ -233,7 +246,7 @@ public class ListController {
 	if (StringUtils.hasText(orderBy)) {
 	    String[] params = orderBy.split(",");
 	    for (int i = 0; i < params.length; i += 2) {
-		orderByColumns.add(TopicColumnType.valueOf(params[i]).getTopicColumnName());
+		orderByColumns.add(TopicColumnType.valueOf(params[i]).getColumnName());
 		orderByDirections.add(params[i + 1]);
 	    }
 	}
@@ -242,7 +255,9 @@ public class ListController {
 	if (StringUtils.hasText(filterBy)) {
 	    String[] params = filterBy.split(",");
 	    for (int i = 0; i < params.length; i += 2) {
-		filterByColumns.add(TopicColumnType.valueOf(params[i]).getTopicColumnName());
+		TopicColumnType topicColumnType = TopicColumnType.valueOf(params[i]);
+		filterByColumns.add(getFilterByColumn(topicColumnType.getColumnName(),
+			topicColumnType.getColumnDataType()));
 		filterByTexts.add(params[i + 1]);
 	    }
 	}
@@ -250,5 +265,18 @@ public class ListController {
 		orderByDirections.toArray(new String[orderByDirections.size()]),
 		filterByColumns.toArray(new String[filterByColumns.size()]),
 		filterByTexts.toArray(new String[filterByTexts.size()]));
+    }
+
+    private String getFilterByColumn(String columnName, ColumnDataType columnDataType) {
+	switch (columnDataType) {
+	case date:
+	    return "to_char(" + columnName + ", 'DD.MM.YYYY.')";
+	case text:
+	    return columnName;
+	case number:
+	    return "cast(" + columnName + " as text)";
+	default:
+	    return columnName;
+	}
     }
 }

@@ -49,7 +49,10 @@ public class CommentServiceImpl implements CommentService {
     public Long saveComment(Comment comment) {
 	Long result = null;
 	// TODO check if comment exists
-	comment.setCreationDate(new Date());
+	Date creationDate = new Date();
+	comment.setCreationDate(creationDate);
+	comment.setLastActivity(creationDate);
+	// TODO set parent last activity
 	comment.setContentStatus(ContentStatusType.active);
 	comment.setKind(ContentKindType.text_comment);
 	comment.setLocale("sr");

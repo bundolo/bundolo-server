@@ -2,21 +2,28 @@ package org.bundolo.model.enumeration;
 
 public enum TextColumnType {
     // TODO description
-    author("author_username"), title("content_name"), text("content_text"), date("creation_date"), activity(
-	    "last_activity");
+    author("author_username", ColumnDataType.text), title("content_name", ColumnDataType.text), text("content_text",
+	    ColumnDataType.text), date("creation_date", ColumnDataType.date), activity("last_activity",
+	    ColumnDataType.date);
 
-    private final String textColumnName;
+    private final String columnName;
+    private final ColumnDataType columnDataType;
 
-    private TextColumnType(String textColumnName) {
-	this.textColumnName = textColumnName;
+    private TextColumnType(String columnName, ColumnDataType columnDataType) {
+	this.columnName = columnName;
+	this.columnDataType = columnDataType;
     }
 
-    public String getTextColumnName() {
-	return textColumnName;
+    public String getColumnName() {
+	return columnName;
+    }
+
+    public ColumnDataType getColumnDataType() {
+	return columnDataType;
     }
 
     @Override
     public String toString() {
-	return name() + ": " + getTextColumnName();
+	return name() + ": " + getColumnName();
     }
 }
