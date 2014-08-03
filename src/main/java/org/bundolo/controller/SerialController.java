@@ -74,6 +74,8 @@ public class SerialController {
 	    @RequestBody final Content episode) {
 	logger.log(Level.WARNING, "saveOrUpdate, episode: " + episode);
 	// TODO check param validity
+
+	// TODO saving episode should update serial's last activity
 	episode.setKind(ContentKindType.episode);
 	episode.setName(title);
 	Boolean result = contentService.saveOrUpdateContent(episode, false);

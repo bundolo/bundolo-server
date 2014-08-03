@@ -1,5 +1,6 @@
 package org.bundolo.services;
 
+import java.util.Date;
 import java.util.List;
 
 import org.bundolo.model.Content;
@@ -47,6 +48,8 @@ public interface ContentService {
     // public Boolean saveOrUpdateContent(Content content);
 
     public Boolean saveOrUpdateContent(Content content, boolean anonymousAllowed);
+
+    public Boolean updateLastActivity(Long contentId, Date lastActivity);
 
     public void clearSession();
 }

@@ -41,9 +41,6 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private MailingUtils mailingUtils;
 
-    @Autowired
-    private ContentService contentService;
-
     @PostConstruct
     public void init() {
     }

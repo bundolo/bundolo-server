@@ -112,7 +112,9 @@ public class ContentServiceImpl implements ContentService {
     private Boolean saveContent(Content content) {
 	try {
 	    content.setContentStatus(ContentStatusType.active);
-	    content.setCreationDate(new Date());
+	    Date creationDate = new Date();
+	    content.setCreationDate(creationDate);
+	    content.setLastActivity(creationDate);
 	    content.setLocale(Constants.DEFAULT_LOCALE);
 	    if (ContentKindType.text.equals(content.getKind())) {
 		Content descriptionContent = (Content) content.getDescription().toArray()[0];
@@ -152,7 +154,7 @@ public class ContentServiceImpl implements ContentService {
 		} else {
 		    Content contentDB = contentDAO.findById(content.getContentId());
 		    if (contentDB == null) {
-			// no such connection
+			// no such content
 			return false;
 		    } else {
 			if (!((String) authentication.getPrincipal()).equals(contentDB.getAuthorUsername())) {
@@ -166,6 +168,7 @@ public class ContentServiceImpl implements ContentService {
 			}
 			contentDB.setName(content.getName());
 			contentDB.setText(content.getText());
+			contentDB.setLastActivity(new Date());
 			contentDAO.merge(contentDB);
 			return true;
 		    }
@@ -200,5 +203,20 @@ public class ContentServiceImpl implements ContentService {
     @Override
     public Content findEpisode(String serialTitle, String title) {
 	return contentDAO.findEpisode(serialTitle, title);
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    public Boolean updateLastActivity(Long contentId, Date lastActivity) {
+	logger.log(Level.WARNING, "updateLastActivity: " + contentId);
+	Content contentDB = contentDAO.findById(contentId);
+	if (contentDB == null) {
+	    // no such content
+	    return false;
+	} else {
+	    contentDB.setLastActivity(lastActivity);
+	    contentDAO.merge(contentDB);
+	    return true;
+	}
     }
 }

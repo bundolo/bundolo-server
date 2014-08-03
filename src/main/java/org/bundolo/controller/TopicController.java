@@ -75,6 +75,7 @@ public class TopicController {
     Boolean save(@RequestBody final Content post) {
 	logger.log(Level.WARNING, "saving post: " + post);
 	// TODO check param validity
+	// TODO saving post should update topic last activity
 	post.setKind(ContentKindType.forum_post);
 	Boolean result = contentService.saveOrUpdateContent(post, true);
 	if (result) {

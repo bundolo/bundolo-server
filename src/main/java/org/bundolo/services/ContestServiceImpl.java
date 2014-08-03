@@ -10,7 +10,6 @@ import javax.annotation.PreDestroy;
 
 import org.apache.commons.lang3.StringUtils;
 import org.bundolo.Constants;
-import org.bundolo.dao.ContentDAO;
 import org.bundolo.dao.ContestDAO;
 import org.bundolo.model.Content;
 import org.bundolo.model.Contest;
@@ -33,12 +32,6 @@ public class ContestServiceImpl implements ContestService {
 
     @Autowired
     private ContestDAO contestDAO;
-
-    @Autowired
-    private ContentDAO contentDAO;
-
-    @Autowired
-    private ContentService contentService;
 
     @PostConstruct
     public void init() throws Exception {

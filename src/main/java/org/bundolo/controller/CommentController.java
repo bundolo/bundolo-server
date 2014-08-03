@@ -1,11 +1,19 @@
 package org.bundolo.controller;
 
+import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.bundolo.Constants;
+import org.bundolo.Utils;
 import org.bundolo.model.Comment;
+import org.bundolo.model.Content;
 import org.bundolo.services.CommentService;
+import org.bundolo.services.ConnectionService;
+import org.bundolo.services.ContentService;
+import org.bundolo.services.ContestService;
+import org.bundolo.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -24,6 +32,18 @@ public class CommentController {
     @Autowired
     private CommentService commentService;
 
+    @Autowired
+    private ContentService contentService;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private ContestService contestService;
+
+    @Autowired
+    private ConnectionService connectionService;
+
     @RequestMapping(value = Constants.REST_PATH_COMMENTS + "/{parentId}", method = RequestMethod.GET)
     public @ResponseBody
     List<Comment> comments(@PathVariable Long parentId) {
@@ -38,12 +58,39 @@ public class CommentController {
     @ResponseStatus(HttpStatus.CREATED)
     public @ResponseBody
     Long save(@RequestBody final Comment comment) {
-	logger.fine("saving comment: " + comment);
+	logger.log(Level.WARNING, "saving comment: " + comment);
 	// TODO check param validity
+	// TODO this could be nicer, move this logic to service. the problem with that is calling content update from
+	// comment save method. transactions collide.
+	Date creationDate = new Date();
+	comment.setCreationDate(creationDate);
+	comment.setLastActivity(creationDate);
+	Content commentAncestor = contentService.findContent(comment.getParentContent().getContentId());
+	while (commentAncestor != null && commentAncestor.getKind().name().contains("comment")) {
+	    commentAncestor = commentAncestor.getParentContent();
+	}
+	comment.setKind(Utils.getCommentContentKind(commentAncestor.getKind()));
 	Long result = commentService.saveComment(comment);
 	if (result != null) {
+	    // logger.log(Level.WARNING, "saving comment; result not null: " + result);
+	    contentService.updateLastActivity(commentAncestor.getContentId(), creationDate);
 	    commentService.clearSession();
+	    switch (commentAncestor.getKind()) {
+	    case connection_description:
+		connectionService.clearSession();
+		break;
+	    case contest_description:
+		contestService.clearSession();
+		break;
+	    case user_description:
+		userService.clearSession();
+		break;
+	    default:
+		contentService.clearSession();
+	    }
+
 	}
+	// logger.log(Level.WARNING, "saving comment; result: " + result);
 	return result;
     }
 

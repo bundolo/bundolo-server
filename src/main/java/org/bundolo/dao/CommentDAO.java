@@ -20,6 +20,7 @@ public class CommentDAO extends JpaDAO<Long, Comment> {
 	if (parentId != null) {
 	    String queryString = "SELECT c FROM Comment c WHERE content_status='active'";
 	    queryString += " AND parent_content_id =" + parentId;
+	    queryString += " AND kind like '%comment%'";
 	    queryString += " ORDER BY creationDate";
 	    logger.log(Level.WARNING, "queryString: " + queryString);
 	    Query q = entityManager.createQuery(queryString);

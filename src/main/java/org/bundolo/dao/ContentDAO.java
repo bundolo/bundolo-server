@@ -206,6 +206,7 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	}
     }
 
+    // TODO not used now since topic titles are moved to content_name
     @SuppressWarnings("unchecked")
     public Content findByText(String text, ContentKindType kind) {
 	String queryString = "SELECT c FROM Content c";

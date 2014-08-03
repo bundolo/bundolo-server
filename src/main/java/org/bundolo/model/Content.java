@@ -211,11 +211,10 @@ public class Content implements java.io.Serializable {
 	this.lastActivity = lastActivity;
     }
 
-    // @Override
-    // public String toString() {
-    // return "Content [contentId=" + contentId + ", authorUsername=" + authorUsername + ", kind=" + kind + ", name="
-    // + name + ", text=" + text + ", locale=" + locale + ", creationDate=" + creationDate
-    // + ", contentStatus=" + contentStatus + ", rating=" + rating + ", parentContent=" + parentContent
-    // + ", description=" + description + "]";
-    // }
+    @Override
+    public String toString() {
+	return "Content [contentId=" + contentId + ", authorUsername=" + authorUsername + ", kind=" + kind + ", name="
+		+ name + ", text=" + text + ", locale=" + locale + ", creationDate=" + creationDate + ", lastActivity="
+		+ lastActivity + ", contentStatus=" + contentStatus + ", rating=" + rating + "]";
+    }
 }

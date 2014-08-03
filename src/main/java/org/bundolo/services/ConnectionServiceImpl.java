@@ -33,9 +33,6 @@ public class ConnectionServiceImpl implements ConnectionService {
     @Autowired
     private ConnectionDAO connectionDAO;
 
-    @Autowired
-    private ContentService contentService;
-
     @PostConstruct
     public void init() throws Exception {
     }
