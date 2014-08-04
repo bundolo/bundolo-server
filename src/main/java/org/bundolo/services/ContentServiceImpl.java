@@ -168,7 +168,11 @@ public class ContentServiceImpl implements ContentService {
 			}
 			contentDB.setName(content.getName());
 			contentDB.setText(content.getText());
-			contentDB.setLastActivity(new Date());
+			if (content.getLastActivity() != null) {
+			    contentDB.setLastActivity(content.getLastActivity());
+			} else {
+			    contentDB.setLastActivity(new Date());
+			}
 			contentDAO.merge(contentDB);
 			return true;
 		    }

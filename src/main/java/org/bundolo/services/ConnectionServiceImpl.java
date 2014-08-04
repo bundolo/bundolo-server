@@ -61,6 +61,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 	    descriptionContent.setCreationDate(connection.getCreationDate());
 	    descriptionContent.setKind(ContentKindType.connection_description);
 	    descriptionContent.setLocale(Constants.DEFAULT_LOCALE);
+	    descriptionContent.setLastActivity(new Date());
 	    connectionDAO.persist(connection);
 	    return true;
 	} catch (Exception ex) {
@@ -118,6 +119,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 			Content descriptionContentDB = connectionDB.getDescriptionContent();
 			descriptionContentDB.setName(descriptionContent.getName());
 			descriptionContentDB.setText(descriptionContent.getText());
+			descriptionContentDB.setLastActivity(new Date());
 			connectionDB.setEmail(connection.getEmail());
 			connectionDB.setUrl(connection.getUrl());
 			connectionDAO.merge(connectionDB);

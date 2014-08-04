@@ -1,5 +1,6 @@
 package org.bundolo.controller;
 
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -74,12 +75,13 @@ public class SerialController {
 	    @RequestBody final Content episode) {
 	logger.log(Level.WARNING, "saveOrUpdate, episode: " + episode);
 	// TODO check param validity
-
-	// TODO saving episode should update serial's last activity
+	Date creationDate = new Date();
+	episode.setLastActivity(creationDate);
 	episode.setKind(ContentKindType.episode);
 	episode.setName(title);
 	Boolean result = contentService.saveOrUpdateContent(episode, false);
 	if (result) {
+	    contentService.updateLastActivity(episode.getParentContent().getContentId(), creationDate);
 	    contentService.clearSession();
 	}
 	return result;

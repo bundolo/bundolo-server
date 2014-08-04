@@ -250,11 +250,13 @@ public class UserServiceImpl implements UserService {
 	    }
 
 	    Content descriptionContent = userProfileDB.getDescriptionContent();
+	    Date creationDate = new Date();
 	    if (descriptionContent == null) {
-		Date creationDate = new Date();
 		descriptionContent = new Content(null, null, ContentKindType.user_description, null, "",
 			Constants.DEFAULT_LOCALE, creationDate, creationDate, ContentStatusType.active, null);
 
+	    } else {
+		descriptionContent.setLastActivity(creationDate);
 	    }
 	    if (StringUtils.isNotBlank(userProfile.getDescriptionContent().getText())) {
 		descriptionContent.setText(userProfile.getDescriptionContent().getText());

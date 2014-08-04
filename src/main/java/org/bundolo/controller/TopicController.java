@@ -1,5 +1,6 @@
 package org.bundolo.controller;
 
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -75,10 +76,12 @@ public class TopicController {
     Boolean save(@RequestBody final Content post) {
 	logger.log(Level.WARNING, "saving post: " + post);
 	// TODO check param validity
-	// TODO saving post should update topic last activity
+	Date creationDate = new Date();
+	post.setLastActivity(creationDate);
 	post.setKind(ContentKindType.forum_post);
 	Boolean result = contentService.saveOrUpdateContent(post, true);
 	if (result) {
+	    contentService.updateLastActivity(post.getParentContent().getContentId(), creationDate);
 	    contentService.clearSession();
 	}
 	return result;

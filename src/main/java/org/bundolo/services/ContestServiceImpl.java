@@ -59,6 +59,7 @@ public class ContestServiceImpl implements ContestService {
 	    descriptionContent.setCreationDate(contest.getCreationDate());
 	    descriptionContent.setKind(ContentKindType.contest_description);
 	    descriptionContent.setLocale(Constants.DEFAULT_LOCALE);
+	    descriptionContent.setLastActivity(new Date());
 	    contestDAO.persist(contest);
 	    return true;
 	} catch (Exception ex) {
@@ -115,6 +116,7 @@ public class ContestServiceImpl implements ContestService {
 			Content descriptionContentDB = contestDB.getDescriptionContent();
 			descriptionContentDB.setName(descriptionContent.getName());
 			descriptionContentDB.setText(descriptionContent.getText());
+			descriptionContentDB.setLastActivity(new Date());
 			contestDB.setExpirationDate(contest.getExpirationDate());
 			contestDAO.merge(contestDB);
 			return true;
