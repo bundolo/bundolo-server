@@ -13,10 +13,13 @@ import org.bundolo.Constants;
 import org.bundolo.dao.ConnectionDAO;
 import org.bundolo.model.Connection;
 import org.bundolo.model.Content;
+import org.bundolo.model.Rating;
 import org.bundolo.model.enumeration.ConnectionKindType;
 import org.bundolo.model.enumeration.ConnectionStatusType;
 import org.bundolo.model.enumeration.ContentKindType;
 import org.bundolo.model.enumeration.ContentStatusType;
+import org.bundolo.model.enumeration.RatingKindType;
+import org.bundolo.model.enumeration.RatingStatusType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -86,8 +89,22 @@ public class ConnectionServiceImpl implements ConnectionService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public Connection findConnection(String title) {
-	return connectionDAO.findByTitle(title);
+	Connection connection = connectionDAO.findByTitle(title);
+	if (connection != null) {
+	    Rating rating = connection.getDescriptionContent().getRating();
+	    if (rating == null) {
+		rating = new Rating(null, null, RatingKindType.general, new Date(), RatingStatusType.active,
+			Constants.DEFAULT_RATING_INCREMENT, connection.getDescriptionContent());
+		connection.getDescriptionContent().setRating(rating);
+	    } else {
+		rating.setValue(rating.getValue() + Constants.DEFAULT_RATING_INCREMENT);
+		rating.setLastActivity(new Date());
+	    }
+	    connectionDAO.merge(connection);
+	}
+	return connection;
     }
 
     @Override

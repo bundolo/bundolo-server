@@ -10,10 +10,14 @@ import javax.annotation.PreDestroy;
 
 import org.bundolo.Constants;
 import org.bundolo.dao.ContentDAO;
+import org.bundolo.dao.RatingDAO;
 import org.bundolo.model.Content;
+import org.bundolo.model.Rating;
 import org.bundolo.model.enumeration.ContentKindType;
 import org.bundolo.model.enumeration.ContentStatusType;
 import org.bundolo.model.enumeration.PageKindType;
+import org.bundolo.model.enumeration.RatingKindType;
+import org.bundolo.model.enumeration.RatingStatusType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -29,6 +33,9 @@ public class ContentServiceImpl implements ContentService {
 
     @Autowired
     private ContentDAO contentDAO;
+
+    @Autowired
+    private RatingDAO ratingDAO;
 
     @PostConstruct
     public void init() throws Exception {
@@ -78,28 +85,98 @@ public class ContentServiceImpl implements ContentService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public Content getPageDescriptionContent(PageKindType pageKind) {
-	return contentDAO.getPageDescriptionContent(pageKind);
+	Content pageDescriptionContent = contentDAO.getPageDescriptionContent(pageKind);
+	if (pageDescriptionContent != null) {
+	    Rating rating = pageDescriptionContent.getRating();
+	    if (rating == null) {
+		rating = new Rating(null, null, RatingKindType.general, new Date(), RatingStatusType.active,
+			Constants.DEFAULT_RATING_INCREMENT, pageDescriptionContent);
+		pageDescriptionContent.setRating(rating);
+	    } else {
+		rating.setValue(rating.getValue() + Constants.DEFAULT_RATING_INCREMENT);
+		rating.setLastActivity(new Date());
+	    }
+	    contentDAO.merge(pageDescriptionContent);
+	}
+	return pageDescriptionContent;
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public Content findAnnouncement(String title) {
-	return contentDAO.findByTitle(title, ContentKindType.news);
+	Content announcement = contentDAO.findByTitle(title, ContentKindType.news);
+	if (announcement != null) {
+	    Rating rating = announcement.getRating();
+	    if (rating == null) {
+		rating = new Rating(null, null, RatingKindType.general, new Date(), RatingStatusType.active,
+			Constants.DEFAULT_RATING_INCREMENT, announcement);
+		announcement.setRating(rating);
+	    } else {
+		rating.setValue(rating.getValue() + Constants.DEFAULT_RATING_INCREMENT);
+		rating.setLastActivity(new Date());
+	    }
+	    contentDAO.merge(announcement);
+	}
+	return announcement;
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public Content findSerial(String title) {
-	return contentDAO.findByTitle(title, ContentKindType.episode_group);
+	Content serial = contentDAO.findByTitle(title, ContentKindType.episode_group);
+	if (serial != null) {
+	    Rating rating = serial.getRating();
+	    if (rating == null) {
+		rating = new Rating(null, null, RatingKindType.general, new Date(), RatingStatusType.active,
+			Constants.DEFAULT_RATING_INCREMENT, serial);
+		serial.setRating(rating);
+	    } else {
+		rating.setValue(rating.getValue() + Constants.DEFAULT_RATING_INCREMENT);
+		rating.setLastActivity(new Date());
+	    }
+	    contentDAO.merge(serial);
+	}
+	return serial;
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public Content findText(String username, String title) {
-	return contentDAO.findText(username, title);
+	Content text = contentDAO.findText(username, title);
+	if (text != null) {
+	    Rating rating = text.getRating();
+	    if (rating == null) {
+		rating = new Rating(null, null, RatingKindType.general, new Date(), RatingStatusType.active,
+			Constants.DEFAULT_RATING_INCREMENT, text);
+		text.setRating(rating);
+	    } else {
+		rating.setValue(rating.getValue() + Constants.DEFAULT_RATING_INCREMENT);
+		rating.setLastActivity(new Date());
+	    }
+	    contentDAO.merge(text);
+	}
+	return text;
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public Content findTopic(String title) {
-	return contentDAO.findByTitle(title, ContentKindType.forum_topic);
+	Content topic = contentDAO.findByTitle(title, ContentKindType.forum_topic);
+	if (topic != null) {
+	    Rating rating = topic.getRating();
+	    if (rating == null) {
+		rating = new Rating(null, null, RatingKindType.general, new Date(), RatingStatusType.active,
+			Constants.DEFAULT_RATING_INCREMENT, topic);
+		topic.setRating(rating);
+	    } else {
+		rating.setValue(rating.getValue() + Constants.DEFAULT_RATING_INCREMENT);
+		rating.setLastActivity(new Date());
+	    }
+	    contentDAO.merge(topic);
+	}
+	return topic;
     }
 
     @Override
@@ -205,8 +282,22 @@ public class ContentServiceImpl implements ContentService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public Content findEpisode(String serialTitle, String title) {
-	return contentDAO.findEpisode(serialTitle, title);
+	Content episode = contentDAO.findEpisode(serialTitle, title);
+	if (episode != null) {
+	    Rating rating = episode.getRating();
+	    if (rating == null) {
+		rating = new Rating(null, null, RatingKindType.general, new Date(), RatingStatusType.active,
+			Constants.DEFAULT_RATING_INCREMENT, episode);
+		episode.setRating(rating);
+	    } else {
+		rating.setValue(rating.getValue() + Constants.DEFAULT_RATING_INCREMENT);
+		rating.setLastActivity(new Date());
+	    }
+	    contentDAO.merge(episode);
+	}
+	return episode;
     }
 
     @Override

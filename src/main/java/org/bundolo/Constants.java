@@ -10,6 +10,7 @@ public class Constants {
     public static final String DEFAULT_LOCALE = "sr";
     public static final int DEFAULT_PAGING_PAGE_SIZE = 20;
     public static final int DETAIL_PAGING_PAGE_SIZE = 10;
+    public static final long DEFAULT_RATING_INCREMENT = 1l;
 
     public static final String BUNDOLO_EMAIL_ADDRESS = "daniel.farkas0@gmail.com";
     public static final String BUNDOLO_FACEBOOK = "https://www.facebook.com/bundolo.dibidus";

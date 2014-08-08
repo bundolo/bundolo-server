@@ -17,10 +17,13 @@ import org.bundolo.Utils;
 import org.bundolo.dao.UserDAO;
 import org.bundolo.dao.UserProfileDAO;
 import org.bundolo.model.Content;
+import org.bundolo.model.Rating;
 import org.bundolo.model.User;
 import org.bundolo.model.UserProfile;
 import org.bundolo.model.enumeration.ContentKindType;
 import org.bundolo.model.enumeration.ContentStatusType;
+import org.bundolo.model.enumeration.RatingKindType;
+import org.bundolo.model.enumeration.RatingStatusType;
 import org.bundolo.model.enumeration.UserProfileStatusType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -50,8 +53,22 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public User findUser(String username) {
-	return userDAO.findById(username);
+	User user = userDAO.findById(username);
+	if (user != null) {
+	    Rating rating = user.getDescriptionContent().getRating();
+	    if (rating == null) {
+		rating = new Rating(null, null, RatingKindType.general, new Date(), RatingStatusType.active,
+			Constants.DEFAULT_RATING_INCREMENT, user.getDescriptionContent());
+		user.getDescriptionContent().setRating(rating);
+	    } else {
+		rating.setValue(rating.getValue() + Constants.DEFAULT_RATING_INCREMENT);
+		rating.setLastActivity(new Date());
+	    }
+	    userDAO.merge(user);
+	}
+	return user;
     }
 
     @Override

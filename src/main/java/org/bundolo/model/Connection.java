@@ -40,9 +40,6 @@ public class Connection implements java.io.Serializable {
     @Column(name = "parent_content_id")
     private Long parentContentId;
 
-    // @Column(name = "description_content_id")
-    // private Long descriptionContentId;
-
     @Column(name = "kind")
     @Enumerated(EnumType.STRING)
     private ConnectionKindType kind;
@@ -63,21 +60,19 @@ public class Connection implements java.io.Serializable {
     // TODO check why this is optional
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, optional = true)
     @JoinColumn(name = "description_content_id", nullable = true)
-    // @Transient
     private Content descriptionContent;
 
     public Connection() {
 	super();
     }
 
-    public Connection(Long connectionId, String authorUsername, Long parentContentId, /*Long descriptionContentId,*/
-	    ConnectionKindType kind, Date creationDate, ConnectionStatusType connectionStatus, String email,
-	    String url, Content descriptionContent) {
+    public Connection(Long connectionId, String authorUsername, Long parentContentId, ConnectionKindType kind,
+	    Date creationDate, ConnectionStatusType connectionStatus, String email, String url,
+	    Content descriptionContent) {
 	super();
 	this.connectionId = connectionId;
 	this.authorUsername = authorUsername;
 	this.parentContentId = parentContentId;
-	// this.descriptionContentId = descriptionContentId;
 	this.kind = kind;
 	this.creationDate = creationDate;
 	this.connectionStatus = connectionStatus;
@@ -101,14 +96,6 @@ public class Connection implements java.io.Serializable {
     public void setAuthorUsername(String authorUsername) {
 	this.authorUsername = authorUsername;
     }
-
-    // public Long getDescriptionContentId() {
-    // return descriptionContentId;
-    // }
-    //
-    // public void setDescriptionContentId(Long descriptionContentId) {
-    // this.descriptionContentId = descriptionContentId;
-    // }
 
     public ConnectionKindType getKind() {
 	return kind;

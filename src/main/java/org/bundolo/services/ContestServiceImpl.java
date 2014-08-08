@@ -13,10 +13,13 @@ import org.bundolo.Constants;
 import org.bundolo.dao.ContestDAO;
 import org.bundolo.model.Content;
 import org.bundolo.model.Contest;
+import org.bundolo.model.Rating;
 import org.bundolo.model.enumeration.ContentKindType;
 import org.bundolo.model.enumeration.ContentStatusType;
 import org.bundolo.model.enumeration.ContestKindType;
 import org.bundolo.model.enumeration.ContestStatusType;
+import org.bundolo.model.enumeration.RatingKindType;
+import org.bundolo.model.enumeration.RatingStatusType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -84,8 +87,22 @@ public class ContestServiceImpl implements ContestService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public Contest findContest(String title) {
-	return contestDAO.findByTitle(title);
+	Contest contest = contestDAO.findByTitle(title);
+	if (contest != null) {
+	    Rating rating = contest.getDescriptionContent().getRating();
+	    if (rating == null) {
+		rating = new Rating(null, null, RatingKindType.general, new Date(), RatingStatusType.active,
+			Constants.DEFAULT_RATING_INCREMENT, contest.getDescriptionContent());
+		contest.getDescriptionContent().setRating(rating);
+	    } else {
+		rating.setValue(rating.getValue() + Constants.DEFAULT_RATING_INCREMENT);
+		rating.setLastActivity(new Date());
+	    }
+	    contestDAO.merge(contest);
+	}
+	return contest;
     }
 
     @Override

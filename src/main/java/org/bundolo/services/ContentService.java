@@ -25,7 +25,7 @@ public interface ContentService {
 	    String[] filter);
 
     public Content getPageDescriptionContent(PageKindType pageKind); // to simplify things, pages are out of scope in
-								     // first release
+								     // the first release
 
     public List<Content> findConnectionGroups();
 

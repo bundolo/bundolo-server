@@ -14,9 +14,9 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 import org.bundolo.CustomDateSerializer;
 import org.bundolo.model.enumeration.ContentKindType;
@@ -38,18 +38,12 @@ public class Content implements java.io.Serializable {
 
     @Id
     @Column(name = "content_id")
-    // @GeneratedValue(strategy = GenerationType.SEQUENCE,
-    // generator="page_id_seq")
     @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "content_id_seq")
     @SequenceGenerator(name = "content_id_seq", sequenceName = "content_id_seq")
     private Long contentId;
 
     @Column(name = "author_username")
     private String authorUsername;
-
-    // @Column(name = "parent_content_id")
-    // @Transient
-    // private Long parentContentId;
 
     @Column(name = "kind")
     @Enumerated(EnumType.STRING)
@@ -74,15 +68,9 @@ public class Content implements java.io.Serializable {
     @Enumerated(EnumType.STRING)
     private ContentStatusType contentStatus;
 
-    // @OneToOne(mappedBy = "parentContent", cascade = CascadeType.ALL)
-    // @OneToOne(cascade=CascadeType.ALL)
-    @Transient
+    @OneToOne(mappedBy = "parentContent", cascade = CascadeType.ALL)
     private Rating rating;
 
-    // @OneToOne(fetch = FetchType.EAGER)
-    // @JoinColumn(name = "parent_content_id", referencedColumnName =
-    // "content_id")
-    // @Transient
     @ManyToOne(optional = true)
     @JoinColumn(name = "parent_content_id", referencedColumnName = "content_id")
     @JsonBackReference
@@ -214,7 +202,7 @@ public class Content implements java.io.Serializable {
     @Override
     public String toString() {
 	return "Content [contentId=" + contentId + ", authorUsername=" + authorUsername + ", kind=" + kind + ", name="
-		+ name + ", text=" + text + ", locale=" + locale + ", creationDate=" + creationDate + ", lastActivity="
-		+ lastActivity + ", contentStatus=" + contentStatus + ", rating=" + rating + "]";
+		+ name + ", locale=" + locale + ", creationDate=" + creationDate + ", lastActivity=" + lastActivity
+		+ ", contentStatus=" + contentStatus + ", rating=" + rating + "]";
     }
 }
