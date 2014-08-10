@@ -1,5 +1,6 @@
 package org.bundolo.controller;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
@@ -44,7 +45,7 @@ public class CommentController {
     @Autowired
     private ConnectionService connectionService;
 
-    @RequestMapping(value = Constants.REST_PATH_COMMENTS + "/{parentId}", method = RequestMethod.GET)
+    @RequestMapping(value = Constants.REST_PATH_PARENT_COMMENTS + "/{parentId}", method = RequestMethod.GET)
     public @ResponseBody
     List<Comment> comments(@PathVariable Long parentId) {
 	// TODO check param validity
@@ -65,17 +66,23 @@ public class CommentController {
 	Date creationDate = new Date();
 	comment.setCreationDate(creationDate);
 	comment.setLastActivity(creationDate);
-	Content commentAncestor = contentService.findContent(comment.getParentContent().getContentId());
-	while (commentAncestor != null && commentAncestor.getKind().name().contains("comment")) {
-	    commentAncestor = commentAncestor.getParentContent();
+	Content rootCommentAncestor = contentService.findContent(comment.getParentContent().getContentId());
+	// make list of ancestors, so that all comments ancestors are updated
+	List<Content> commentAncestors = new ArrayList<Content>();
+	while (rootCommentAncestor != null && rootCommentAncestor.getKind().name().contains("comment")) {
+	    commentAncestors.add(rootCommentAncestor);
+	    rootCommentAncestor = rootCommentAncestor.getParentContent();
 	}
-	comment.setKind(Utils.getCommentContentKind(commentAncestor.getKind()));
+	commentAncestors.add(rootCommentAncestor);
+	comment.setKind(Utils.getCommentContentKind(rootCommentAncestor.getKind()));
 	Long result = commentService.saveComment(comment);
 	if (result != null) {
 	    // logger.log(Level.WARNING, "saving comment; result not null: " + result);
-	    contentService.updateLastActivity(commentAncestor.getContentId(), creationDate);
+	    for (Content commentAncestor : commentAncestors) {
+		contentService.updateLastActivity(commentAncestor.getContentId(), creationDate);
+	    }
 	    commentService.clearSession();
-	    switch (commentAncestor.getKind()) {
+	    switch (rootCommentAncestor.getKind()) {
 	    case connection_description:
 		connectionService.clearSession();
 		break;

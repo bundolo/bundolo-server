@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bundolo.Constants;
+import org.bundolo.model.Comment;
 import org.bundolo.model.Connection;
 import org.bundolo.model.Content;
 import org.bundolo.model.Contest;
@@ -11,11 +12,13 @@ import org.bundolo.model.User;
 import org.bundolo.model.enumeration.AnnouncementColumnType;
 import org.bundolo.model.enumeration.AuthorColumnType;
 import org.bundolo.model.enumeration.ColumnDataType;
+import org.bundolo.model.enumeration.CommentColumnType;
 import org.bundolo.model.enumeration.ConnectionColumnType;
 import org.bundolo.model.enumeration.ContestColumnType;
 import org.bundolo.model.enumeration.SerialColumnType;
 import org.bundolo.model.enumeration.TextColumnType;
 import org.bundolo.model.enumeration.TopicColumnType;
+import org.bundolo.services.CommentService;
 import org.bundolo.services.ConnectionService;
 import org.bundolo.services.ContentService;
 import org.bundolo.services.ContestService;
@@ -42,6 +45,9 @@ public class ListController {
 
     @Autowired
     private ContentService contentService;
+
+    @Autowired
+    private CommentService commentService;
 
     @RequestMapping(value = Constants.REST_PATH_CONNECTIONS, method = RequestMethod.GET)
     public @ResponseBody
@@ -262,6 +268,38 @@ public class ListController {
 	    }
 	}
 	return contentService.findTopics(start, end, orderByColumns.toArray(new String[orderByColumns.size()]),
+		orderByDirections.toArray(new String[orderByDirections.size()]),
+		filterByColumns.toArray(new String[filterByColumns.size()]),
+		filterByTexts.toArray(new String[filterByTexts.size()]));
+    }
+
+    @RequestMapping(value = Constants.REST_PATH_COMMENTS, method = RequestMethod.GET)
+    public @ResponseBody
+    List<Comment> comments(@RequestParam(required = false, defaultValue = "0") Integer start,
+	    @RequestParam(required = false, defaultValue = "0") Integer end,
+	    @RequestParam(required = false) String orderBy, @RequestParam(required = false) String filterBy) {
+	// TODO check param validity
+	List<String> orderByColumns = new ArrayList<String>();
+	List<String> orderByDirections = new ArrayList<String>();
+	if (StringUtils.hasText(orderBy)) {
+	    String[] params = orderBy.split(",");
+	    for (int i = 0; i < params.length; i += 2) {
+		orderByColumns.add(CommentColumnType.valueOf(params[i]).getColumnName());
+		orderByDirections.add(params[i + 1]);
+	    }
+	}
+	List<String> filterByColumns = new ArrayList<String>();
+	List<String> filterByTexts = new ArrayList<String>();
+	if (StringUtils.hasText(filterBy)) {
+	    String[] params = filterBy.split(",");
+	    for (int i = 0; i < params.length; i += 2) {
+		CommentColumnType commentColumnType = CommentColumnType.valueOf(params[i]);
+		filterByColumns.add(getFilterByColumn(commentColumnType.getColumnName(),
+			commentColumnType.getColumnDataType()));
+		filterByTexts.add(params[i + 1]);
+	    }
+	}
+	return commentService.findComments(start, end, orderByColumns.toArray(new String[orderByColumns.size()]),
 		orderByDirections.toArray(new String[orderByDirections.size()]),
 		filterByColumns.toArray(new String[filterByColumns.size()]),
 		filterByTexts.toArray(new String[filterByTexts.size()]));

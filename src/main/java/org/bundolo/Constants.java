@@ -50,6 +50,7 @@ public class Constants {
     public static final String REST_PATH_CONNECTIONS = "/connections";
     public static final String REST_PATH_CONNECTION = "/connection";
     public static final String REST_PATH_CONNECTION_GROUPS = "/connection_groups";
+    public static final String REST_PATH_PARENT_COMMENTS = "/parent_comments";
     public static final String REST_PATH_COMMENTS = "/comments";
     public static final String REST_PATH_COMMENT = "/comment";
     public static final String REST_PATH_PAGE = "/page";

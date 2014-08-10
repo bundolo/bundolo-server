@@ -64,4 +64,10 @@ public class CommentServiceImpl implements CommentService {
 	commentDAO.clear();
     }
 
+    @Override
+    public List<Comment> findComments(Integer start, Integer end, String[] orderBy, String[] order, String[] filterBy,
+	    String[] filter) {
+	return commentDAO.findCommentsWithParents(start, end, orderBy, order, filterBy, filter);
+    }
+
 }
