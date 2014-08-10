@@ -310,4 +310,16 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	    return null;
 	}
     }
+
+    @SuppressWarnings("unchecked")
+    public List<Content> findStatistics(String username) {
+	String queryString = "SELECT c FROM Content c";
+	queryString += " WHERE author_username " + ((username == null) ? "IS NULL" : "='" + username + "'");
+	queryString += " AND (kind='text' OR kind='episode')";
+	queryString += " AND (content_status='active' OR content_status='pending')";
+	queryString += " ORDER BY creationDate";
+	logger.log(Level.WARNING, "queryString: " + queryString.toString());
+	Query q = entityManager.createQuery(queryString.toString());
+	return q.getResultList();
+    }
 }

@@ -314,4 +314,9 @@ public class ContentServiceImpl implements ContentService {
 	    return true;
 	}
     }
+
+    @Override
+    public List<Content> findStatistics(String username) {
+	return contentDAO.findStatistics(username);
+    }
 }

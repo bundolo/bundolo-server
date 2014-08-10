@@ -45,6 +45,8 @@ public interface ContentService {
 
     public List<Content> findPosts(Long parentId, Integer start, Integer end);
 
+    public List<Content> findStatistics(String username);
+
     // public Boolean saveOrUpdateContent(Content content);
 
     public Boolean saveOrUpdateContent(Content content, boolean anonymousAllowed);

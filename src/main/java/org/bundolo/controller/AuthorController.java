@@ -1,11 +1,14 @@
 package org.bundolo.controller;
 
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.bundolo.Constants;
+import org.bundolo.model.Content;
 import org.bundolo.model.User;
 import org.bundolo.model.UserProfile;
+import org.bundolo.services.ContentService;
 import org.bundolo.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -23,6 +26,9 @@ public class AuthorController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private ContentService contentService;
 
     @RequestMapping(value = Constants.REST_PATH_AUTHOR + "/{username}", method = RequestMethod.GET)
     public @ResponseBody
@@ -73,9 +79,9 @@ public class AuthorController {
 
     @RequestMapping(value = Constants.REST_PATH_STATISTICS + "/{username}", method = RequestMethod.GET)
     public @ResponseBody
-    User statistics(@PathVariable String username) {
+    List<Content> statistics(@PathVariable String username) {
 	// TODO check param validity
-	return userService.findUser(username);
+	return contentService.findStatistics(username);
     }
 
 }
