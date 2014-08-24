@@ -67,8 +67,8 @@ public class CommentDAO extends JpaDAO<Long, Comment> {
 	q.setFirstResult(start);
 	q.setMaxResults(end - start + 1);
 
-	// TODO go up and return parents
-
+	// go up and return parents
+	// TODO parents should not hold comments, we are not using them
 	List<Comment> comments = q.getResultList();
 	// logger.log(Level.WARNING, "comments: " + comments);
 	for (Comment comment : comments) {

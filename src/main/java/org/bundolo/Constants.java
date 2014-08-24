@@ -29,7 +29,6 @@ public class Constants {
     // TODO to be removed once db is updated
     public static final String OLD_DB_GUEST_USERNAME = "gost";
 
-    public static final String REST_PATH_OVERVIEW = "/overview";
     public static final String REST_PATH_TEXTS = "/texts";
     public static final String REST_PATH_TEXT = "/text";
     public static final String REST_PATH_SERIALS = "/serials";

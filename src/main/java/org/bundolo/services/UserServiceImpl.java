@@ -212,7 +212,7 @@ public class UserServiceImpl implements UserService {
 		userProfile.setLastIp(SessionUtils.getRemoteHost());
 
 		Date creationDate = new Date();
-		Content descriptionContent = new Content(null, null, ContentKindType.user_description, null, "",
+		Content descriptionContent = new Content(null, username, ContentKindType.user_description, null, "",
 			Constants.DEFAULT_LOCALE, creationDate, creationDate, ContentStatusType.active, null);
 		userProfile.setDescriptionContent(descriptionContent);
 
