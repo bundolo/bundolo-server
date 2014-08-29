@@ -47,6 +47,10 @@ public class CommentDAO extends JpaDAO<Long, Comment> {
 		queryString.append(filter[i].toLowerCase());
 		queryString.append(postfix);
 	    }
+	    // TODO consider making these links functional by keeping old ids in database
+	    // avoid old links
+	    queryString.append("AND content_text NOT LIKE '%http://www.bundolo.org/%'");
+	    queryString.append("AND content_text NOT LIKE '%http://bundolo.org/%'");
 	}
 	if (ArrayUtils.isNotEmpty(orderBy) && ArrayUtils.isSameLength(orderBy, order)) {
 	    String firstPrefix = " ORDER BY ";
@@ -68,7 +72,7 @@ public class CommentDAO extends JpaDAO<Long, Comment> {
 	q.setMaxResults(end - start + 1);
 
 	// go up and return parents
-	// TODO parents should not hold comments, we are not using them
+	// TODO make sure that parents do not hold comments, we are not using them
 	List<Comment> comments = q.getResultList();
 	// logger.log(Level.WARNING, "comments: " + comments);
 	for (Comment comment : comments) {
@@ -77,7 +81,8 @@ public class CommentDAO extends JpaDAO<Long, Comment> {
 	    while (commentAncestor.getParentContent() != null) {
 		commentAncestor = commentAncestor.getParentContent();
 	    }
-	    logger.log(Level.WARNING, "commentAncestor: " + commentAncestor);
+	    //logger.log(Level.WARNING, "commentAncestor: " + commentAncestor);
+
 	    comment.setParentContent(commentAncestor);
 	}
 	return comments;

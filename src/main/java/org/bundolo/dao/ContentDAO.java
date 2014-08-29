@@ -97,7 +97,8 @@ public class ContentDAO extends JpaDAO<Long, Content> {
     public List<Content> findSerials(Integer start, Integer end, String[] orderBy, String[] order, String[] filterBy,
 	    String[] filter) {
 	StringBuilder queryString = new StringBuilder();
-	queryString.append("SELECT c FROM Content c WHERE kind='episode_group' AND content_status='active'");
+	queryString.append("SELECT c FROM Content c WHERE kind='episode_group'");
+	queryString.append(" AND (content_status='active' OR content_status='pending')");
 	if (ArrayUtils.isNotEmpty(filterBy)) {
 	    String prefix = " AND LOWER(";
 	    String suffix = ") LIKE '%";
@@ -135,7 +136,12 @@ public class ContentDAO extends JpaDAO<Long, Content> {
     public List<Content> findTopics(Integer start, Integer end, String[] orderBy, String[] order, String[] filterBy,
 	    String[] filter) {
 	StringBuilder queryString = new StringBuilder();
-	queryString.append("SELECT c FROM Content c WHERE kind='forum_topic' AND content_status='active'");
+	queryString.append("SELECT c FROM Content c WHERE kind='forum_topic'");
+	queryString.append(" AND contentStatus='active'");
+	// TODO archived topics are not visible. if we enable retrieving disabled content, we have to handle exceptions
+	// in editing, adding, comments...
+	// queryString
+	// .append(" AND (contentStatus='active' OR (parentContent.name='arhiva' AND contentStatus='disabled'))");
 	if (ArrayUtils.isNotEmpty(filterBy)) {
 	    String prefix = " AND LOWER(";
 	    String suffix = ") LIKE '%";
@@ -193,14 +199,22 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	String queryString = "SELECT c FROM Content c";
 	queryString += " WHERE kind = '" + kind + "'";
 	queryString += " AND content_name " + ((title == null) ? "IS NULL" : "='" + title + "'");
-	queryString += " AND content_status='active'";
+	if (ContentKindType.episode_group.equals(kind)) {
+	    queryString += " AND (content_status='active' OR content_status='pending')";
+	} else {
+	    queryString += " AND content_status='active'";
+	}
 	logger.log(Level.WARNING, "queryString: " + queryString);
 
 	Query q = entityManager.createQuery(queryString);
 	q.setMaxResults(1);
 	List<Content> resultList = q.getResultList();
 	if (resultList != null && resultList.size() > 0) {
-	    return resultList.get(0);
+	    Content result = resultList.get(0);
+	    if (ContentKindType.forum_topic.equals(kind)) {
+		result.setParentGroup(result.getParentContent().getName());
+	    }
+	    return result;
 	} else {
 	    return null;
 	}

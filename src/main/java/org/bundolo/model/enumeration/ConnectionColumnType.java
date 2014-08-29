@@ -4,7 +4,7 @@ public enum ConnectionColumnType {
     author("authorUsername", ColumnDataType.text), email("email", ColumnDataType.text), url("url", ColumnDataType.text), date(
 	    "creationDate", ColumnDataType.date), description("descriptionContent.text", ColumnDataType.text), title(
 	    "descriptionContent.name", ColumnDataType.text), activity("descriptionContent.lastActivity",
-	    ColumnDataType.date);
+	    ColumnDataType.date), group("parentContent.name", ColumnDataType.text);
 
     private final String columnName;
     private final ColumnDataType columnDataType;

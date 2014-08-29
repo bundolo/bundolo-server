@@ -17,12 +17,11 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.bundolo.CustomDateSerializer;
 import org.bundolo.model.enumeration.ContentKindType;
 import org.bundolo.model.enumeration.ContentStatusType;
-import org.hibernate.annotations.FilterDef;
-import org.hibernate.annotations.ParamDef;
 import org.hibernate.annotations.Where;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -30,7 +29,6 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @Entity
-@FilterDef(name = "descriptionFilter", parameters = @ParamDef(name = "kind", type = "java.lang.String"))
 @Table(name = "content")
 public class Content implements java.io.Serializable {
 
@@ -76,6 +74,9 @@ public class Content implements java.io.Serializable {
     @JsonBackReference
     // prevent circular
     private Content parentContent;
+
+    @Transient
+    private String parentGroup;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "parentContent")
     @JsonManagedReference
@@ -197,6 +198,14 @@ public class Content implements java.io.Serializable {
 
     public void setLastActivity(Date lastActivity) {
 	this.lastActivity = lastActivity;
+    }
+
+    public String getParentGroup() {
+	return parentGroup;
+    }
+
+    public void setParentGroup(String parentGroup) {
+	this.parentGroup = parentGroup;
     }
 
     @Override

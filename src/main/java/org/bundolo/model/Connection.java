@@ -12,6 +12,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -37,8 +38,9 @@ public class Connection implements java.io.Serializable {
     @Column(name = "author_username")
     private String authorUsername;
 
-    @Column(name = "parent_content_id")
-    private Long parentContentId;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "parent_content_id", referencedColumnName = "content_id")
+    private Content parentContent;
 
     @Column(name = "kind")
     @Enumerated(EnumType.STRING)
@@ -66,13 +68,13 @@ public class Connection implements java.io.Serializable {
 	super();
     }
 
-    public Connection(Long connectionId, String authorUsername, Long parentContentId, ConnectionKindType kind,
+    public Connection(Long connectionId, String authorUsername, Content parentContent, ConnectionKindType kind,
 	    Date creationDate, ConnectionStatusType connectionStatus, String email, String url,
 	    Content descriptionContent) {
 	super();
 	this.connectionId = connectionId;
 	this.authorUsername = authorUsername;
-	this.parentContentId = parentContentId;
+	this.parentContent = parentContent;
 	this.kind = kind;
 	this.creationDate = creationDate;
 	this.connectionStatus = connectionStatus;
@@ -138,12 +140,12 @@ public class Connection implements java.io.Serializable {
 	this.url = url;
     }
 
-    public Long getParentContentId() {
-	return parentContentId;
+    public Content getParentContent() {
+	return parentContent;
     }
 
-    public void setParentContentId(Long parentContentId) {
-	this.parentContentId = parentContentId;
+    public void setParentContent(Content parentContent) {
+	this.parentContent = parentContent;
     }
 
     public Content getDescriptionContent() {
