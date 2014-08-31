@@ -17,5 +17,7 @@ public interface ContestService {
     public List<Contest> findContests(Integer start, Integer end, String[] orderBy, String[] order, String[] filterBy,
 	    String[] filter);
 
+    public Contest findNext(Long contestId, String orderBy, String fixBy, boolean ascending);
+
     public void clearSession();
 }

@@ -17,5 +17,7 @@ public interface ConnectionService {
     public List<Connection> findConnections(Integer start, Integer end, String[] orderBy, String[] order,
 	    String[] filterBy, String[] filter);
 
+    public Connection findNext(Long connectionId, String orderBy, String fixBy, boolean ascending);
+
     public void clearSession();
 }

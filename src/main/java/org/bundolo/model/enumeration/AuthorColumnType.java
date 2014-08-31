@@ -1,9 +1,9 @@
 package org.bundolo.model.enumeration;
 
 public enum AuthorColumnType {
-    author("username", ColumnDataType.text), firstName("first_name", ColumnDataType.text), lastName("last_name",
-	    ColumnDataType.text), gender("gender", ColumnDataType.text), birthDate("birth_date", ColumnDataType.date), date(
-	    "signup_date", ColumnDataType.date), lastLoginDate("last_login_date", ColumnDataType.date), description(
+    author("username", ColumnDataType.text), firstName("firstName", ColumnDataType.text), lastName("lastName",
+	    ColumnDataType.text), gender("gender", ColumnDataType.text), birthDate("birthDate", ColumnDataType.date), date(
+	    "signupDate", ColumnDataType.date), lastLoginDate("lastLoginDate", ColumnDataType.date), description(
 	    "descriptionContent.text", ColumnDataType.text), name("descriptionContent.name", ColumnDataType.text), activity(
 	    "descriptionContent.lastActivity", ColumnDataType.date);
     // TODO check why descriptionContent.name is here

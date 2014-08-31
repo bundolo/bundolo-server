@@ -319,4 +319,9 @@ public class ContentServiceImpl implements ContentService {
     public List<Content> findStatistics(String username) {
 	return contentDAO.findStatistics(username);
     }
+
+    @Override
+    public Content findNext(Long contentId, String orderBy, String fixBy, boolean ascending) {
+	return contentDAO.findNext(contentId, orderBy, fixBy, ascending);
+    }
 }

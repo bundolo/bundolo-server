@@ -176,6 +176,7 @@ public class UserServiceImpl implements UserService {
 	    UserProfile recipientUserProfile = userProfileDAO.findByField("username", recipientUsername);
 	    if (recipientUserProfile != null) {
 		// TODO i18n
+		// TODO do not retrieve username from session
 		String emailSubject = "bundolo user " + SessionUtils.getUsername() + " sent you a message: " + title;
 		String emailBody = "Message text:\n" + text + "\n\nPlease use bundolo to reply!";
 		mailingUtils.sendEmail(emailBody, emailSubject, recipientUserProfile.getEmail());
@@ -336,5 +337,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public void clearSession() {
 	userDAO.clear();
+    }
+
+    @Override
+    public User findNext(String username, String orderBy, String fixBy, boolean ascending) {
+	return userDAO.findNext(username, orderBy, fixBy, ascending);
     }
 }

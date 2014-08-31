@@ -64,6 +64,11 @@ public class User implements java.io.Serializable {
     @JoinColumn(name = "description_content_id")
     private Content descriptionContent;
 
+    // @Column(name = "user_profile_status")
+    // @Enumerated(EnumType.STRING)
+    // @Transient
+    // private UserProfileStatusType userStatus;
+
     public User() {
 	super();
     }
@@ -166,4 +171,12 @@ public class User implements java.io.Serializable {
     public void setDescriptionContent(Content descriptionContent) {
 	this.descriptionContent = descriptionContent;
     }
+
+    // public UserProfileStatusType getUserStatus() {
+    // return userStatus;
+    // }
+    //
+    // public void setUserStatus(UserProfileStatusType userStatus) {
+    // this.userStatus = userStatus;
+    // }
 }

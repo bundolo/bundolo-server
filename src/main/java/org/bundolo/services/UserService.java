@@ -22,6 +22,8 @@ public interface UserService {
 
     public Boolean saveOrUpdateUser(UserProfile userProfile);
 
+    public User findNext(String username, String orderBy, String fixBy, boolean ascending);
+
     public void clearSession();
 
 }

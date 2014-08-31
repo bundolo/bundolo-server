@@ -1,8 +1,8 @@
 package org.bundolo.model.enumeration;
 
 public enum ContestColumnType {
-    author("author_username", ColumnDataType.text), date("creationDate", ColumnDataType.date), url("url",
-	    ColumnDataType.text), expirationDate("expiration_date", ColumnDataType.text), description(
+    author("authorUsername", ColumnDataType.text), date("creationDate", ColumnDataType.date), url("url",
+	    ColumnDataType.text), expirationDate("expirationDate", ColumnDataType.text), description(
 	    "descriptionContent.text", ColumnDataType.text), title("descriptionContent.name", ColumnDataType.text), activity(
 	    "descriptionContent.lastActivity", ColumnDataType.date);
     // TODO url is probably not needed

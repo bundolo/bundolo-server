@@ -10,6 +10,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.bundolo.model.Connection;
 import org.bundolo.model.enumeration.ContentKindType;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
 @Repository("connectionDAO")
 public class ConnectionDAO extends JpaDAO<Long, Connection> {
@@ -64,6 +65,28 @@ public class ConnectionDAO extends JpaDAO<Long, Connection> {
 	logger.log(Level.WARNING, "queryString: " + queryString);
 
 	Query q = entityManager.createQuery(queryString);
+	q.setMaxResults(1);
+	List<Connection> resultList = q.getResultList();
+	if (resultList != null && resultList.size() > 0) {
+	    return resultList.get(0);
+	} else {
+	    return null;
+	}
+    }
+
+    @SuppressWarnings("unchecked")
+    public Connection findNext(Long connectionId, String orderBy, String fixBy, boolean ascending) {
+	StringBuilder queryString = new StringBuilder();
+	queryString.append("SELECT c1 FROM Connection c1, Connection c2");
+	queryString.append(" WHERE c2.connectionId = " + connectionId);
+	queryString.append(" AND c1.connectionStatus='active'");
+	if (StringUtils.hasText(fixBy)) {
+	    queryString.append(" AND c1." + fixBy + "=c2." + fixBy);
+	}
+	queryString.append(" AND c1." + orderBy + (ascending ? ">" : "<") + "c2." + orderBy);
+	queryString.append(" ORDER BY c1." + orderBy + " " + (ascending ? "ASC" : "DESC"));
+	logger.log(Level.WARNING, "queryString: " + queryString.toString());
+	Query q = entityManager.createQuery(queryString.toString());
 	q.setMaxResults(1);
 	List<Connection> resultList = q.getResultList();
 	if (resultList != null && resultList.size() > 0) {

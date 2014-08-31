@@ -2,6 +2,8 @@ package org.bundolo.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.bundolo.Constants;
 import org.bundolo.model.Comment;
@@ -15,6 +17,7 @@ import org.bundolo.model.enumeration.ColumnDataType;
 import org.bundolo.model.enumeration.CommentColumnType;
 import org.bundolo.model.enumeration.ConnectionColumnType;
 import org.bundolo.model.enumeration.ContestColumnType;
+import org.bundolo.model.enumeration.EpisodeColumnType;
 import org.bundolo.model.enumeration.SerialColumnType;
 import org.bundolo.model.enumeration.TextColumnType;
 import org.bundolo.model.enumeration.TopicColumnType;
@@ -33,6 +36,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 public class ListController {
+
+    private static final Logger logger = Logger.getLogger(ListController.class.getName());
 
     @Autowired
     private ConnectionService connectionService;
@@ -305,6 +310,56 @@ public class ListController {
 		filterByTexts.toArray(new String[filterByTexts.size()]));
     }
 
+    @RequestMapping(value = Constants.REST_PATH_NEXT, method = RequestMethod.GET)
+    public @ResponseBody
+    Object next(@RequestParam(required = true) String type, @RequestParam(required = true) String id,
+	    @RequestParam(required = false, defaultValue = "creationDate") String orderBy,
+	    @RequestParam(required = false) String fixBy,
+	    @RequestParam(required = false, defaultValue = "true") Boolean ascending) {
+	logger.log(Level.WARNING, "next, type: " + type + ", id: " + id + ", orderBy: " + orderBy + ", ascending: "
+		+ ascending);
+	Object result = null;
+	// TODO check param validity
+	switch (type) {
+	case "connection":
+	    result = connectionService.findNext(Long.valueOf(id),
+		    ConnectionColumnType.valueOf(orderBy).getColumnName(),
+		    StringUtils.hasText(fixBy) ? ConnectionColumnType.valueOf(fixBy).getColumnName() : null, ascending);
+	    break;
+	case "contest":
+	    result = contestService.findNext(Long.valueOf(id), ContestColumnType.valueOf(orderBy).getColumnName(),
+		    StringUtils.hasText(fixBy) ? ContestColumnType.valueOf(fixBy).getColumnName() : null, ascending);
+	    break;
+	case "author":
+	    result = userService.findNext(id, AuthorColumnType.valueOf(orderBy).getColumnName(),
+		    StringUtils.hasText(fixBy) ? AuthorColumnType.valueOf(fixBy).getColumnName() : null, ascending);
+	    break;
+	case "announcement":
+	    result = contentService.findNext(Long.valueOf(id), AnnouncementColumnType.valueOf(orderBy).getColumnName(),
+		    StringUtils.hasText(fixBy) ? AnnouncementColumnType.valueOf(fixBy).getColumnName() : null,
+		    ascending);
+	    break;
+	case "topic":
+	    result = contentService.findNext(Long.valueOf(id), TopicColumnType.valueOf(orderBy).getColumnName(),
+		    StringUtils.hasText(fixBy) ? TopicColumnType.valueOf(fixBy).getColumnName() : null, ascending);
+	    break;
+	case "text":
+	    result = contentService.findNext(Long.valueOf(id), TextColumnType.valueOf(orderBy).getColumnName(),
+		    StringUtils.hasText(fixBy) ? TextColumnType.valueOf(fixBy).getColumnName() : null, ascending);
+	    break;
+	case "serial":
+	    result = contentService.findNext(Long.valueOf(id), SerialColumnType.valueOf(orderBy).getColumnName(),
+		    StringUtils.hasText(fixBy) ? SerialColumnType.valueOf(fixBy).getColumnName() : null, ascending);
+	    break;
+	case "episode":
+	    result = contentService.findNext(Long.valueOf(id), EpisodeColumnType.valueOf(orderBy).getColumnName(),
+		    StringUtils.hasText(fixBy) ? EpisodeColumnType.valueOf(fixBy).getColumnName() : null, ascending);
+	    break;
+	}
+	logger.log(Level.WARNING, "next, result: " + result);
+	return result;
+    }
+
     private String getFilterByColumn(String columnName, ColumnDataType columnDataType) {
 	switch (columnDataType) {
 	case date:
@@ -317,4 +372,5 @@ public class ListController {
 	    return columnName;
 	}
     }
+
 }

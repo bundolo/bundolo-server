@@ -155,4 +155,9 @@ public class ConnectionServiceImpl implements ConnectionService {
 	connectionDAO.clear();
     }
 
+    @Override
+    public Connection findNext(Long connectionId, String orderBy, String fixBy, boolean ascending) {
+	return connectionDAO.findNext(connectionId, orderBy, fixBy, ascending);
+    }
+
 }

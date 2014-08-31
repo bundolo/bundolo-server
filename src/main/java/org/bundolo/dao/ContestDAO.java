@@ -10,6 +10,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.bundolo.model.Contest;
 import org.bundolo.model.enumeration.ContentKindType;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
 @Repository("contestDAO")
 public class ContestDAO extends JpaDAO<Long, Contest> {
@@ -64,6 +65,28 @@ public class ContestDAO extends JpaDAO<Long, Contest> {
 	logger.log(Level.WARNING, "queryString: " + queryString);
 
 	Query q = entityManager.createQuery(queryString);
+	q.setMaxResults(1);
+	List<Contest> resultList = q.getResultList();
+	if (resultList != null && resultList.size() > 0) {
+	    return resultList.get(0);
+	} else {
+	    return null;
+	}
+    }
+
+    @SuppressWarnings("unchecked")
+    public Contest findNext(Long contestId, String orderBy, String fixBy, boolean ascending) {
+	StringBuilder queryString = new StringBuilder();
+	queryString.append("SELECT c1 FROM Contest c1, Contest c2");
+	queryString.append(" WHERE c2.contestId = " + contestId);
+	queryString.append(" AND c1.contestStatus='active'");
+	if (StringUtils.hasText(fixBy)) {
+	    queryString.append(" AND c1." + fixBy + "=c2." + fixBy);
+	}
+	queryString.append(" AND c1." + orderBy + (ascending ? ">" : "<") + "c2." + orderBy);
+	queryString.append(" ORDER BY c1." + orderBy + " " + (ascending ? "ASC" : "DESC"));
+	logger.log(Level.WARNING, "queryString: " + queryString.toString());
+	Query q = entityManager.createQuery(queryString.toString());
 	q.setMaxResults(1);
 	List<Contest> resultList = q.getResultList();
 	if (resultList != null && resultList.size() > 0) {

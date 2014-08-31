@@ -11,6 +11,7 @@ import org.bundolo.model.Content;
 import org.bundolo.model.enumeration.ContentKindType;
 import org.bundolo.model.enumeration.PageKindType;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
 @Repository("contentDAO")
 public class ContentDAO extends JpaDAO<Long, Content> {
@@ -211,7 +212,7 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	List<Content> resultList = q.getResultList();
 	if (resultList != null && resultList.size() > 0) {
 	    Content result = resultList.get(0);
-	    if (ContentKindType.forum_topic.equals(kind)) {
+	    if (ContentKindType.forum_topic.equals(kind) || ContentKindType.episode.equals(kind)) {
 		result.setParentGroup(result.getParentContent().getName());
 	    }
 	    return result;
@@ -319,7 +320,9 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	q.setMaxResults(1);
 	List<Content> resultList = q.getResultList();
 	if (resultList != null && resultList.size() > 0) {
-	    return resultList.get(0);
+	    Content result = resultList.get(0);
+	    result.setParentGroup(result.getParentContent().getName());
+	    return result;
 	} else {
 	    return null;
 	}
@@ -335,5 +338,33 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	logger.log(Level.WARNING, "queryString: " + queryString.toString());
 	Query q = entityManager.createQuery(queryString.toString());
 	return q.getResultList();
+    }
+
+    @SuppressWarnings("unchecked")
+    public Content findNext(Long contentId, String orderBy, String fixBy, boolean ascending) {
+	StringBuilder queryString = new StringBuilder();
+	queryString.append("SELECT c1 FROM Content c1, Content c2");
+	queryString.append(" WHERE c2.contentId = " + contentId);
+	queryString.append(" AND c1.kind = c2.kind");
+	queryString.append(" AND c1.contentStatus='active'");
+	if (StringUtils.hasText(fixBy)) {
+	    queryString.append(" AND c1." + fixBy + "=c2." + fixBy);
+	}
+	queryString.append(" AND c1." + orderBy + (ascending ? ">" : "<") + "c2." + orderBy);
+	queryString.append(" ORDER BY c1." + orderBy + " " + (ascending ? "ASC" : "DESC"));
+	logger.log(Level.WARNING, "queryString: " + queryString.toString());
+	Query q = entityManager.createQuery(queryString.toString());
+	q.setMaxResults(1);
+	List<Content> resultList = q.getResultList();
+	if (resultList != null && resultList.size() > 0) {
+	    Content result = resultList.get(0);
+	    if (ContentKindType.forum_topic.equals(result.getKind())
+		    || ContentKindType.episode.equals(result.getKind())) {
+		result.setParentGroup(result.getParentContent().getName());
+	    }
+	    return result;
+	} else {
+	    return null;
+	}
     }
 }

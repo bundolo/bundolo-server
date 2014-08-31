@@ -151,4 +151,9 @@ public class ContestServiceImpl implements ContestService {
 	contestDAO.clear();
     }
 
+    @Override
+    public Contest findNext(Long contestId, String orderBy, String fixBy, boolean ascending) {
+	return contestDAO.findNext(contestId, orderBy, fixBy, ascending);
+    }
+
 }

@@ -76,12 +76,12 @@ public class CommentDAO extends JpaDAO<Long, Comment> {
 	List<Comment> comments = q.getResultList();
 	// logger.log(Level.WARNING, "comments: " + comments);
 	for (Comment comment : comments) {
-	    logger.log(Level.WARNING, "comment: " + comment);
+	    // logger.log(Level.WARNING, "comment: " + comment);
 	    Content commentAncestor = comment.getParentContent();
 	    while (commentAncestor.getParentContent() != null) {
 		commentAncestor = commentAncestor.getParentContent();
 	    }
-	    //logger.log(Level.WARNING, "commentAncestor: " + commentAncestor);
+	    // logger.log(Level.WARNING, "commentAncestor: " + commentAncestor);
 
 	    comment.setParentContent(commentAncestor);
 	}

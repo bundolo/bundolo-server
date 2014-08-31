@@ -53,5 +53,7 @@ public interface ContentService {
 
     public Boolean updateLastActivity(Long contentId, Date lastActivity);
 
+    public Content findNext(Long contentId, String orderBy, String fixBy, boolean ascending);
+
     public void clearSession();
 }
