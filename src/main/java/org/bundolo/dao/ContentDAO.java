@@ -337,7 +337,16 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	queryString += " ORDER BY creationDate";
 	logger.log(Level.WARNING, "queryString: " + queryString.toString());
 	Query q = entityManager.createQuery(queryString.toString());
-	return q.getResultList();
+	List<Content> resultList = q.getResultList();
+	if (resultList != null && resultList.size() > 0) {
+	    for (Content result : resultList) {
+		if (ContentKindType.forum_topic.equals(result.getKind())
+			|| ContentKindType.episode.equals(result.getKind()) && result.getParentContent() != null) {
+		    result.setParentGroup(result.getParentContent().getName());
+		}
+	    }
+	}
+	return resultList;
     }
 
     @SuppressWarnings("unchecked")
