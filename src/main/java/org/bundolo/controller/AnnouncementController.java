@@ -27,13 +27,23 @@ public class AnnouncementController {
     private ContentService contentService;
 
     @RequestMapping(value = Constants.REST_PATH_ANNOUNCEMENT + "/**", method = RequestMethod.GET)
-    public @ResponseBody
-    Content announcement(HttpServletRequest request) {
+    @ResponseBody
+    public Content announcement(HttpServletRequest request) {
 	String restOfTheUrl = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
-	logger.log(Level.WARNING, "connection, restOfTheUrl: " + restOfTheUrl);
+	logger.log(Level.WARNING, "announcement, restOfTheUrl: " + restOfTheUrl);
 
 	// TODO check param validity
 	return contentService.findAnnouncement(restOfTheUrl.substring(Constants.REST_PATH_ANNOUNCEMENT.length() + 1));
+    }
+
+    @RequestMapping(value = Constants.REST_PATH_ANNOUNCEMENT + "/**", method = RequestMethod.DELETE)
+    @ResponseBody
+    public Boolean delete(HttpServletRequest request) {
+	String restOfTheUrl = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
+	logger.log(Level.WARNING, "delete announcement, restOfTheUrl: " + restOfTheUrl);
+
+	// TODO check param validity
+	return contentService.deleteAnnouncement(restOfTheUrl.substring(Constants.REST_PATH_ANNOUNCEMENT.length() + 1)) != null;
     }
 
     @RequestMapping(value = Constants.REST_PATH_ANNOUNCEMENT + "/{title}", method = RequestMethod.PUT)

@@ -33,6 +33,14 @@ public class ContestController {
 	return contestService.findContest(restOfTheUrl.substring(Constants.REST_PATH_CONTEST.length() + 1));
     }
 
+    @RequestMapping(value = Constants.REST_PATH_CONTEST + "/**", method = RequestMethod.DELETE)
+    public @ResponseBody
+    Boolean delete(HttpServletRequest request) {
+	String restOfTheUrl = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
+	// TODO check param validity
+	return contestService.deleteContest(restOfTheUrl.substring(Constants.REST_PATH_CONTEST.length() + 1)) != null;
+    }
+
     @RequestMapping(value = Constants.REST_PATH_CONTEST + "/{title}", method = RequestMethod.PUT)
     public @ResponseBody
     Boolean saveOrUpdate(@PathVariable String title, @RequestBody final Contest contest) {

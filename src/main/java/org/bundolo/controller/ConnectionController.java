@@ -31,15 +31,24 @@ public class ConnectionController {
     @Autowired
     private ContentService contentService;
 
-    // @RequestMapping(value = Constants.REST_PATH_CONNECTION + "/{title:.+/}", method = RequestMethod.GET)
     @RequestMapping(value = Constants.REST_PATH_CONNECTION + "/**", method = RequestMethod.GET)
     public @ResponseBody
-    Connection connection(/*@PathVariable String title, */HttpServletRequest request) {
+    Connection connection(HttpServletRequest request) {
 	String restOfTheUrl = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
 	logger.log(Level.WARNING, "connection, restOfTheUrl: " + restOfTheUrl);
 
 	// TODO check param validity
 	return connectionService.findConnection(restOfTheUrl.substring(Constants.REST_PATH_CONNECTION.length() + 1));
+    }
+
+    @RequestMapping(value = Constants.REST_PATH_CONNECTION + "/**", method = RequestMethod.DELETE)
+    public @ResponseBody
+    Boolean delete(HttpServletRequest request) {
+	String restOfTheUrl = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
+	logger.log(Level.WARNING, "delete connection, restOfTheUrl: " + restOfTheUrl);
+
+	// TODO check param validity
+	return connectionService.deleteConnection(restOfTheUrl.substring(Constants.REST_PATH_CONNECTION.length() + 1)) != null;
     }
 
     @RequestMapping(value = Constants.REST_PATH_CONNECTION + "/{title}", method = RequestMethod.PUT)

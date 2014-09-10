@@ -70,4 +70,19 @@ public class CommentServiceImpl implements CommentService {
 	return commentDAO.findCommentsWithParents(start, end, orderBy, order, filterBy, filter);
     }
 
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    public Boolean deleteCommentsByParentId(Long parentId) {
+	try {
+	    List<Comment> comments = commentDAO.findCommentsByParentId(parentId);
+	    for (Comment comment : comments) {
+		comment.setContentStatus(ContentStatusType.disabled);
+		commentDAO.merge(comment);
+	    }
+	    return true;
+	} catch (Exception ex) {
+	    return false;
+	}
+    }
+
 }

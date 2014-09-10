@@ -160,4 +160,10 @@ public class ConnectionServiceImpl implements ConnectionService {
 	return connectionDAO.findNext(connectionId, orderBy, fixBy, ascending);
     }
 
+    @Override
+    public Long deleteConnection(String title) {
+	// TODO
+	return null;
+    }
+
 }

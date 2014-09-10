@@ -37,6 +37,13 @@ public class AuthorController {
 	return userService.findUser(username);
     }
 
+    @RequestMapping(value = Constants.REST_PATH_AUTHOR + "/{username}", method = RequestMethod.DELETE)
+    public @ResponseBody
+    Boolean delete(@PathVariable String username) {
+	// TODO check param validity
+	return userService.deleteUser(username) != null;
+    }
+
     @RequestMapping(value = Constants.REST_PATH_AUTH + "/{username}", method = RequestMethod.POST)
     public @ResponseBody
     Boolean auth(@PathVariable String username, @RequestParam String password) {

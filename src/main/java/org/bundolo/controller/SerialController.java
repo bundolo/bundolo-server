@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.bundolo.Constants;
 import org.bundolo.model.Content;
 import org.bundolo.model.enumeration.ContentKindType;
+import org.bundolo.services.CommentService;
 import org.bundolo.services.ContentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -29,12 +30,23 @@ public class SerialController {
     @Autowired
     private ContentService contentService;
 
+    @Autowired
+    private CommentService commentService;
+
     @RequestMapping(value = Constants.REST_PATH_SERIAL + "/**", method = RequestMethod.GET)
     public @ResponseBody
     Content serial(HttpServletRequest request) {
 	String restOfTheUrl = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
 	// TODO check param validity
 	return contentService.findSerial(restOfTheUrl.substring(Constants.REST_PATH_SERIAL.length() + 1));
+    }
+
+    @RequestMapping(value = Constants.REST_PATH_SERIAL + "/**", method = RequestMethod.DELETE)
+    public @ResponseBody
+    Boolean deleteSerial(HttpServletRequest request) {
+	String restOfTheUrl = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
+	// TODO check param validity
+	return contentService.deleteSerial(restOfTheUrl.substring(Constants.REST_PATH_SERIAL.length() + 1)) != null;
     }
 
     @RequestMapping(value = Constants.REST_PATH_SERIAL + "/{title}", method = RequestMethod.PUT)
@@ -67,6 +79,22 @@ public class SerialController {
 	restOfTheUrl = restOfTheUrl.substring(restOfTheUrl.indexOf(serialTitle));
 	// TODO check param validity
 	return contentService.findEpisode(serialTitle, restOfTheUrl.substring(serialTitle.length() + 1));
+    }
+
+    @RequestMapping(value = Constants.REST_PATH_EPISODE + "/{serialTitle}/**", method = RequestMethod.DELETE)
+    public @ResponseBody
+    Boolean deleteEpisode(@PathVariable String serialTitle, HttpServletRequest request) {
+	String restOfTheUrl = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
+	restOfTheUrl = restOfTheUrl.substring(restOfTheUrl.indexOf(serialTitle));
+	// TODO check param validity
+	Long episodeId = contentService.deleteEpisode(serialTitle, restOfTheUrl.substring(serialTitle.length() + 1));
+	Boolean result = episodeId != null;
+	if (result) {
+	    // contentService.clearSession();
+	    commentService.deleteCommentsByParentId(episodeId);
+	    // commentService.clearSession();
+	}
+	return result;
     }
 
     @RequestMapping(value = Constants.REST_PATH_EPISODE + "/{serialTitle}/{title}", method = RequestMethod.PUT)

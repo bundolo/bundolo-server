@@ -343,4 +343,10 @@ public class UserServiceImpl implements UserService {
     public User findNext(String username, String orderBy, String fixBy, boolean ascending) {
 	return userDAO.findNext(username, orderBy, fixBy, ascending);
     }
+
+    @Override
+    public Long deleteUser(String username) {
+	// TODO
+	return null;
+    }
 }

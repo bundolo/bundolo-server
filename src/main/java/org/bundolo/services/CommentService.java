@@ -15,4 +15,6 @@ public interface CommentService {
 
     public void clearSession();
 
+    public Boolean deleteCommentsByParentId(Long parentId);
+
 }

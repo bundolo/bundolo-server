@@ -26,4 +26,6 @@ public interface UserService {
 
     public void clearSession();
 
+    public Long deleteUser(String username);
+
 }

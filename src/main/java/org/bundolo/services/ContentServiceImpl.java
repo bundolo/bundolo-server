@@ -9,8 +9,8 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import org.bundolo.Constants;
+import org.bundolo.dao.CommentDAO;
 import org.bundolo.dao.ContentDAO;
-import org.bundolo.dao.RatingDAO;
 import org.bundolo.model.Content;
 import org.bundolo.model.Rating;
 import org.bundolo.model.enumeration.ContentKindType;
@@ -18,6 +18,7 @@ import org.bundolo.model.enumeration.ContentStatusType;
 import org.bundolo.model.enumeration.PageKindType;
 import org.bundolo.model.enumeration.RatingKindType;
 import org.bundolo.model.enumeration.RatingStatusType;
+import org.bundolo.model.enumeration.TextColumnType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -35,7 +36,7 @@ public class ContentServiceImpl implements ContentService {
     private ContentDAO contentDAO;
 
     @Autowired
-    private RatingDAO ratingDAO;
+    private CommentDAO commentDAO;
 
     @PostConstruct
     public void init() throws Exception {
@@ -323,5 +324,74 @@ public class ContentServiceImpl implements ContentService {
     @Override
     public Content findNext(Long contentId, String orderBy, String fixBy, boolean ascending) {
 	return contentDAO.findNext(contentId, orderBy, fixBy, ascending);
+    }
+
+    @Override
+    public Long deleteAnnouncement(String title) {
+	// TODO
+	return null;
+    }
+
+    @Override
+    public Long deleteSerial(String title) {
+	// TODO
+	return null;
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    public Long deleteEpisode(String serialTitle, String title) {
+	logger.log(Level.WARNING, "deleteEpisode: username: " + serialTitle + ", title: " + title);
+	Content episode = contentDAO.findEpisode(serialTitle, title);
+	if (episode == null) {
+	    // no such content
+	    return null;
+	} else {
+	    UsernamePasswordAuthenticationToken authentication = (UsernamePasswordAuthenticationToken) SecurityContextHolder
+		    .getContext().getAuthentication();
+	    if (!((String) authentication.getPrincipal()).equals(episode.getAuthorUsername())) {
+		// user is not the owner
+		return null;
+	    }
+
+	    Content nextEpisode = contentDAO.findNext(episode.getContentId(), TextColumnType.valueOf("date")
+		    .getColumnName(), null, true);
+	    if (nextEpisode != null) {
+		// there is subsequent episode
+		return null;
+	    }
+	    episode.setContentStatus(ContentStatusType.disabled);
+
+	    // TODO disable all children
+	    contentDAO.merge(episode);
+	    return episode.getContentId();
+	}
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    public Long deleteText(String username, String title) {
+	logger.log(Level.WARNING, "deleteText: username: " + username + ", title: " + title);
+	Content text = contentDAO.findText(username, title);
+	if (text == null) {
+	    // no such content
+	    return null;
+	} else {
+	    UsernamePasswordAuthenticationToken authentication = (UsernamePasswordAuthenticationToken) SecurityContextHolder
+		    .getContext().getAuthentication();
+	    if (!((String) authentication.getPrincipal()).equals(text.getAuthorUsername())) {
+		// user is not the owner
+		return null;
+	    }
+	    text.setContentStatus(ContentStatusType.disabled);
+	    contentDAO.merge(text);
+	    return text.getContentId();
+	}
+    }
+
+    @Override
+    public Long deleteTopic(String title) {
+	// TODO
+	return null;
     }
 }

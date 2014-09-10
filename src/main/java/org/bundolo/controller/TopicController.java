@@ -39,6 +39,14 @@ public class TopicController {
 	return contentService.findTopic(restOfTheUrl.substring(Constants.REST_PATH_TOPIC.length() + 1));
     }
 
+    @RequestMapping(value = Constants.REST_PATH_TOPIC + "/**", method = RequestMethod.DELETE)
+    public @ResponseBody
+    Boolean delete(HttpServletRequest request) {
+	String restOfTheUrl = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
+	// TODO check param validity
+	return contentService.deleteTopic(restOfTheUrl.substring(Constants.REST_PATH_TOPIC.length() + 1)) != null;
+    }
+
     @RequestMapping(value = Constants.REST_PATH_TOPIC_GROUPS, method = RequestMethod.GET)
     public @ResponseBody
     List<Content> topicGroups() {

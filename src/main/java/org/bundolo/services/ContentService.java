@@ -10,8 +10,6 @@ public interface ContentService {
 
     public Content findContent(Long contentId);
 
-    // public void deleteContent(Long contentId) throws Exception;
-
     public List<Content> findTexts(Integer start, Integer end, String[] orderBy, String[] order, String[] filterBy,
 	    String[] filter);
 
@@ -56,4 +54,14 @@ public interface ContentService {
     public Content findNext(Long contentId, String orderBy, String fixBy, boolean ascending);
 
     public void clearSession();
+
+    public Long deleteAnnouncement(String title);
+
+    public Long deleteSerial(String title);
+
+    public Long deleteEpisode(String serialTitle, String title);
+
+    public Long deleteText(String username, String title);
+
+    public Long deleteTopic(String title);
 }

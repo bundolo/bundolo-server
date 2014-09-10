@@ -156,4 +156,10 @@ public class ContestServiceImpl implements ContestService {
 	return contestDAO.findNext(contestId, orderBy, fixBy, ascending);
     }
 
+    @Override
+    public Long deleteContest(String title) {
+	// TODO
+	return null;
+    }
+
 }
