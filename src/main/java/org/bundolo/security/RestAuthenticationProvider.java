@@ -13,6 +13,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 public class RestAuthenticationProvider implements AuthenticationProvider {
 
@@ -22,6 +24,7 @@ public class RestAuthenticationProvider implements AuthenticationProvider {
     private UserProfileDAO userProfileDAO;
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
 	// logger.log(Level.WARNING, "authentication: " + authentication);
 	UsernamePasswordAuthenticationToken restToken = (UsernamePasswordAuthenticationToken) authentication;
@@ -35,7 +38,6 @@ public class RestAuthenticationProvider implements AuthenticationProvider {
 	    authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
 	}
 	return new UsernamePasswordAuthenticationToken(key, credentials, authorities);
-
     }
 
     @Override
