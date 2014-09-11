@@ -5,6 +5,9 @@ import java.util.List;
 
 //import org.bundolo.client.LocalStorage.PresenterName;
 import org.bundolo.model.enumeration.ContentKindType;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 //import com.google.gwt.user.client.History;
 
@@ -146,5 +149,17 @@ public class Utils {
 	    i++;
 	}
 	return s;
+    }
+
+    public static String getUsername() {
+	// TODO switch to using this to update rating
+	// TODO cleanup SessionUtils, we don't keep user in session
+	UsernamePasswordAuthenticationToken authentication = (UsernamePasswordAuthenticationToken) SecurityContextHolder
+		.getContext().getAuthentication();
+	if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_USER"))) {
+	    return (String) authentication.getPrincipal();
+	} else {
+	    return null;
+	}
     }
 }

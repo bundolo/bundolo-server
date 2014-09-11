@@ -8,6 +8,7 @@ import javax.persistence.Query;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.bundolo.model.UserProfile;
+import org.bundolo.model.enumeration.UserProfileStatusType;
 import org.springframework.stereotype.Repository;
 
 @Repository("userProfileDAO")
@@ -103,6 +104,15 @@ public class UserProfileDAO extends JpaDAO<Long, UserProfile> {
 	q.setFirstResult(start);
 	q.setMaxResults(end - start + 1);
 	return q.getResultList();
+    }
+
+    public String findPassword(String username) {
+	String result = null;
+	UserProfile userProfile = findByField("username", username);
+	if (userProfile != null && UserProfileStatusType.active.equals(userProfile.getUserProfileStatus())) {
+	    result = userProfile.getPassword();
+	}
+	return result;
     }
 
 }

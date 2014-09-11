@@ -26,8 +26,6 @@ import org.bundolo.model.enumeration.RatingKindType;
 import org.bundolo.model.enumeration.RatingStatusType;
 import org.bundolo.model.enumeration.UserProfileStatusType;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -61,12 +59,10 @@ public class UserServiceImpl implements UserService {
 	if (user != null) {
 	    Rating rating = user.getDescriptionContent().getRating();
 	    // if user that requested this is the author, do not increase rating
-	    UsernamePasswordAuthenticationToken authentication = (UsernamePasswordAuthenticationToken) SecurityContextHolder
-		    .getContext().getAuthentication();
-	    long ratingIncrement = ((String) authentication.getPrincipal()).equals(user.getUsername()) ? 0
+	    long ratingIncrement = user.getUsername().equals(Utils.getUsername()) ? 0
 		    : Constants.DEFAULT_RATING_INCREMENT;
-	    Date lastActivity = !((String) authentication.getPrincipal()).equals(user.getUsername()) || rating == null ? new Date()
-		    : rating.getLastActivity();
+	    Date lastActivity = !user.getUsername().equals(Utils.getUsername()) || rating == null ? new Date() : rating
+		    .getLastActivity();
 	    if (rating == null) {
 		rating = new Rating(null, null, RatingKindType.general, lastActivity, RatingStatusType.active,
 			ratingIncrement, user.getDescriptionContent());

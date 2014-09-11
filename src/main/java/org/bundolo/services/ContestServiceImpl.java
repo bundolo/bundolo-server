@@ -10,6 +10,7 @@ import javax.annotation.PreDestroy;
 
 import org.apache.commons.lang3.StringUtils;
 import org.bundolo.Constants;
+import org.bundolo.Utils;
 import org.bundolo.dao.ContestDAO;
 import org.bundolo.model.Content;
 import org.bundolo.model.Contest;
@@ -93,12 +94,10 @@ public class ContestServiceImpl implements ContestService {
 	if (contest != null) {
 	    Rating rating = contest.getDescriptionContent().getRating();
 	    // if user that requested this is the author, do not increase rating
-	    UsernamePasswordAuthenticationToken authentication = (UsernamePasswordAuthenticationToken) SecurityContextHolder
-		    .getContext().getAuthentication();
-	    long ratingIncrement = ((String) authentication.getPrincipal()).equals(contest.getAuthorUsername()) ? 0
+	    long ratingIncrement = contest.getAuthorUsername().equals(Utils.getUsername()) ? 0
 		    : Constants.DEFAULT_RATING_INCREMENT;
-	    Date lastActivity = !((String) authentication.getPrincipal()).equals(contest.getAuthorUsername())
-		    || rating == null ? new Date() : rating.getLastActivity();
+	    Date lastActivity = !contest.getAuthorUsername().equals(Utils.getUsername()) || rating == null ? new Date()
+		    : rating.getLastActivity();
 	    if (rating == null) {
 		rating = new Rating(null, null, RatingKindType.general, lastActivity, RatingStatusType.active,
 			ratingIncrement, contest.getDescriptionContent());

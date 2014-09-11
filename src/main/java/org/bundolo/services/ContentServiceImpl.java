@@ -9,6 +9,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import org.bundolo.Constants;
+import org.bundolo.Utils;
 import org.bundolo.dao.CommentDAO;
 import org.bundolo.dao.ContentDAO;
 import org.bundolo.model.Content;
@@ -51,15 +52,6 @@ public class ContentServiceImpl implements ContentService {
 	Content content = contentDAO.findById(contentId);
 	return content;
     }
-
-    // @Override
-    // @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    // public void deleteContent(Long contentId) throws Exception {
-    // Content content = contentDAO.findById(contentId);
-    // if (content != null) {
-    // contentDAO.remove(content);
-    // }
-    // }
 
     @Override
     public List<Content> findTexts(Integer start, Integer end, String[] orderBy, String[] order, String[] filterBy,
@@ -111,12 +103,10 @@ public class ContentServiceImpl implements ContentService {
 	if (announcement != null) {
 	    Rating rating = announcement.getRating();
 	    // if user that requested this is the author, do not increase rating
-	    UsernamePasswordAuthenticationToken authentication = (UsernamePasswordAuthenticationToken) SecurityContextHolder
-		    .getContext().getAuthentication();
-	    long ratingIncrement = ((String) authentication.getPrincipal()).equals(announcement.getAuthorUsername()) ? 0
+	    long ratingIncrement = announcement.getAuthorUsername().equals(Utils.getUsername()) ? 0
 		    : Constants.DEFAULT_RATING_INCREMENT;
-	    Date lastActivity = !((String) authentication.getPrincipal()).equals(announcement.getAuthorUsername())
-		    || rating == null ? new Date() : rating.getLastActivity();
+	    Date lastActivity = !announcement.getAuthorUsername().equals(Utils.getUsername()) || rating == null ? new Date()
+		    : rating.getLastActivity();
 	    if (rating == null) {
 		rating = new Rating(null, null, RatingKindType.general, lastActivity, RatingStatusType.active,
 			ratingIncrement, announcement);
@@ -137,12 +127,10 @@ public class ContentServiceImpl implements ContentService {
 	if (serial != null) {
 	    Rating rating = serial.getRating();
 	    // if user that requested this is the author, do not increase rating
-	    UsernamePasswordAuthenticationToken authentication = (UsernamePasswordAuthenticationToken) SecurityContextHolder
-		    .getContext().getAuthentication();
-	    long ratingIncrement = ((String) authentication.getPrincipal()).equals(serial.getAuthorUsername()) ? 0
+	    long ratingIncrement = serial.getAuthorUsername().equals(Utils.getUsername()) ? 0
 		    : Constants.DEFAULT_RATING_INCREMENT;
-	    Date lastActivity = !((String) authentication.getPrincipal()).equals(serial.getAuthorUsername())
-		    || rating == null ? new Date() : rating.getLastActivity();
+	    Date lastActivity = !serial.getAuthorUsername().equals(Utils.getUsername()) || rating == null ? new Date()
+		    : rating.getLastActivity();
 	    if (rating == null) {
 		rating = new Rating(null, null, RatingKindType.general, lastActivity, RatingStatusType.active,
 			ratingIncrement, serial);
@@ -163,12 +151,10 @@ public class ContentServiceImpl implements ContentService {
 	if (text != null) {
 	    Rating rating = text.getRating();
 	    // if user that requested this is the author, do not increase rating
-	    UsernamePasswordAuthenticationToken authentication = (UsernamePasswordAuthenticationToken) SecurityContextHolder
-		    .getContext().getAuthentication();
-	    long ratingIncrement = ((String) authentication.getPrincipal()).equals(text.getAuthorUsername()) ? 0
+	    long ratingIncrement = text.getAuthorUsername().equals(Utils.getUsername()) ? 0
 		    : Constants.DEFAULT_RATING_INCREMENT;
-	    Date lastActivity = !((String) authentication.getPrincipal()).equals(text.getAuthorUsername())
-		    || rating == null ? new Date() : rating.getLastActivity();
+	    Date lastActivity = !text.getAuthorUsername().equals(Utils.getUsername()) || rating == null ? new Date()
+		    : rating.getLastActivity();
 	    if (rating == null) {
 		rating = new Rating(null, null, RatingKindType.general, lastActivity, RatingStatusType.active,
 			ratingIncrement, text);
@@ -189,12 +175,10 @@ public class ContentServiceImpl implements ContentService {
 	if (topic != null) {
 	    Rating rating = topic.getRating();
 	    // if user that requested this is the author, do not increase rating
-	    UsernamePasswordAuthenticationToken authentication = (UsernamePasswordAuthenticationToken) SecurityContextHolder
-		    .getContext().getAuthentication();
-	    long ratingIncrement = ((String) authentication.getPrincipal()).equals(topic.getAuthorUsername()) ? 0
+	    long ratingIncrement = topic.getAuthorUsername().equals(Utils.getUsername()) ? 0
 		    : Constants.DEFAULT_RATING_INCREMENT;
-	    Date lastActivity = !((String) authentication.getPrincipal()).equals(topic.getAuthorUsername())
-		    || rating == null ? new Date() : rating.getLastActivity();
+	    Date lastActivity = !topic.getAuthorUsername().equals(Utils.getUsername()) || rating == null ? new Date()
+		    : rating.getLastActivity();
 	    if (rating == null) {
 		rating = new Rating(null, null, RatingKindType.general, lastActivity, RatingStatusType.active,
 			ratingIncrement, topic);
@@ -318,12 +302,10 @@ public class ContentServiceImpl implements ContentService {
 	if (episode != null) {
 	    Rating rating = episode.getRating();
 	    // if user that requested this is the author, do not increase rating
-	    UsernamePasswordAuthenticationToken authentication = (UsernamePasswordAuthenticationToken) SecurityContextHolder
-		    .getContext().getAuthentication();
-	    long ratingIncrement = ((String) authentication.getPrincipal()).equals(episode.getAuthorUsername()) ? 0
+	    long ratingIncrement = episode.getAuthorUsername().equals(Utils.getUsername()) ? 0
 		    : Constants.DEFAULT_RATING_INCREMENT;
-	    Date lastActivity = !((String) authentication.getPrincipal()).equals(episode.getAuthorUsername())
-		    || rating == null ? new Date() : rating.getLastActivity();
+	    Date lastActivity = !episode.getAuthorUsername().equals(Utils.getUsername()) || rating == null ? new Date()
+		    : rating.getLastActivity();
 	    if (rating == null) {
 		rating = new Rating(null, null, RatingKindType.general, lastActivity, RatingStatusType.active,
 			ratingIncrement, episode);
@@ -383,13 +365,11 @@ public class ContentServiceImpl implements ContentService {
 	    // no such content
 	    return null;
 	} else {
-	    UsernamePasswordAuthenticationToken authentication = (UsernamePasswordAuthenticationToken) SecurityContextHolder
-		    .getContext().getAuthentication();
-	    if (!((String) authentication.getPrincipal()).equals(episode.getAuthorUsername())) {
+	    if (!episode.getAuthorUsername().equals(Utils.getUsername())) {
 		// user is not the owner
 		return null;
 	    }
-
+	    // TODO it might be sufficient just to check episode status
 	    Content nextEpisode = contentDAO.findNext(episode.getContentId(), TextColumnType.valueOf("date")
 		    .getColumnName(), null, true);
 	    if (nextEpisode != null) {
@@ -413,9 +393,7 @@ public class ContentServiceImpl implements ContentService {
 	    // no such content
 	    return null;
 	} else {
-	    UsernamePasswordAuthenticationToken authentication = (UsernamePasswordAuthenticationToken) SecurityContextHolder
-		    .getContext().getAuthentication();
-	    if (!((String) authentication.getPrincipal()).equals(text.getAuthorUsername())) {
+	    if (!text.getAuthorUsername().equals(Utils.getUsername())) {
 		// user is not the owner
 		return null;
 	    }
