@@ -92,13 +92,20 @@ public class ContestServiceImpl implements ContestService {
 	Contest contest = contestDAO.findByTitle(title);
 	if (contest != null) {
 	    Rating rating = contest.getDescriptionContent().getRating();
+	    // if user that requested this is the author, do not increase rating
+	    UsernamePasswordAuthenticationToken authentication = (UsernamePasswordAuthenticationToken) SecurityContextHolder
+		    .getContext().getAuthentication();
+	    long ratingIncrement = ((String) authentication.getPrincipal()).equals(contest.getAuthorUsername()) ? 0
+		    : Constants.DEFAULT_RATING_INCREMENT;
+	    Date lastActivity = !((String) authentication.getPrincipal()).equals(contest.getAuthorUsername())
+		    || rating == null ? new Date() : rating.getLastActivity();
 	    if (rating == null) {
-		rating = new Rating(null, null, RatingKindType.general, new Date(), RatingStatusType.active,
-			Constants.DEFAULT_RATING_INCREMENT, contest.getDescriptionContent());
+		rating = new Rating(null, null, RatingKindType.general, lastActivity, RatingStatusType.active,
+			ratingIncrement, contest.getDescriptionContent());
 		contest.getDescriptionContent().setRating(rating);
 	    } else {
-		rating.setValue(rating.getValue() + Constants.DEFAULT_RATING_INCREMENT);
-		rating.setLastActivity(new Date());
+		rating.setValue(rating.getValue() + ratingIncrement);
+		rating.setLastActivity(lastActivity);
 	    }
 	    contestDAO.merge(contest);
 	}

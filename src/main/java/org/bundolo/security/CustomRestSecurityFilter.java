@@ -2,6 +2,7 @@ package org.bundolo.security;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.logging.Logger;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -21,6 +22,8 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationEn
 import org.springframework.web.filter.GenericFilterBean;
 
 public class CustomRestSecurityFilter extends GenericFilterBean {
+
+    private static final Logger logger = Logger.getLogger(CustomRestSecurityFilter.class.getName());
 
     private final AuthenticationManager authenticationManager;
     private final AuthenticationEntryPoint authenticationEntryPoint;
@@ -45,16 +48,14 @@ public class CustomRestSecurityFilter extends GenericFilterBean {
 	// Pull out the Authorization header
 	String authorization = request.getHeader("Authorization");
 
-	// If the Authorization header is null, let the ExceptionTranslationFilter provided by
-	// the <http> namespace kick of the BasicAuthenticationEntryPoint to provide the username and password dialog
-	// box
-	if (authorization == null) {
-	    chain.doFilter(request, response);
-	    return;
+	// if authotization header is null, proceed with authorisation to get UsernamePasswordAuthenticationToken
+	// without authorities
+	String[] credentials = { "", "" };
+	if (authorization != null) {
+	    credentials = decodeHeader(authorization);
 	}
-
-	String[] credentials = decodeHeader(authorization);
 	if (credentials.length == 2) {
+	    // logger.log(Level.WARNING, "credentials: " + credentials);
 	    Authentication authentication = new UsernamePasswordAuthenticationToken(credentials[0], credentials[1]);
 
 	    try {

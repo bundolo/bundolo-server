@@ -94,13 +94,20 @@ public class ConnectionServiceImpl implements ConnectionService {
 	Connection connection = connectionDAO.findByTitle(title);
 	if (connection != null) {
 	    Rating rating = connection.getDescriptionContent().getRating();
+	    // if user that requested this is the author, do not increase rating
+	    UsernamePasswordAuthenticationToken authentication = (UsernamePasswordAuthenticationToken) SecurityContextHolder
+		    .getContext().getAuthentication();
+	    long ratingIncrement = ((String) authentication.getPrincipal()).equals(connection.getAuthorUsername()) ? 0
+		    : Constants.DEFAULT_RATING_INCREMENT;
+	    Date lastActivity = !((String) authentication.getPrincipal()).equals(connection.getAuthorUsername())
+		    || rating == null ? new Date() : rating.getLastActivity();
 	    if (rating == null) {
-		rating = new Rating(null, null, RatingKindType.general, new Date(), RatingStatusType.active,
-			Constants.DEFAULT_RATING_INCREMENT, connection.getDescriptionContent());
+		rating = new Rating(null, null, RatingKindType.general, lastActivity, RatingStatusType.active,
+			ratingIncrement, connection.getDescriptionContent());
 		connection.getDescriptionContent().setRating(rating);
 	    } else {
-		rating.setValue(rating.getValue() + Constants.DEFAULT_RATING_INCREMENT);
-		rating.setLastActivity(new Date());
+		rating.setValue(rating.getValue() + ratingIncrement);
+		rating.setLastActivity(lastActivity);
 	    }
 	    connectionDAO.merge(connection);
 	}

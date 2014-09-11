@@ -110,13 +110,20 @@ public class ContentServiceImpl implements ContentService {
 	Content announcement = contentDAO.findByTitle(title, ContentKindType.news);
 	if (announcement != null) {
 	    Rating rating = announcement.getRating();
+	    // if user that requested this is the author, do not increase rating
+	    UsernamePasswordAuthenticationToken authentication = (UsernamePasswordAuthenticationToken) SecurityContextHolder
+		    .getContext().getAuthentication();
+	    long ratingIncrement = ((String) authentication.getPrincipal()).equals(announcement.getAuthorUsername()) ? 0
+		    : Constants.DEFAULT_RATING_INCREMENT;
+	    Date lastActivity = !((String) authentication.getPrincipal()).equals(announcement.getAuthorUsername())
+		    || rating == null ? new Date() : rating.getLastActivity();
 	    if (rating == null) {
-		rating = new Rating(null, null, RatingKindType.general, new Date(), RatingStatusType.active,
-			Constants.DEFAULT_RATING_INCREMENT, announcement);
+		rating = new Rating(null, null, RatingKindType.general, lastActivity, RatingStatusType.active,
+			ratingIncrement, announcement);
 		announcement.setRating(rating);
 	    } else {
-		rating.setValue(rating.getValue() + Constants.DEFAULT_RATING_INCREMENT);
-		rating.setLastActivity(new Date());
+		rating.setValue(rating.getValue() + ratingIncrement);
+		rating.setLastActivity(lastActivity);
 	    }
 	    contentDAO.merge(announcement);
 	}
@@ -129,13 +136,20 @@ public class ContentServiceImpl implements ContentService {
 	Content serial = contentDAO.findByTitle(title, ContentKindType.episode_group);
 	if (serial != null) {
 	    Rating rating = serial.getRating();
+	    // if user that requested this is the author, do not increase rating
+	    UsernamePasswordAuthenticationToken authentication = (UsernamePasswordAuthenticationToken) SecurityContextHolder
+		    .getContext().getAuthentication();
+	    long ratingIncrement = ((String) authentication.getPrincipal()).equals(serial.getAuthorUsername()) ? 0
+		    : Constants.DEFAULT_RATING_INCREMENT;
+	    Date lastActivity = !((String) authentication.getPrincipal()).equals(serial.getAuthorUsername())
+		    || rating == null ? new Date() : rating.getLastActivity();
 	    if (rating == null) {
-		rating = new Rating(null, null, RatingKindType.general, new Date(), RatingStatusType.active,
-			Constants.DEFAULT_RATING_INCREMENT, serial);
+		rating = new Rating(null, null, RatingKindType.general, lastActivity, RatingStatusType.active,
+			ratingIncrement, serial);
 		serial.setRating(rating);
 	    } else {
-		rating.setValue(rating.getValue() + Constants.DEFAULT_RATING_INCREMENT);
-		rating.setLastActivity(new Date());
+		rating.setValue(rating.getValue() + ratingIncrement);
+		rating.setLastActivity(lastActivity);
 	    }
 	    contentDAO.merge(serial);
 	}
@@ -148,13 +162,20 @@ public class ContentServiceImpl implements ContentService {
 	Content text = contentDAO.findText(username, title);
 	if (text != null) {
 	    Rating rating = text.getRating();
+	    // if user that requested this is the author, do not increase rating
+	    UsernamePasswordAuthenticationToken authentication = (UsernamePasswordAuthenticationToken) SecurityContextHolder
+		    .getContext().getAuthentication();
+	    long ratingIncrement = ((String) authentication.getPrincipal()).equals(text.getAuthorUsername()) ? 0
+		    : Constants.DEFAULT_RATING_INCREMENT;
+	    Date lastActivity = !((String) authentication.getPrincipal()).equals(text.getAuthorUsername())
+		    || rating == null ? new Date() : rating.getLastActivity();
 	    if (rating == null) {
-		rating = new Rating(null, null, RatingKindType.general, new Date(), RatingStatusType.active,
-			Constants.DEFAULT_RATING_INCREMENT, text);
+		rating = new Rating(null, null, RatingKindType.general, lastActivity, RatingStatusType.active,
+			ratingIncrement, text);
 		text.setRating(rating);
 	    } else {
-		rating.setValue(rating.getValue() + Constants.DEFAULT_RATING_INCREMENT);
-		rating.setLastActivity(new Date());
+		rating.setValue(rating.getValue() + ratingIncrement);
+		rating.setLastActivity(lastActivity);
 	    }
 	    contentDAO.merge(text);
 	}
@@ -167,13 +188,20 @@ public class ContentServiceImpl implements ContentService {
 	Content topic = contentDAO.findByTitle(title, ContentKindType.forum_topic);
 	if (topic != null) {
 	    Rating rating = topic.getRating();
+	    // if user that requested this is the author, do not increase rating
+	    UsernamePasswordAuthenticationToken authentication = (UsernamePasswordAuthenticationToken) SecurityContextHolder
+		    .getContext().getAuthentication();
+	    long ratingIncrement = ((String) authentication.getPrincipal()).equals(topic.getAuthorUsername()) ? 0
+		    : Constants.DEFAULT_RATING_INCREMENT;
+	    Date lastActivity = !((String) authentication.getPrincipal()).equals(topic.getAuthorUsername())
+		    || rating == null ? new Date() : rating.getLastActivity();
 	    if (rating == null) {
-		rating = new Rating(null, null, RatingKindType.general, new Date(), RatingStatusType.active,
-			Constants.DEFAULT_RATING_INCREMENT, topic);
+		rating = new Rating(null, null, RatingKindType.general, lastActivity, RatingStatusType.active,
+			ratingIncrement, topic);
 		topic.setRating(rating);
 	    } else {
-		rating.setValue(rating.getValue() + Constants.DEFAULT_RATING_INCREMENT);
-		rating.setLastActivity(new Date());
+		rating.setValue(rating.getValue() + ratingIncrement);
+		rating.setLastActivity(lastActivity);
 	    }
 	    contentDAO.merge(topic);
 	}
@@ -199,6 +227,7 @@ public class ContentServiceImpl implements ContentService {
 		descriptionContent.setAuthorUsername(content.getAuthorUsername());
 		descriptionContent.setContentStatus(ContentStatusType.active);
 		descriptionContent.setCreationDate(content.getCreationDate());
+		descriptionContent.setLastActivity(creationDate);
 		descriptionContent.setKind(ContentKindType.text_description);
 		descriptionContent.setLocale(Constants.DEFAULT_LOCALE);
 	    }
@@ -288,13 +317,20 @@ public class ContentServiceImpl implements ContentService {
 	Content episode = contentDAO.findEpisode(serialTitle, title);
 	if (episode != null) {
 	    Rating rating = episode.getRating();
+	    // if user that requested this is the author, do not increase rating
+	    UsernamePasswordAuthenticationToken authentication = (UsernamePasswordAuthenticationToken) SecurityContextHolder
+		    .getContext().getAuthentication();
+	    long ratingIncrement = ((String) authentication.getPrincipal()).equals(episode.getAuthorUsername()) ? 0
+		    : Constants.DEFAULT_RATING_INCREMENT;
+	    Date lastActivity = !((String) authentication.getPrincipal()).equals(episode.getAuthorUsername())
+		    || rating == null ? new Date() : rating.getLastActivity();
 	    if (rating == null) {
-		rating = new Rating(null, null, RatingKindType.general, new Date(), RatingStatusType.active,
-			Constants.DEFAULT_RATING_INCREMENT, episode);
+		rating = new Rating(null, null, RatingKindType.general, lastActivity, RatingStatusType.active,
+			ratingIncrement, episode);
 		episode.setRating(rating);
 	    } else {
-		rating.setValue(rating.getValue() + Constants.DEFAULT_RATING_INCREMENT);
-		rating.setLastActivity(new Date());
+		rating.setValue(rating.getValue() + ratingIncrement);
+		rating.setLastActivity(lastActivity);
 	    }
 	    contentDAO.merge(episode);
 	}
