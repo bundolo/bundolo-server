@@ -7,10 +7,10 @@ import java.util.logging.Logger;
 import javax.persistence.Query;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.bundolo.model.Connection;
 import org.bundolo.model.enumeration.ContentKindType;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.StringUtils;
 
 @Repository("connectionDAO")
 public class ConnectionDAO extends JpaDAO<Long, Connection> {
@@ -80,7 +80,7 @@ public class ConnectionDAO extends JpaDAO<Long, Connection> {
 	queryString.append("SELECT c1 FROM Connection c1, Connection c2");
 	queryString.append(" WHERE c2.connectionId = " + connectionId);
 	queryString.append(" AND c1.connectionStatus='active'");
-	if (StringUtils.hasText(fixBy)) {
+	if (StringUtils.isNotBlank(fixBy)) {
 	    queryString.append(" AND c1." + fixBy + "=c2." + fixBy);
 	}
 	queryString.append(" AND c1." + orderBy + (ascending ? ">" : "<") + "c2." + orderBy);

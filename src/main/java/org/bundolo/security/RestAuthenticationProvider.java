@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
+import org.apache.commons.lang3.StringUtils;
 import org.bundolo.dao.UserProfileDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -12,7 +13,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.util.StringUtils;
 
 public class RestAuthenticationProvider implements AuthenticationProvider {
 
@@ -31,9 +31,9 @@ public class RestAuthenticationProvider implements AuthenticationProvider {
 	String credentials = (String) restToken.getCredentials();
 
 	List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
-	if (StringUtils.hasText(key) && StringUtils.hasText(credentials)) {
+	if (StringUtils.isNotBlank(key) && StringUtils.isNotBlank(credentials)) {
 	    String userPassword = userProfileDAO.findPassword(key);
-	    if (StringUtils.hasText(userPassword) && userPassword.equals(credentials)) {
+	    if (StringUtils.isNotBlank(userPassword) && userPassword.equals(credentials)) {
 		authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
 	    }
 	}

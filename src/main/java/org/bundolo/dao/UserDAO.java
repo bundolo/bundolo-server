@@ -7,10 +7,10 @@ import java.util.logging.Logger;
 import javax.persistence.Query;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.bundolo.model.User;
 import org.bundolo.model.UserProfile;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.StringUtils;
 
 @Repository("userDAO")
 public class UserDAO extends JpaDAO<String, User> {
@@ -64,7 +64,7 @@ public class UserDAO extends JpaDAO<String, User> {
 	queryString.append("SELECT u1 FROM UserProfile u1, UserProfile u2");
 	queryString.append(" WHERE u2.username = '" + username + "'");
 	queryString.append(" AND u1.userProfileStatus='active'");
-	if (StringUtils.hasText(fixBy)) {
+	if (StringUtils.isNotBlank(fixBy)) {
 	    queryString.append(" AND u1." + fixBy + "=u2." + fixBy);
 	}
 	queryString.append(" AND u1." + orderBy + (ascending ? ">" : "<") + "u2." + orderBy);

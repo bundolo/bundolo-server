@@ -7,10 +7,10 @@ import java.util.logging.Logger;
 import javax.persistence.Query;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.bundolo.model.Contest;
 import org.bundolo.model.enumeration.ContentKindType;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.StringUtils;
 
 @Repository("contestDAO")
 public class ContestDAO extends JpaDAO<Long, Contest> {
@@ -80,7 +80,7 @@ public class ContestDAO extends JpaDAO<Long, Contest> {
 	queryString.append("SELECT c1 FROM Contest c1, Contest c2");
 	queryString.append(" WHERE c2.contestId = " + contestId);
 	queryString.append(" AND c1.contestStatus='active'");
-	if (StringUtils.hasText(fixBy)) {
+	if (StringUtils.isNotBlank(fixBy)) {
 	    queryString.append(" AND c1." + fixBy + "=c2." + fixBy);
 	}
 	queryString.append(" AND c1." + orderBy + (ascending ? ">" : "<") + "c2." + orderBy);

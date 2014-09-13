@@ -58,5 +58,6 @@ public class Constants {
     public static final String REST_PATH_VALIDATE = "/validate";
     public static final String REST_PATH_STATISTICS = "/statistics";
     public static final String REST_PATH_NEXT = "/next";
+    public static final String REST_PATH_MESSAGE = "/message";
 
 }

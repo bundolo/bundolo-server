@@ -76,4 +76,17 @@ public class MailingUtils {
 		    + body);
 	}
     }
+
+    public static String format(String s, Object... arguments) {
+	// A very simple implementation of format
+	int i = 0;
+	while (i < arguments.length) {
+	    String delimiter = "{" + i + "}";
+	    while (s.contains(delimiter)) {
+		s = s.replace(delimiter, String.valueOf(arguments[i]));
+	    }
+	    i++;
+	}
+	return s;
+    }
 }

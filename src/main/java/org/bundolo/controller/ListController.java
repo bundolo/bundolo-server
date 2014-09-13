@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.commons.lang3.StringUtils;
 import org.bundolo.Constants;
 import org.bundolo.model.Comment;
 import org.bundolo.model.Connection;
@@ -28,7 +29,6 @@ import org.bundolo.services.ContestService;
 import org.bundolo.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -62,7 +62,7 @@ public class ListController {
 	// TODO check param validity
 	List<String> orderByColumns = new ArrayList<String>();
 	List<String> orderByDirections = new ArrayList<String>();
-	if (StringUtils.hasText(orderBy)) {
+	if (StringUtils.isNotBlank(orderBy)) {
 	    String[] params = orderBy.split(",");
 	    for (int i = 0; i < params.length; i += 2) {
 		orderByColumns.add(ConnectionColumnType.valueOf(params[i]).getColumnName());
@@ -71,7 +71,7 @@ public class ListController {
 	}
 	List<String> filterByColumns = new ArrayList<String>();
 	List<String> filterByTexts = new ArrayList<String>();
-	if (StringUtils.hasText(filterBy)) {
+	if (StringUtils.isNotBlank(filterBy)) {
 	    String[] params = filterBy.split(",");
 	    for (int i = 0; i < params.length; i += 2) {
 		ConnectionColumnType connectionColumnType = ConnectionColumnType.valueOf(params[i]);
@@ -94,7 +94,7 @@ public class ListController {
 	// TODO check param validity
 	List<String> orderByColumns = new ArrayList<String>();
 	List<String> orderByDirections = new ArrayList<String>();
-	if (StringUtils.hasText(orderBy)) {
+	if (StringUtils.isNotBlank(orderBy)) {
 	    String[] params = orderBy.split(",");
 	    for (int i = 0; i < params.length; i += 2) {
 		orderByColumns.add(ContestColumnType.valueOf(params[i]).getColumnName());
@@ -103,7 +103,7 @@ public class ListController {
 	}
 	List<String> filterByColumns = new ArrayList<String>();
 	List<String> filterByTexts = new ArrayList<String>();
-	if (StringUtils.hasText(filterBy)) {
+	if (StringUtils.isNotBlank(filterBy)) {
 	    String[] params = filterBy.split(",");
 	    for (int i = 0; i < params.length; i += 2) {
 		ContestColumnType contestColumnType = ContestColumnType.valueOf(params[i]);
@@ -126,7 +126,7 @@ public class ListController {
 	// TODO check param validity
 	List<String> orderByColumns = new ArrayList<String>();
 	List<String> orderByDirections = new ArrayList<String>();
-	if (StringUtils.hasText(orderBy)) {
+	if (StringUtils.isNotBlank(orderBy)) {
 	    String[] params = orderBy.split(",");
 	    for (int i = 0; i < params.length; i += 2) {
 		orderByColumns.add(AuthorColumnType.valueOf(params[i]).getColumnName());
@@ -135,7 +135,7 @@ public class ListController {
 	}
 	List<String> filterByColumns = new ArrayList<String>();
 	List<String> filterByTexts = new ArrayList<String>();
-	if (StringUtils.hasText(filterBy)) {
+	if (StringUtils.isNotBlank(filterBy)) {
 	    String[] params = filterBy.split(",");
 	    for (int i = 0; i < params.length; i += 2) {
 		AuthorColumnType authorColumnType = AuthorColumnType.valueOf(params[i]);
@@ -158,7 +158,7 @@ public class ListController {
 	// TODO check param validity
 	List<String> orderByColumns = new ArrayList<String>();
 	List<String> orderByDirections = new ArrayList<String>();
-	if (StringUtils.hasText(orderBy)) {
+	if (StringUtils.isNotBlank(orderBy)) {
 	    String[] params = orderBy.split(",");
 	    for (int i = 0; i < params.length; i += 2) {
 		orderByColumns.add(TextColumnType.valueOf(params[i]).getColumnName());
@@ -167,7 +167,7 @@ public class ListController {
 	}
 	List<String> filterByColumns = new ArrayList<String>();
 	List<String> filterByTexts = new ArrayList<String>();
-	if (StringUtils.hasText(filterBy)) {
+	if (StringUtils.isNotBlank(filterBy)) {
 	    String[] params = filterBy.split(",");
 	    for (int i = 0; i < params.length; i += 2) {
 		TextColumnType textColumnType = TextColumnType.valueOf(params[i]);
@@ -190,7 +190,7 @@ public class ListController {
 	// TODO check param validity
 	List<String> orderByColumns = new ArrayList<String>();
 	List<String> orderByDirections = new ArrayList<String>();
-	if (StringUtils.hasText(orderBy)) {
+	if (StringUtils.isNotBlank(orderBy)) {
 	    String[] params = orderBy.split(",");
 	    for (int i = 0; i < params.length; i += 2) {
 		orderByColumns.add(AnnouncementColumnType.valueOf(params[i]).getColumnName());
@@ -199,7 +199,7 @@ public class ListController {
 	}
 	List<String> filterByColumns = new ArrayList<String>();
 	List<String> filterByTexts = new ArrayList<String>();
-	if (StringUtils.hasText(filterBy)) {
+	if (StringUtils.isNotBlank(filterBy)) {
 	    String[] params = filterBy.split(",");
 	    for (int i = 0; i < params.length; i += 2) {
 		AnnouncementColumnType announcementColumnType = AnnouncementColumnType.valueOf(params[i]);
@@ -222,7 +222,7 @@ public class ListController {
 	// TODO check param validity
 	List<String> orderByColumns = new ArrayList<String>();
 	List<String> orderByDirections = new ArrayList<String>();
-	if (StringUtils.hasText(orderBy)) {
+	if (StringUtils.isNotBlank(orderBy)) {
 	    String[] params = orderBy.split(",");
 	    for (int i = 0; i < params.length; i += 2) {
 		orderByColumns.add(SerialColumnType.valueOf(params[i]).getColumnName());
@@ -231,7 +231,7 @@ public class ListController {
 	}
 	List<String> filterByColumns = new ArrayList<String>();
 	List<String> filterByTexts = new ArrayList<String>();
-	if (StringUtils.hasText(filterBy)) {
+	if (StringUtils.isNotBlank(filterBy)) {
 	    String[] params = filterBy.split(",");
 	    for (int i = 0; i < params.length; i += 2) {
 		SerialColumnType serialColumnType = SerialColumnType.valueOf(params[i]);
@@ -254,7 +254,7 @@ public class ListController {
 	// TODO check param validity
 	List<String> orderByColumns = new ArrayList<String>();
 	List<String> orderByDirections = new ArrayList<String>();
-	if (StringUtils.hasText(orderBy)) {
+	if (StringUtils.isNotBlank(orderBy)) {
 	    String[] params = orderBy.split(",");
 	    for (int i = 0; i < params.length; i += 2) {
 		orderByColumns.add(TopicColumnType.valueOf(params[i]).getColumnName());
@@ -263,7 +263,7 @@ public class ListController {
 	}
 	List<String> filterByColumns = new ArrayList<String>();
 	List<String> filterByTexts = new ArrayList<String>();
-	if (StringUtils.hasText(filterBy)) {
+	if (StringUtils.isNotBlank(filterBy)) {
 	    String[] params = filterBy.split(",");
 	    for (int i = 0; i < params.length; i += 2) {
 		TopicColumnType topicColumnType = TopicColumnType.valueOf(params[i]);
@@ -286,7 +286,7 @@ public class ListController {
 	// TODO check param validity
 	List<String> orderByColumns = new ArrayList<String>();
 	List<String> orderByDirections = new ArrayList<String>();
-	if (StringUtils.hasText(orderBy)) {
+	if (StringUtils.isNotBlank(orderBy)) {
 	    String[] params = orderBy.split(",");
 	    for (int i = 0; i < params.length; i += 2) {
 		orderByColumns.add(CommentColumnType.valueOf(params[i]).getColumnName());
@@ -295,7 +295,7 @@ public class ListController {
 	}
 	List<String> filterByColumns = new ArrayList<String>();
 	List<String> filterByTexts = new ArrayList<String>();
-	if (StringUtils.hasText(filterBy)) {
+	if (StringUtils.isNotBlank(filterBy)) {
 	    String[] params = filterBy.split(",");
 	    for (int i = 0; i < params.length; i += 2) {
 		CommentColumnType commentColumnType = CommentColumnType.valueOf(params[i]);
@@ -324,36 +324,37 @@ public class ListController {
 	case "connection":
 	    result = connectionService.findNext(Long.valueOf(id),
 		    ConnectionColumnType.valueOf(orderBy).getColumnName(),
-		    StringUtils.hasText(fixBy) ? ConnectionColumnType.valueOf(fixBy).getColumnName() : null, ascending);
+		    StringUtils.isNotBlank(fixBy) ? ConnectionColumnType.valueOf(fixBy).getColumnName() : null,
+		    ascending);
 	    break;
 	case "contest":
 	    result = contestService.findNext(Long.valueOf(id), ContestColumnType.valueOf(orderBy).getColumnName(),
-		    StringUtils.hasText(fixBy) ? ContestColumnType.valueOf(fixBy).getColumnName() : null, ascending);
+		    StringUtils.isNotBlank(fixBy) ? ContestColumnType.valueOf(fixBy).getColumnName() : null, ascending);
 	    break;
 	case "author":
 	    result = userService.findNext(id, AuthorColumnType.valueOf(orderBy).getColumnName(),
-		    StringUtils.hasText(fixBy) ? AuthorColumnType.valueOf(fixBy).getColumnName() : null, ascending);
+		    StringUtils.isNotBlank(fixBy) ? AuthorColumnType.valueOf(fixBy).getColumnName() : null, ascending);
 	    break;
 	case "announcement":
 	    result = contentService.findNext(Long.valueOf(id), AnnouncementColumnType.valueOf(orderBy).getColumnName(),
-		    StringUtils.hasText(fixBy) ? AnnouncementColumnType.valueOf(fixBy).getColumnName() : null,
+		    StringUtils.isNotBlank(fixBy) ? AnnouncementColumnType.valueOf(fixBy).getColumnName() : null,
 		    ascending);
 	    break;
 	case "topic":
 	    result = contentService.findNext(Long.valueOf(id), TopicColumnType.valueOf(orderBy).getColumnName(),
-		    StringUtils.hasText(fixBy) ? TopicColumnType.valueOf(fixBy).getColumnName() : null, ascending);
+		    StringUtils.isNotBlank(fixBy) ? TopicColumnType.valueOf(fixBy).getColumnName() : null, ascending);
 	    break;
 	case "text":
 	    result = contentService.findNext(Long.valueOf(id), TextColumnType.valueOf(orderBy).getColumnName(),
-		    StringUtils.hasText(fixBy) ? TextColumnType.valueOf(fixBy).getColumnName() : null, ascending);
+		    StringUtils.isNotBlank(fixBy) ? TextColumnType.valueOf(fixBy).getColumnName() : null, ascending);
 	    break;
 	case "serial":
 	    result = contentService.findNext(Long.valueOf(id), SerialColumnType.valueOf(orderBy).getColumnName(),
-		    StringUtils.hasText(fixBy) ? SerialColumnType.valueOf(fixBy).getColumnName() : null, ascending);
+		    StringUtils.isNotBlank(fixBy) ? SerialColumnType.valueOf(fixBy).getColumnName() : null, ascending);
 	    break;
 	case "episode":
 	    result = contentService.findNext(Long.valueOf(id), EpisodeColumnType.valueOf(orderBy).getColumnName(),
-		    StringUtils.hasText(fixBy) ? EpisodeColumnType.valueOf(fixBy).getColumnName() : null, ascending);
+		    StringUtils.isNotBlank(fixBy) ? EpisodeColumnType.valueOf(fixBy).getColumnName() : null, ascending);
 	    break;
 	}
 	logger.log(Level.WARNING, "next, result: " + result);

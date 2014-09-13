@@ -7,11 +7,11 @@ import java.util.logging.Logger;
 import javax.persistence.Query;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.bundolo.model.Content;
 import org.bundolo.model.enumeration.ContentKindType;
 import org.bundolo.model.enumeration.PageKindType;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.StringUtils;
 
 @Repository("contentDAO")
 public class ContentDAO extends JpaDAO<Long, Content> {
@@ -356,7 +356,7 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	queryString.append(" WHERE c2.contentId = " + contentId);
 	queryString.append(" AND c1.kind = c2.kind");
 	queryString.append(" AND c1.contentStatus='active'");
-	if (StringUtils.hasText(fixBy)) {
+	if (StringUtils.isNotBlank(fixBy)) {
 	    queryString.append(" AND c1." + fixBy + "=c2." + fixBy);
 	}
 	queryString.append(" AND c1." + orderBy + (ascending ? ">" : "<") + "c2." + orderBy);

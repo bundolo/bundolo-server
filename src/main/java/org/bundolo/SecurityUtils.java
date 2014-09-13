@@ -1,5 +1,6 @@
 package org.bundolo;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -8,6 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.codec.binary.Base64;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 public class SecurityUtils {
 
@@ -115,5 +119,16 @@ public class SecurityUtils {
     // BASE64Encoder endecoder = new BASE64Encoder();
     // return endecoder.encode(data);
     // }
+
+    public static String getUsername() {
+	// TODO cleanup SessionUtils, we don't keep user in session
+	UsernamePasswordAuthenticationToken authentication = (UsernamePasswordAuthenticationToken) SecurityContextHolder
+		.getContext().getAuthentication();
+	if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_USER"))) {
+	    return (String) authentication.getPrincipal();
+	} else {
+	    return null;
+	}
+    }
 
 }

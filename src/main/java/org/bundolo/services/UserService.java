@@ -16,7 +16,7 @@ public interface UserService {
 
     public Boolean activateUserEmailAddress(String email, String nonce);
 
-    public Boolean sendMessage(String title, String text, String recipientUsername);
+    public Boolean sendMessage(String title, String text, String senderUsername, String recipientUsername);
 
     public Boolean sendNewPassword(String username, String email);
 

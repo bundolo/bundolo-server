@@ -9,7 +9,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import org.bundolo.Constants;
-import org.bundolo.Utils;
+import org.bundolo.SecurityUtils;
 import org.bundolo.dao.CommentDAO;
 import org.bundolo.dao.ContentDAO;
 import org.bundolo.model.Content;
@@ -103,9 +103,9 @@ public class ContentServiceImpl implements ContentService {
 	if (announcement != null) {
 	    Rating rating = announcement.getRating();
 	    // if user that requested this is the author, do not increase rating
-	    long ratingIncrement = announcement.getAuthorUsername().equals(Utils.getUsername()) ? 0
+	    long ratingIncrement = announcement.getAuthorUsername().equals(SecurityUtils.getUsername()) ? 0
 		    : Constants.DEFAULT_RATING_INCREMENT;
-	    Date lastActivity = !announcement.getAuthorUsername().equals(Utils.getUsername()) || rating == null ? new Date()
+	    Date lastActivity = !announcement.getAuthorUsername().equals(SecurityUtils.getUsername()) || rating == null ? new Date()
 		    : rating.getLastActivity();
 	    if (rating == null) {
 		rating = new Rating(null, null, RatingKindType.general, lastActivity, RatingStatusType.active,
@@ -127,9 +127,9 @@ public class ContentServiceImpl implements ContentService {
 	if (serial != null) {
 	    Rating rating = serial.getRating();
 	    // if user that requested this is the author, do not increase rating
-	    long ratingIncrement = serial.getAuthorUsername().equals(Utils.getUsername()) ? 0
+	    long ratingIncrement = serial.getAuthorUsername().equals(SecurityUtils.getUsername()) ? 0
 		    : Constants.DEFAULT_RATING_INCREMENT;
-	    Date lastActivity = !serial.getAuthorUsername().equals(Utils.getUsername()) || rating == null ? new Date()
+	    Date lastActivity = !serial.getAuthorUsername().equals(SecurityUtils.getUsername()) || rating == null ? new Date()
 		    : rating.getLastActivity();
 	    if (rating == null) {
 		rating = new Rating(null, null, RatingKindType.general, lastActivity, RatingStatusType.active,
@@ -151,9 +151,9 @@ public class ContentServiceImpl implements ContentService {
 	if (text != null) {
 	    Rating rating = text.getRating();
 	    // if user that requested this is the author, do not increase rating
-	    long ratingIncrement = text.getAuthorUsername().equals(Utils.getUsername()) ? 0
+	    long ratingIncrement = text.getAuthorUsername().equals(SecurityUtils.getUsername()) ? 0
 		    : Constants.DEFAULT_RATING_INCREMENT;
-	    Date lastActivity = !text.getAuthorUsername().equals(Utils.getUsername()) || rating == null ? new Date()
+	    Date lastActivity = !text.getAuthorUsername().equals(SecurityUtils.getUsername()) || rating == null ? new Date()
 		    : rating.getLastActivity();
 	    if (rating == null) {
 		rating = new Rating(null, null, RatingKindType.general, lastActivity, RatingStatusType.active,
@@ -175,9 +175,9 @@ public class ContentServiceImpl implements ContentService {
 	if (topic != null) {
 	    Rating rating = topic.getRating();
 	    // if user that requested this is the author, do not increase rating
-	    long ratingIncrement = topic.getAuthorUsername().equals(Utils.getUsername()) ? 0
+	    long ratingIncrement = topic.getAuthorUsername().equals(SecurityUtils.getUsername()) ? 0
 		    : Constants.DEFAULT_RATING_INCREMENT;
-	    Date lastActivity = !topic.getAuthorUsername().equals(Utils.getUsername()) || rating == null ? new Date()
+	    Date lastActivity = !topic.getAuthorUsername().equals(SecurityUtils.getUsername()) || rating == null ? new Date()
 		    : rating.getLastActivity();
 	    if (rating == null) {
 		rating = new Rating(null, null, RatingKindType.general, lastActivity, RatingStatusType.active,
@@ -302,9 +302,9 @@ public class ContentServiceImpl implements ContentService {
 	if (episode != null) {
 	    Rating rating = episode.getRating();
 	    // if user that requested this is the author, do not increase rating
-	    long ratingIncrement = episode.getAuthorUsername().equals(Utils.getUsername()) ? 0
+	    long ratingIncrement = episode.getAuthorUsername().equals(SecurityUtils.getUsername()) ? 0
 		    : Constants.DEFAULT_RATING_INCREMENT;
-	    Date lastActivity = !episode.getAuthorUsername().equals(Utils.getUsername()) || rating == null ? new Date()
+	    Date lastActivity = !episode.getAuthorUsername().equals(SecurityUtils.getUsername()) || rating == null ? new Date()
 		    : rating.getLastActivity();
 	    if (rating == null) {
 		rating = new Rating(null, null, RatingKindType.general, lastActivity, RatingStatusType.active,
@@ -365,7 +365,7 @@ public class ContentServiceImpl implements ContentService {
 	    // no such content
 	    return null;
 	} else {
-	    if (!episode.getAuthorUsername().equals(Utils.getUsername())) {
+	    if (!episode.getAuthorUsername().equals(SecurityUtils.getUsername())) {
 		// user is not the owner
 		return null;
 	    }
@@ -393,7 +393,7 @@ public class ContentServiceImpl implements ContentService {
 	    // no such content
 	    return null;
 	} else {
-	    if (!text.getAuthorUsername().equals(Utils.getUsername())) {
+	    if (!text.getAuthorUsername().equals(SecurityUtils.getUsername())) {
 		// user is not the owner
 		return null;
 	    }

@@ -10,7 +10,7 @@ import javax.annotation.PreDestroy;
 
 import org.apache.commons.lang3.StringUtils;
 import org.bundolo.Constants;
-import org.bundolo.Utils;
+import org.bundolo.SecurityUtils;
 import org.bundolo.dao.ConnectionDAO;
 import org.bundolo.model.Connection;
 import org.bundolo.model.Content;
@@ -96,9 +96,9 @@ public class ConnectionServiceImpl implements ConnectionService {
 	if (connection != null) {
 	    Rating rating = connection.getDescriptionContent().getRating();
 	    // if user that requested this is the author, do not increase rating
-	    long ratingIncrement = connection.getAuthorUsername().equals(Utils.getUsername()) ? 0
+	    long ratingIncrement = connection.getAuthorUsername().equals(SecurityUtils.getUsername()) ? 0
 		    : Constants.DEFAULT_RATING_INCREMENT;
-	    Date lastActivity = !connection.getAuthorUsername().equals(Utils.getUsername()) || rating == null ? new Date()
+	    Date lastActivity = !connection.getAuthorUsername().equals(SecurityUtils.getUsername()) || rating == null ? new Date()
 		    : rating.getLastActivity();
 	    if (rating == null) {
 		rating = new Rating(null, null, RatingKindType.general, lastActivity, RatingStatusType.active,

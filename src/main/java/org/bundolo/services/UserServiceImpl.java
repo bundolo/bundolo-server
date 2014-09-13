@@ -12,8 +12,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.bundolo.Constants;
 import org.bundolo.MailingUtils;
 import org.bundolo.SecurityUtils;
-import org.bundolo.SessionUtils;
-import org.bundolo.Utils;
 import org.bundolo.dao.UserDAO;
 import org.bundolo.dao.UserProfileDAO;
 import org.bundolo.model.Content;
@@ -29,6 +27,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 @Service("userService")
 public class UserServiceImpl implements UserService {
@@ -59,10 +59,10 @@ public class UserServiceImpl implements UserService {
 	if (user != null) {
 	    Rating rating = user.getDescriptionContent().getRating();
 	    // if user that requested this is the author, do not increase rating
-	    long ratingIncrement = user.getUsername().equals(Utils.getUsername()) ? 0
+	    long ratingIncrement = user.getUsername().equals(SecurityUtils.getUsername()) ? 0
 		    : Constants.DEFAULT_RATING_INCREMENT;
-	    Date lastActivity = !user.getUsername().equals(Utils.getUsername()) || rating == null ? new Date() : rating
-		    .getLastActivity();
+	    Date lastActivity = !user.getUsername().equals(SecurityUtils.getUsername()) || rating == null ? new Date()
+		    : rating.getLastActivity();
 	    if (rating == null) {
 		rating = new Rating(null, null, RatingKindType.general, lastActivity, RatingStatusType.active,
 			ratingIncrement, user.getDescriptionContent());
@@ -95,7 +95,7 @@ public class UserServiceImpl implements UserService {
 		if (password.equals(userProfile.getPassword())) {
 		    userProfile.setLastLoginDate(new Date());
 		    // this line fails
-		    userProfile.setLastIp(SessionUtils.getRemoteHost());
+		    userProfile.setLastIp(getRemoteHost());
 		    userProfileDAO.merge(userProfile);
 		    result = true;
 		}
@@ -116,7 +116,7 @@ public class UserServiceImpl implements UserService {
 		UserProfile userProfile = userProfileDAO.findByField("nonce", nonce);
 		if (userProfile != null) {
 		    String serverNonce;
-		    if (Utils.hasText(userProfile.getNewEmail())) {
+		    if (StringUtils.isNotBlank(userProfile.getNewEmail())) {
 			if (userProfile.getNewEmail().equals(email)) {
 			    serverNonce = SecurityUtils.getHashWithoutSalt(userProfile.getNewEmail() + ":"
 				    + userProfile.getSalt());
@@ -176,19 +176,22 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Boolean sendMessage(String title, String text, String recipientUsername) {
+    public Boolean sendMessage(String title, String text, String senderUsername, String recipientUsername) {
 	try {
+	    if (StringUtils.isBlank(senderUsername)) {
+
+	    }
 	    UserProfile recipientUserProfile = userProfileDAO.findByField("username", recipientUsername);
 	    if (recipientUserProfile != null) {
 		// TODO i18n
 		// TODO do not retrieve username from session
-		String emailSubject = "bundolo user " + SessionUtils.getUsername() + " sent you a message: " + title;
+		String emailSubject = "bundolo user " + SecurityUtils.getUsername() + " sent you a message: " + title;
 		String emailBody = "Message text:\n" + text + "\n\nPlease use bundolo to reply!";
 		mailingUtils.sendEmail(emailBody, emailSubject, recipientUserProfile.getEmail());
 		return true;
 	    }
 	} catch (Exception ex) {
-	    ex.printStackTrace();
+	    logger.log(Level.SEVERE, "sendMessage exception: " + ex);
 	}
 	return false;
     }
@@ -215,7 +218,7 @@ public class UserServiceImpl implements UserService {
 		userProfile.setPassword(password);
 		userProfile.setUserProfileStatus(UserProfileStatusType.pending);
 		userProfile.setSignupDate(new Date());
-		userProfile.setLastIp(SessionUtils.getRemoteHost());
+		userProfile.setLastIp(getRemoteHost());
 
 		Date creationDate = new Date();
 		Content descriptionContent = new Content(null, username, ContentKindType.user_description, null, "",
@@ -353,5 +356,10 @@ public class UserServiceImpl implements UserService {
     public Long deleteUser(String username) {
 	// TODO
 	return null;
+    }
+
+    private String getRemoteHost() {
+	ServletRequestAttributes sra = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+	return sra.getRequest().getRemoteHost();
     }
 }

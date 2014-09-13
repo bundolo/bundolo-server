@@ -7,9 +7,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.bundolo.Constants;
-import org.bundolo.Utils;
 import org.bundolo.model.Comment;
 import org.bundolo.model.Content;
+import org.bundolo.model.enumeration.ContentKindType;
 import org.bundolo.services.CommentService;
 import org.bundolo.services.ConnectionService;
 import org.bundolo.services.ContentService;
@@ -74,7 +74,7 @@ public class CommentController {
 	    rootCommentAncestor = rootCommentAncestor.getParentContent();
 	}
 	commentAncestors.add(rootCommentAncestor);
-	comment.setKind(Utils.getCommentContentKind(rootCommentAncestor.getKind()));
+	comment.setKind(getCommentContentKind(rootCommentAncestor.getKind()));
 	Long result = commentService.saveComment(comment);
 	if (result != null) {
 	    // logger.log(Level.WARNING, "saving comment; result not null: " + result);
@@ -98,6 +98,62 @@ public class CommentController {
 
 	}
 	// logger.log(Level.WARNING, "saving comment; result: " + result);
+	return result;
+    }
+
+    private ContentKindType getCommentContentKind(ContentKindType parentContentKind) {
+	ContentKindType result = ContentKindType.page_comment;
+	if (parentContentKind != null) {
+	    switch (parentContentKind) {
+	    case page_description:
+	    case page_comment:
+		result = ContentKindType.page_comment;
+		break;
+	    case text:
+	    case text_comment:
+		result = ContentKindType.text_comment;
+		break;
+	    case episode_group:
+	    case episode_group_comment:
+		result = ContentKindType.episode_group_comment;
+		break;
+	    case episode:
+	    case episode_comment:
+		result = ContentKindType.episode_comment;
+		break;
+	    case item_list_description:
+	    case item_list_comment:
+		result = ContentKindType.item_list_comment;
+		break;
+	    case connection_description:
+	    case connection_comment:
+		result = ContentKindType.connection_comment;
+		break;
+	    case news:
+	    case news_comment:
+		result = ContentKindType.news_comment;
+		break;
+	    case contest_description:
+	    case contest_comment:
+		result = ContentKindType.contest_comment;
+		break;
+	    case event:
+	    case event_comment:
+		result = ContentKindType.event_comment;
+		break;
+	    case label:
+	    case label_comment:
+		result = ContentKindType.label_comment;
+		break;
+	    case user_description:
+	    case user_comment:
+		result = ContentKindType.user_comment;
+		break;
+	    default:
+		result = ContentKindType.page_comment;
+		break;
+	    }
+	}
 	return result;
     }
 
