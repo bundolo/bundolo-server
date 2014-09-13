@@ -5,6 +5,7 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.mail.Address;
 import javax.mail.Authenticator;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -31,50 +32,78 @@ public class MailingUtils {
     public void sendEmail(String body, String subject, String recipient) throws MessagingException,
 	    UnsupportedEncodingException {
 	if (Boolean.valueOf(properties.getProperty("mailing.active"))) {
-	    logger.log(Level.FINE, "sendEmail\nrecipient: " + recipient + "\nsubject: " + subject + "\nbody: " + body);
-	    if (Boolean.valueOf(properties.getProperty("mail.from"))) {
-		Properties mailProps = new Properties();
-		mailProps.put("mail.smtp.from", properties.getProperty("mail.from"));
-		mailProps.put("mail.smtp.host", properties.getProperty("mail.smtphost"));
-		mailProps.put("mail.smtp.port", properties.getProperty("mail.port"));
-		mailProps.put("mail.smtp.auth", true);
-		mailProps.put("mail.smtp.socketFactory.port", properties.getProperty("mail.port"));
-		mailProps.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
-		mailProps.put("mail.smtp.socketFactory.fallback", "false");
-		mailProps.put("mail.smtp.starttls.enable", "true");
-
-		Session mailSession = Session.getDefaultInstance(mailProps, new Authenticator() {
-
-		    @Override
-		    protected PasswordAuthentication getPasswordAuthentication() {
-			return new PasswordAuthentication(properties.getProperty("mail.username"), properties
-				.getProperty("mail.password"));
-		    }
-
-		});
-
-		MimeMessage message = new MimeMessage(mailSession);
-		message.setFrom(new InternetAddress(properties.getProperty("mail.from")));
-		String[] emails = { recipient };
-		InternetAddress dests[] = new InternetAddress[emails.length];
-		for (int i = 0; i < emails.length; i++) {
-		    dests[i] = new InternetAddress(emails[i].trim().toLowerCase());
-		}
-		message.setRecipients(Message.RecipientType.TO, dests);
-		message.setSubject(subject, "UTF-8");
-		Multipart mp = new MimeMultipart();
-		MimeBodyPart mbp = new MimeBodyPart();
-		mbp.setContent(body, "text/html;charset=utf-8");
-		mp.addBodyPart(mbp);
-		message.setContent(mp);
-		message.setSentDate(new java.util.Date());
-
-		Transport.send(message);
+	    logger.log(Level.WARNING, "sendEmail\nrecipient: " + recipient + "\nsubject: " + subject + "\nbody: "
+		    + body);
+	    if ("gmail".equals(properties.getProperty("mail.service"))) {
+		sendEmailGmail(body, subject, recipient);
+	    } else if ("godaddy".equals(properties.getProperty("mail.service"))) {
+		sendEmailGoDaddy(body, subject, recipient);
 	    }
 	} else {
-	    logger.log(Level.WARNING, "#####sendEmail\nrecipient: " + recipient + "\nsubject: " + subject + "\nbody: "
+	    logger.log(Level.WARNING, "sendEmail\nrecipient: " + recipient + "\nsubject: " + subject + "\nbody: "
 		    + body);
 	}
+    }
+
+    private void sendEmailGmail(String body, String subject, String recipient) throws MessagingException,
+	    UnsupportedEncodingException {
+	Properties mailProps = new Properties();
+	mailProps.put("mail.smtp.from", properties.getProperty("mail.from"));
+	mailProps.put("mail.smtp.host", properties.getProperty("mail.host"));
+	mailProps.put("mail.smtp.port", properties.getProperty("mail.port"));
+	mailProps.put("mail.smtp.auth", true);
+	mailProps.put("mail.smtp.socketFactory.port", properties.getProperty("mail.port"));
+	mailProps.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+	mailProps.put("mail.smtp.socketFactory.fallback", "false");
+	mailProps.put("mail.smtp.starttls.enable", "true");
+
+	Session mailSession = Session.getDefaultInstance(mailProps, new Authenticator() {
+	    @Override
+	    protected PasswordAuthentication getPasswordAuthentication() {
+		return new PasswordAuthentication(properties.getProperty("mail.username"), properties
+			.getProperty("mail.password"));
+	    }
+	});
+
+	MimeMessage message = new MimeMessage(mailSession);
+	message.setFrom(new InternetAddress(properties.getProperty("mail.from")));
+	String[] emails = { recipient };
+	InternetAddress dests[] = new InternetAddress[emails.length];
+	for (int i = 0; i < emails.length; i++) {
+	    dests[i] = new InternetAddress(emails[i].trim().toLowerCase());
+	}
+	message.setRecipients(Message.RecipientType.TO, dests);
+	message.setSubject(subject, "UTF-8");
+	Multipart mp = new MimeMultipart();
+	MimeBodyPart mbp = new MimeBodyPart();
+	mbp.setContent(body, "text/html;charset=utf-8");
+	mp.addBodyPart(mbp);
+	message.setContent(mp);
+	message.setSentDate(new java.util.Date());
+	Transport.send(message);
+    }
+
+    private void sendEmailGoDaddy(String body, String subject, String recipient) throws MessagingException,
+	    UnsupportedEncodingException {
+	Properties props = new Properties();
+	props.put("mail.transport.protocol", "smtps");
+	props.put("mail.smtps.host", properties.getProperty("mail.host"));
+	props.put("mail.smtps.auth", "true");
+
+	Session mailSession = Session.getDefaultInstance(props);
+	// mailSession.setDebug(true);
+	Transport transport = mailSession.getTransport();
+	MimeMessage message = new MimeMessage(mailSession);
+
+	message.setSubject(subject, "UTF-8");
+	message.setContent(body, "text/plain;charset=utf-8");
+	Address[] from = InternetAddress.parse(properties.getProperty("mail.from"));
+	message.addFrom(from);
+	message.addRecipient(Message.RecipientType.TO, new InternetAddress(recipient));
+	transport.connect(properties.getProperty("mail.host"), Integer.valueOf(properties.getProperty("mail.port")),
+		properties.getProperty("mail.username"), properties.getProperty("mail.password"));
+	transport.sendMessage(message, message.getRecipients(Message.RecipientType.TO));
+	transport.close();
     }
 
     public static String format(String s, Object... arguments) {
