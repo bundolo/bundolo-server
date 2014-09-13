@@ -176,24 +176,37 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Boolean sendMessage(String title, String text, String senderUsername, String recipientUsername) {
+    public Boolean sendMessage(String title, String text, String recipientUsername) {
+	logger.log(Level.WARNING, "sendMessage: " + title + ", " + recipientUsername);
 	try {
+	    String senderUsername = SecurityUtils.getUsername();
+	    String recipientEmailAddress;
+	    if (StringUtils.isNotBlank(recipientUsername)) {
+		if (StringUtils.isBlank(senderUsername)) {
+		    // guests can't send messages to users
+		    return false;
+		}
+		UserProfile recipientUserProfile = userProfileDAO.findByField("username", recipientUsername);
+		if (recipientUserProfile != null) {
+		    recipientEmailAddress = recipientUserProfile.getEmail();
+		} else {
+		    // recipient does not exist
+		    return false;
+		}
+	    } else {
+		recipientEmailAddress = Constants.BUNDOLO_EMAIL_ADDRESS;
+	    }
 	    if (StringUtils.isBlank(senderUsername)) {
-
+		senderUsername = Constants.DEFAULT_GUEST_USERNAME;
 	    }
-	    UserProfile recipientUserProfile = userProfileDAO.findByField("username", recipientUsername);
-	    if (recipientUserProfile != null) {
-		// TODO i18n
-		// TODO do not retrieve username from session
-		String emailSubject = "bundolo user " + SecurityUtils.getUsername() + " sent you a message: " + title;
-		String emailBody = "Message text:\n" + text + "\n\nPlease use bundolo to reply!";
-		mailingUtils.sendEmail(emailBody, emailSubject, recipientUserProfile.getEmail());
-		return true;
-	    }
+	    String emailSubject = "bundolo korisnik " + senderUsername + " vam je poslao privatnu poruku: " + title;
+	    String emailBody = "tekst poruke:\n" + text + "\n\nza odgovor koristite bundolo!";
+	    mailingUtils.sendEmail(emailBody, emailSubject, recipientEmailAddress);
+	    return true;
 	} catch (Exception ex) {
 	    logger.log(Level.SEVERE, "sendMessage exception: " + ex);
+	    return false;
 	}
-	return false;
     }
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)

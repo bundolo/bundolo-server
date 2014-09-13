@@ -26,8 +26,7 @@ public class Constants {
     public static final String USER_PROFILE_ATTRIBUTE_NAME = "userProfileDTO";
     public static final String LOCALE_ATTRIBUTE_NAME = "locale";
 
-    // TODO to be removed once db is updated
-    public static final String OLD_DB_GUEST_USERNAME = "gost";
+    public static final String DEFAULT_GUEST_USERNAME = "gost";
 
     public static final String REST_PATH_TEXTS = "/texts";
     public static final String REST_PATH_TEXT = "/text";

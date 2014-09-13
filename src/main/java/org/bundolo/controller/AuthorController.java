@@ -1,6 +1,7 @@
 package org.bundolo.controller;
 
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -91,4 +92,19 @@ public class AuthorController {
 	return contentService.findStatistics(username);
     }
 
+    @RequestMapping(value = Constants.REST_PATH_MESSAGE + "/{username}", method = RequestMethod.POST)
+    public @ResponseBody
+    Boolean message(@PathVariable String username, @RequestBody final Map<String, String> message) {
+	logger.log(Level.WARNING, "message, username: " + username + ", message: " + message);
+	// TODO check param validity
+	return userService.sendMessage(message.get("title"), message.get("text"), username);
+    }
+
+    @RequestMapping(value = Constants.REST_PATH_MESSAGE, method = RequestMethod.POST)
+    public @ResponseBody
+    Boolean messageToBundolo(@RequestBody final Map<String, String> message) {
+	logger.log(Level.WARNING, "messageToBundolo, message: " + message);
+	// TODO check param validity
+	return userService.sendMessage(message.get("title"), message.get("text"), null);
+    }
 }
