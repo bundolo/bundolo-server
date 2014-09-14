@@ -103,6 +103,8 @@ public class SerialController {
 	    @RequestBody final Content episode) {
 	logger.log(Level.WARNING, "saveOrUpdate, episode: " + episode);
 	// TODO check param validity
+	Content serial = contentService.findSerial(serialTitle);
+	episode.getParentContent().setContentId(serial.getContentId());
 	Date creationDate = new Date();
 	episode.setLastActivity(creationDate);
 	episode.setKind(ContentKindType.episode);

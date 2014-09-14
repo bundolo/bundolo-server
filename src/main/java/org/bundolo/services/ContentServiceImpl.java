@@ -201,7 +201,17 @@ public class ContentServiceImpl implements ContentService {
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     private Boolean saveContent(Content content) {
 	try {
-	    content.setContentStatus(ContentStatusType.active);
+	    if (ContentKindType.episode.equals(content.getKind())) {
+		// if this is episode and the last one in the serial is pending, saving is not allowed
+		List<Content> episodes = contentDAO.findEpisodes(content.getParentContent().getContentId(), 0, -1);
+		if (episodes != null && episodes.size() > 0
+			&& ContentStatusType.pending.equals(episodes.get(episodes.size() - 1).getContentStatus())) {
+		    return false;
+		}
+	    }
+	    if (content.getContentStatus() == null) {
+		content.setContentStatus(ContentStatusType.active);
+	    }
 	    Date creationDate = new Date();
 	    content.setCreationDate(creationDate);
 	    content.setLastActivity(creationDate);
@@ -228,6 +238,10 @@ public class ContentServiceImpl implements ContentService {
     public Boolean saveOrUpdateContent(Content content, boolean anonymousAllowed) {
 	try {
 	    if (content == null) {
+		return false;
+	    }
+	    if (ContentKindType.episode.equals(content.getKind()) && content.getParentContent().getContentId() == null) {
+		// episode that is not attached to serial is not allowed
 		return false;
 	    }
 	    UsernamePasswordAuthenticationToken authentication = (UsernamePasswordAuthenticationToken) SecurityContextHolder
@@ -263,6 +277,9 @@ public class ContentServiceImpl implements ContentService {
 			    contentDB.setLastActivity(content.getLastActivity());
 			} else {
 			    contentDB.setLastActivity(new Date());
+			}
+			if (ContentKindType.episode.equals(content.getKind()) && content.getContentStatus() != null) {
+			    contentDB.setContentStatus(content.getContentStatus());
 			}
 			contentDAO.merge(contentDB);
 			return true;
