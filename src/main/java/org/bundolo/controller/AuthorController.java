@@ -31,35 +31,36 @@ public class AuthorController {
     @Autowired
     private ContentService contentService;
 
-    @RequestMapping(value = Constants.REST_PATH_AUTHOR + "/{username}", method = RequestMethod.GET)
+    @RequestMapping(value = Constants.REST_PATH_AUTHOR + "/{username:.+}", method = RequestMethod.GET)
     public @ResponseBody
     User author(@PathVariable String username) {
+	logger.log(Level.WARNING, "author, username: " + username);
 	// TODO check param validity
 	return userService.findUser(username);
     }
 
-    @RequestMapping(value = Constants.REST_PATH_AUTHOR + "/{username}", method = RequestMethod.DELETE)
+    @RequestMapping(value = Constants.REST_PATH_AUTHOR + "/{username:.+}", method = RequestMethod.DELETE)
     public @ResponseBody
     Boolean delete(@PathVariable String username) {
 	// TODO check param validity
 	return userService.deleteUser(username) != null;
     }
 
-    @RequestMapping(value = Constants.REST_PATH_AUTH + "/{username}", method = RequestMethod.POST)
+    @RequestMapping(value = Constants.REST_PATH_AUTH + "/{username:.+}", method = RequestMethod.POST)
     public @ResponseBody
     Boolean auth(@PathVariable String username, @RequestParam String password) {
 	// TODO check param validity
 	return userService.authenticateUser(username, password);
     }
 
-    @RequestMapping(value = Constants.REST_PATH_PASSWORD + "/{username}", method = RequestMethod.POST)
+    @RequestMapping(value = Constants.REST_PATH_PASSWORD + "/{username:.+}", method = RequestMethod.POST)
     public @ResponseBody
     Boolean password(@PathVariable String username, @RequestParam String email) {
 	// TODO check param validity
 	return userService.sendNewPassword(username, email);
     }
 
-    @RequestMapping(value = Constants.REST_PATH_AUTHOR + "/{username}", method = RequestMethod.PUT)
+    @RequestMapping(value = Constants.REST_PATH_AUTHOR + "/{username:.+}", method = RequestMethod.PUT)
     public @ResponseBody
     Boolean saveOrUpdate(@PathVariable String username, @RequestBody final UserProfile userProfile) {
 	logger.log(Level.WARNING, "saveOrUpdate, userProfile: " + userProfile);
@@ -85,14 +86,14 @@ public class AuthorController {
 	return result;
     }
 
-    @RequestMapping(value = Constants.REST_PATH_STATISTICS + "/{username}", method = RequestMethod.GET)
+    @RequestMapping(value = Constants.REST_PATH_STATISTICS + "/{username:.+}", method = RequestMethod.GET)
     public @ResponseBody
     List<Content> statistics(@PathVariable String username) {
 	// TODO check param validity
 	return contentService.findStatistics(username);
     }
 
-    @RequestMapping(value = Constants.REST_PATH_MESSAGE + "/{username}", method = RequestMethod.POST)
+    @RequestMapping(value = Constants.REST_PATH_MESSAGE + "/{username:.+}", method = RequestMethod.POST)
     public @ResponseBody
     Boolean message(@PathVariable String username, @RequestBody final Map<String, String> message) {
 	logger.log(Level.WARNING, "message, username: " + username + ", message: " + message);

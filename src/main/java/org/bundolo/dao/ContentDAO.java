@@ -21,6 +21,7 @@ public class ContentDAO extends JpaDAO<Long, Content> {
     @SuppressWarnings("unchecked")
     public List<Content> findTexts(Integer start, Integer end, String[] orderBy, String[] order, String[] filterBy,
 	    String[] filter) {
+	int filterParamCounter = 0;
 	StringBuilder queryString = new StringBuilder();
 	queryString.append("SELECT c FROM Content c WHERE kind='text' AND content_status='active'");
 	if (ArrayUtils.isNotEmpty(filterBy)) {
@@ -31,7 +32,8 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 		queryString.append(prefix);
 		queryString.append(filterBy[i]);
 		queryString.append(suffix);
-		queryString.append(filter[i].toLowerCase());
+		filterParamCounter++;
+		queryString.append("'||?" + filterParamCounter + "||'");
 		queryString.append(postfix);
 	    }
 	}
@@ -51,6 +53,11 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	logger.log(Level.WARNING, "queryString: " + queryString.toString() + ", start: " + start + ", max results: "
 		+ (end - start + 1));
 	Query q = entityManager.createQuery(queryString.toString());
+	if (filterParamCounter > 0) {
+	    for (int i = 0; i < filterBy.length; i++) {
+		q.setParameter(i + 1, filter[i].toLowerCase());
+	    }
+	}
 	q.setFirstResult(start);
 	q.setMaxResults(end - start + 1);
 	return q.getResultList();
@@ -59,6 +66,7 @@ public class ContentDAO extends JpaDAO<Long, Content> {
     @SuppressWarnings("unchecked")
     public List<Content> findAnnouncements(Integer start, Integer end, String[] orderBy, String[] order,
 	    String[] filterBy, String[] filter) {
+	int filterParamCounter = 0;
 	StringBuilder queryString = new StringBuilder();
 	queryString.append("SELECT c FROM Content c WHERE kind='news' AND content_status='active'");
 	if (ArrayUtils.isNotEmpty(filterBy)) {
@@ -69,7 +77,8 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 		queryString.append(prefix);
 		queryString.append(filterBy[i]);
 		queryString.append(suffix);
-		queryString.append(filter[i].toLowerCase());
+		filterParamCounter++;
+		queryString.append("'||?" + filterParamCounter + "||'");
 		queryString.append(postfix);
 	    }
 	}
@@ -89,6 +98,11 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	logger.log(Level.WARNING, "queryString: " + queryString.toString() + ", start: " + start + ", max results: "
 		+ (end - start + 1));
 	Query q = entityManager.createQuery(queryString.toString());
+	if (filterParamCounter > 0) {
+	    for (int i = 0; i < filterBy.length; i++) {
+		q.setParameter(i + 1, filter[i].toLowerCase());
+	    }
+	}
 	q.setFirstResult(start);
 	q.setMaxResults(end - start + 1);
 	return q.getResultList();
@@ -97,6 +111,7 @@ public class ContentDAO extends JpaDAO<Long, Content> {
     @SuppressWarnings("unchecked")
     public List<Content> findSerials(Integer start, Integer end, String[] orderBy, String[] order, String[] filterBy,
 	    String[] filter) {
+	int filterParamCounter = 0;
 	StringBuilder queryString = new StringBuilder();
 	queryString.append("SELECT c FROM Content c WHERE kind='episode_group'");
 	queryString.append(" AND (content_status='active' OR content_status='pending')");
@@ -108,7 +123,8 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 		queryString.append(prefix);
 		queryString.append(filterBy[i]);
 		queryString.append(suffix);
-		queryString.append(filter[i].toLowerCase());
+		filterParamCounter++;
+		queryString.append("'||?" + filterParamCounter + "||'");
 		queryString.append(postfix);
 	    }
 	}
@@ -128,6 +144,11 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	logger.log(Level.WARNING, "queryString: " + queryString.toString() + ", start: " + start + ", max results: "
 		+ (end - start + 1));
 	Query q = entityManager.createQuery(queryString.toString());
+	if (filterParamCounter > 0) {
+	    for (int i = 0; i < filterBy.length; i++) {
+		q.setParameter(i + 1, filter[i].toLowerCase());
+	    }
+	}
 	q.setFirstResult(start);
 	q.setMaxResults(end - start + 1);
 	return q.getResultList();
@@ -136,6 +157,7 @@ public class ContentDAO extends JpaDAO<Long, Content> {
     @SuppressWarnings("unchecked")
     public List<Content> findTopics(Integer start, Integer end, String[] orderBy, String[] order, String[] filterBy,
 	    String[] filter) {
+	int filterParamCounter = 0;
 	StringBuilder queryString = new StringBuilder();
 	queryString.append("SELECT c FROM Content c WHERE kind='forum_topic'");
 	queryString.append(" AND contentStatus='active'");
@@ -151,7 +173,8 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 		queryString.append(prefix);
 		queryString.append(filterBy[i]);
 		queryString.append(suffix);
-		queryString.append(filter[i].toLowerCase());
+		filterParamCounter++;
+		queryString.append("'||?" + filterParamCounter + "||'");
 		queryString.append(postfix);
 	    }
 	}
@@ -171,6 +194,11 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	logger.log(Level.WARNING, "queryString: " + queryString.toString() + ", start: " + start + ", max results: "
 		+ (end - start + 1));
 	Query q = entityManager.createQuery(queryString.toString());
+	if (filterParamCounter > 0) {
+	    for (int i = 0; i < filterBy.length; i++) {
+		q.setParameter(i + 1, filter[i].toLowerCase());
+	    }
+	}
 	q.setFirstResult(start);
 	q.setMaxResults(end - start + 1);
 	return q.getResultList();
@@ -197,9 +225,15 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 
     @SuppressWarnings("unchecked")
     public Content findByTitle(String title, ContentKindType kind) {
+	logger.log(Level.WARNING, "findByTitle: " + title + ", kind: " + kind);
+	if (title == null) {
+	    return null;
+	}
 	String queryString = "SELECT c FROM Content c";
 	queryString += " WHERE kind = '" + kind + "'";
-	queryString += " AND content_name " + ((title == null) ? "IS NULL" : "='" + title + "'");
+	// queryString += " AND content_name =''||?1||''";
+	queryString += " AND content_name =?1";
+	// queryString += " AND content_name ='" + title + "'";
 	if (ContentKindType.episode_group.equals(kind)) {
 	    queryString += " AND (content_status='active' OR content_status='pending')";
 	} else {
@@ -208,6 +242,7 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	logger.log(Level.WARNING, "queryString: " + queryString);
 
 	Query q = entityManager.createQuery(queryString);
+	q.setParameter(1, title);
 	q.setMaxResults(1);
 	List<Content> resultList = q.getResultList();
 	if (resultList != null && resultList.size() > 0) {
@@ -221,35 +256,21 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	}
     }
 
-    // TODO not used now since topic titles are moved to content_name
-    @SuppressWarnings("unchecked")
-    public Content findByText(String text, ContentKindType kind) {
-	String queryString = "SELECT c FROM Content c";
-	queryString += " WHERE kind = '" + kind + "'";
-	queryString += " AND content_text " + ((text == null) ? "IS NULL" : "='" + text + "'");
-	queryString += " AND content_status='active'";
-	logger.log(Level.WARNING, "queryString: " + queryString);
-
-	Query q = entityManager.createQuery(queryString);
-	q.setMaxResults(1);
-	List<Content> resultList = q.getResultList();
-	if (resultList != null && resultList.size() > 0) {
-	    return resultList.get(0);
-	} else {
-	    return null;
-	}
-    }
-
     @SuppressWarnings("unchecked")
     public Content findText(String username, String title) {
+	if (username == null || title == null) {
+	    return null;
+	}
 	String queryString = "SELECT c FROM Content c";
 	queryString += " WHERE kind = '" + ContentKindType.text + "'";
-	queryString += " AND author_username " + ((username == null) ? "IS NULL" : "='" + username + "'");
-	queryString += " AND content_name " + ((title == null) ? "IS NULL" : "='" + title + "'");
+	queryString += " AND author_username =?1";
+	queryString += " AND content_name =?2";
 	queryString += " AND content_status='active'";
 	logger.log(Level.WARNING, "queryString: " + queryString);
 
 	Query q = entityManager.createQuery(queryString);
+	q.setParameter(1, username);
+	q.setParameter(2, title);
 	q.setMaxResults(1);
 	List<Content> resultList = q.getResultList();
 	if (resultList != null && resultList.size() > 0) {
@@ -281,12 +302,16 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 
     @SuppressWarnings("unchecked")
     public List<Content> findPosts(Long parentId, Integer start, Integer end) {
+	if (parentId == null) {
+	    return null;
+	}
 	String queryString = "SELECT c FROM Content c WHERE kind='forum_post' AND content_status='active'";
-	queryString += " AND parent_content_id =" + parentId;
+	queryString += " AND parent_content_id =?1";
 	queryString += " ORDER BY creationDate";
 	logger.log(Level.WARNING, "queryString: " + queryString.toString() + ", start: " + start + ", max results: "
 		+ (end - start + 1));
 	Query q = entityManager.createQuery(queryString.toString());
+	q.setParameter(1, parentId);
 	q.setFirstResult(start);
 	q.setMaxResults(end - start + 1);
 	return q.getResultList();
@@ -294,12 +319,16 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 
     @SuppressWarnings("unchecked")
     public List<Content> findEpisodes(Long parentId, Integer start, Integer end) {
+	if (parentId == null) {
+	    return null;
+	}
 	String queryString = "SELECT c FROM Content c WHERE kind='episode' AND (content_status='active' OR content_status='pending')";
-	queryString += " AND parent_content_id =" + parentId;
+	queryString += " AND parent_content_id =?1";
 	queryString += " ORDER BY creationDate";
 	logger.log(Level.WARNING, "queryString: " + queryString.toString() + ", start: " + start + ", max results: "
 		+ (end - start + 1));
 	Query q = entityManager.createQuery(queryString.toString());
+	q.setParameter(1, parentId);
 	q.setFirstResult(start);
 	if (end != null && end >= 0) {
 	    q.setMaxResults(end - start + 1);
@@ -309,14 +338,19 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 
     @SuppressWarnings("unchecked")
     public Content findEpisode(String serialTitle, String title) {
+	if (serialTitle == null || title == null) {
+	    return null;
+	}
 	String queryString = "SELECT c FROM Content c";
 	queryString += " WHERE c.kind = '" + ContentKindType.episode + "'";
-	queryString += " AND parentContent.name " + ((serialTitle == null) ? "IS NULL" : "='" + serialTitle + "'");
-	queryString += " AND c.name " + ((title == null) ? "IS NULL" : "='" + title + "'");
+	queryString += " AND parentContent.name =?1";
+	queryString += " AND c.name =?2";
 	queryString += " AND (c.contentStatus='active' OR c.contentStatus='pending')";
 	logger.log(Level.WARNING, "queryString: " + queryString);
 
 	Query q = entityManager.createQuery(queryString);
+	q.setParameter(1, serialTitle);
+	q.setParameter(2, title);
 	q.setMaxResults(1);
 	List<Content> resultList = q.getResultList();
 	if (resultList != null && resultList.size() > 0) {
@@ -330,13 +364,17 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 
     @SuppressWarnings("unchecked")
     public List<Content> findStatistics(String username) {
+	if (username == null) {
+	    return null;
+	}
 	String queryString = "SELECT c FROM Content c";
-	queryString += " WHERE author_username " + ((username == null) ? "IS NULL" : "='" + username + "'");
+	queryString += " WHERE author_username =?1";
 	queryString += " AND (kind='text' OR kind='episode')";
 	queryString += " AND (content_status='active' OR content_status='pending')";
 	queryString += " ORDER BY creationDate";
 	logger.log(Level.WARNING, "queryString: " + queryString.toString());
 	Query q = entityManager.createQuery(queryString.toString());
+	q.setParameter(1, username);
 	List<Content> resultList = q.getResultList();
 	if (resultList != null && resultList.size() > 0) {
 	    for (Content result : resultList) {
@@ -351,9 +389,12 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 
     @SuppressWarnings("unchecked")
     public Content findNext(Long contentId, String orderBy, String fixBy, boolean ascending) {
+	if (contentId == null) {
+	    return null;
+	}
 	StringBuilder queryString = new StringBuilder();
 	queryString.append("SELECT c1 FROM Content c1, Content c2");
-	queryString.append(" WHERE c2.contentId = " + contentId);
+	queryString.append(" WHERE c2.contentId = ?1");
 	queryString.append(" AND c1.kind = c2.kind");
 	queryString.append(" AND c1.contentStatus='active'");
 	if (StringUtils.isNotBlank(fixBy)) {
@@ -363,6 +404,7 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	queryString.append(" ORDER BY c1." + orderBy + " " + (ascending ? "ASC" : "DESC"));
 	logger.log(Level.WARNING, "queryString: " + queryString.toString());
 	Query q = entityManager.createQuery(queryString.toString());
+	q.setParameter(1, contentId);
 	q.setMaxResults(1);
 	List<Content> resultList = q.getResultList();
 	if (resultList != null && resultList.size() > 0) {

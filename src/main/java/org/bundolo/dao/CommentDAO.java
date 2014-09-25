@@ -21,11 +21,12 @@ public class CommentDAO extends JpaDAO<Long, Comment> {
 	List<Comment> result = null;
 	if (parentId != null) {
 	    String queryString = "SELECT c FROM Comment c WHERE content_status='active'";
-	    queryString += " AND parent_content_id =" + parentId;
+	    queryString += " AND parent_content_id =?1";
 	    queryString += " AND kind like '%comment%'";
 	    queryString += " ORDER BY creationDate";
 	    logger.log(Level.WARNING, "queryString: " + queryString);
 	    Query q = entityManager.createQuery(queryString);
+	    q.setParameter(1, parentId);
 	    result = q.getResultList();
 	}
 	return result;
@@ -34,6 +35,7 @@ public class CommentDAO extends JpaDAO<Long, Comment> {
     @SuppressWarnings("unchecked")
     public List<Comment> findCommentsWithParents(Integer start, Integer end, String[] orderBy, String[] order,
 	    String[] filterBy, String[] filter) {
+	int filterParamCounter = 0;
 	StringBuilder queryString = new StringBuilder();
 	queryString.append("SELECT c FROM Comment c WHERE kind like '%comment%' AND content_status='active'");
 	if (ArrayUtils.isNotEmpty(filterBy)) {
@@ -44,7 +46,8 @@ public class CommentDAO extends JpaDAO<Long, Comment> {
 		queryString.append(prefix);
 		queryString.append(filterBy[i]);
 		queryString.append(suffix);
-		queryString.append(filter[i].toLowerCase());
+		filterParamCounter++;
+		queryString.append("'||?" + filterParamCounter + "||'");
 		queryString.append(postfix);
 	    }
 	    // TODO consider making these links functional by keeping old ids in database
@@ -68,6 +71,11 @@ public class CommentDAO extends JpaDAO<Long, Comment> {
 	logger.log(Level.WARNING, "queryString: " + queryString.toString() + ", start: " + start + ", max results: "
 		+ (end - start + 1));
 	Query q = entityManager.createQuery(queryString.toString());
+	if (filterParamCounter > 0) {
+	    for (int i = 0; i < filterBy.length; i++) {
+		q.setParameter(i + 1, filter[i].toLowerCase());
+	    }
+	}
 	q.setFirstResult(start);
 	q.setMaxResults(end - start + 1);
 

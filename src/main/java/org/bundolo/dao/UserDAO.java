@@ -20,8 +20,7 @@ public class UserDAO extends JpaDAO<String, User> {
     @SuppressWarnings("unchecked")
     public List<User> findUsers(Integer start, Integer end, String[] orderBy, String[] order, String[] filterBy,
 	    String[] filter) {
-	// Session session = entityManager.unwrap(Session.class);
-	// session.enableFilter("descriptionFilter").setParameter("kind", "user_description");
+	int filterParamCounter = 0;
 	StringBuilder queryString = new StringBuilder();
 	queryString.append("SELECT u FROM User u WHERE user_profile_status='active'");
 	if (ArrayUtils.isNotEmpty(filterBy)) {
@@ -32,7 +31,8 @@ public class UserDAO extends JpaDAO<String, User> {
 		queryString.append(prefix);
 		queryString.append(filterBy[i]);
 		queryString.append(suffix);
-		queryString.append(filter[i].toLowerCase());
+		filterParamCounter++;
+		queryString.append("'||?" + filterParamCounter + "||'");
 		queryString.append(postfix);
 	    }
 	}
@@ -52,6 +52,11 @@ public class UserDAO extends JpaDAO<String, User> {
 	logger.log(Level.WARNING, "queryString: " + queryString.toString() + ", start: " + start + ", max results: "
 		+ (end - start + 1));
 	Query q = entityManager.createQuery(queryString.toString());
+	if (filterParamCounter > 0) {
+	    for (int i = 0; i < filterBy.length; i++) {
+		q.setParameter(i + 1, filter[i].toLowerCase());
+	    }
+	}
 	q.setFirstResult(start);
 	q.setMaxResults(end - start + 1);
 	return q.getResultList();
@@ -59,10 +64,13 @@ public class UserDAO extends JpaDAO<String, User> {
 
     @SuppressWarnings("unchecked")
     public User findNext(String username, String orderBy, String fixBy, boolean ascending) {
+	if (username == null) {
+	    return null;
+	}
 	// TODO this is not nice. since we don't keep user status in User, we retrieve UserProfile and then get User
 	StringBuilder queryString = new StringBuilder();
 	queryString.append("SELECT u1 FROM UserProfile u1, UserProfile u2");
-	queryString.append(" WHERE u2.username = '" + username + "'");
+	queryString.append(" WHERE u2.username = ?1");
 	queryString.append(" AND u1.userProfileStatus='active'");
 	if (StringUtils.isNotBlank(fixBy)) {
 	    queryString.append(" AND u1." + fixBy + "=u2." + fixBy);
@@ -71,6 +79,7 @@ public class UserDAO extends JpaDAO<String, User> {
 	queryString.append(" ORDER BY u1." + orderBy + " " + (ascending ? "ASC" : "DESC"));
 	logger.log(Level.WARNING, "queryString: " + queryString.toString());
 	Query q = entityManager.createQuery(queryString.toString());
+	q.setParameter(1, username);
 	q.setMaxResults(1);
 	List<UserProfile> resultList = q.getResultList();
 	if (resultList != null && resultList.size() > 0) {

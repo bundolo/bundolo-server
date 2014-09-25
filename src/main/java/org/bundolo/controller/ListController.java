@@ -66,7 +66,7 @@ public class ListController {
 	    String[] params = orderBy.split(",");
 	    for (int i = 0; i < params.length; i += 2) {
 		orderByColumns.add(ConnectionColumnType.valueOf(params[i]).getColumnName());
-		orderByDirections.add(params[i + 1]);
+		orderByDirections.add(getOrderByDirection(params[i + 1]));
 	    }
 	}
 	List<String> filterByColumns = new ArrayList<String>();
@@ -98,7 +98,7 @@ public class ListController {
 	    String[] params = orderBy.split(",");
 	    for (int i = 0; i < params.length; i += 2) {
 		orderByColumns.add(ContestColumnType.valueOf(params[i]).getColumnName());
-		orderByDirections.add(params[i + 1]);
+		orderByDirections.add(getOrderByDirection(params[i + 1]));
 	    }
 	}
 	List<String> filterByColumns = new ArrayList<String>();
@@ -130,7 +130,7 @@ public class ListController {
 	    String[] params = orderBy.split(",");
 	    for (int i = 0; i < params.length; i += 2) {
 		orderByColumns.add(AuthorColumnType.valueOf(params[i]).getColumnName());
-		orderByDirections.add(params[i + 1]);
+		orderByDirections.add(getOrderByDirection(params[i + 1]));
 	    }
 	}
 	List<String> filterByColumns = new ArrayList<String>();
@@ -162,7 +162,7 @@ public class ListController {
 	    String[] params = orderBy.split(",");
 	    for (int i = 0; i < params.length; i += 2) {
 		orderByColumns.add(TextColumnType.valueOf(params[i]).getColumnName());
-		orderByDirections.add(params[i + 1]);
+		orderByDirections.add(getOrderByDirection(params[i + 1]));
 	    }
 	}
 	List<String> filterByColumns = new ArrayList<String>();
@@ -194,7 +194,7 @@ public class ListController {
 	    String[] params = orderBy.split(",");
 	    for (int i = 0; i < params.length; i += 2) {
 		orderByColumns.add(AnnouncementColumnType.valueOf(params[i]).getColumnName());
-		orderByDirections.add(params[i + 1]);
+		orderByDirections.add(getOrderByDirection(params[i + 1]));
 	    }
 	}
 	List<String> filterByColumns = new ArrayList<String>();
@@ -226,7 +226,7 @@ public class ListController {
 	    String[] params = orderBy.split(",");
 	    for (int i = 0; i < params.length; i += 2) {
 		orderByColumns.add(SerialColumnType.valueOf(params[i]).getColumnName());
-		orderByDirections.add(params[i + 1]);
+		orderByDirections.add(getOrderByDirection(params[i + 1]));
 	    }
 	}
 	List<String> filterByColumns = new ArrayList<String>();
@@ -258,7 +258,7 @@ public class ListController {
 	    String[] params = orderBy.split(",");
 	    for (int i = 0; i < params.length; i += 2) {
 		orderByColumns.add(TopicColumnType.valueOf(params[i]).getColumnName());
-		orderByDirections.add(params[i + 1]);
+		orderByDirections.add(getOrderByDirection(params[i + 1]));
 	    }
 	}
 	List<String> filterByColumns = new ArrayList<String>();
@@ -290,7 +290,7 @@ public class ListController {
 	    String[] params = orderBy.split(",");
 	    for (int i = 0; i < params.length; i += 2) {
 		orderByColumns.add(CommentColumnType.valueOf(params[i]).getColumnName());
-		orderByDirections.add(params[i + 1]);
+		orderByDirections.add(getOrderByDirection(params[i + 1]));
 	    }
 	}
 	List<String> filterByColumns = new ArrayList<String>();
@@ -371,6 +371,14 @@ public class ListController {
 	    return "cast(" + columnName + " as text)";
 	default:
 	    return columnName;
+	}
+    }
+
+    private String getOrderByDirection(String direction) {
+	if ("desc".equals(direction)) {
+	    return "desc";
+	} else {
+	    return "asc";
 	}
     }
 
