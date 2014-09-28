@@ -5,7 +5,6 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.mail.Address;
 import javax.mail.Authenticator;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -97,8 +96,8 @@ public class MailingUtils {
 
 	message.setSubject(subject, "UTF-8");
 	message.setContent(body, "text/plain;charset=utf-8");
-	Address[] from = InternetAddress.parse(properties.getProperty("mail.from"));
-	message.addFrom(from);
+	message.setFrom(new InternetAddress(properties.getProperty("mail.from"), properties
+		.getProperty("mail.from.friendly")));
 	message.addRecipient(Message.RecipientType.TO, new InternetAddress(recipient));
 	transport.connect(properties.getProperty("mail.host"), Integer.valueOf(properties.getProperty("mail.port")),
 		properties.getProperty("mail.username"), properties.getProperty("mail.password"));

@@ -242,7 +242,7 @@ public class UserServiceImpl implements UserService {
 		userProfile.setLastIp(getRemoteHost());
 
 		Date creationDate = new Date();
-		Content descriptionContent = new Content(null, username, ContentKindType.user_description, null, "",
+		Content descriptionContent = new Content(null, null, ContentKindType.user_description, null, "",
 			Constants.DEFAULT_LOCALE, creationDate, creationDate, ContentStatusType.active, null);
 		userProfile.setDescriptionContent(descriptionContent);
 
@@ -273,6 +273,7 @@ public class UserServiceImpl implements UserService {
 		    // + "enter the following Auth code:\n\n" + nonce;
 		    String emailSubject = "aktivacija bundolo korisničkog naloga";
 		    mailingUtils.sendEmail(emailBody, emailSubject, email);
+		    // TODO rollback db if email sending failed, or notify admin somehow
 		    return true;
 		}
 	    }
