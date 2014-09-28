@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.commons.lang3.StringUtils;
 import org.bundolo.Constants;
 import org.bundolo.model.Comment;
 import org.bundolo.model.Content;
@@ -50,7 +51,6 @@ public class CommentController {
     List<Comment> comments(@PathVariable Long parentId) {
 	// TODO check param validity
 	return commentService.findCommentsByParentId(parentId);
-
     }
 
     // TODO this should eventually become put method, to avoid saving the same comment twice, but it's going to be a
@@ -59,6 +59,9 @@ public class CommentController {
     @ResponseStatus(HttpStatus.CREATED)
     public @ResponseBody
     Long save(@RequestBody final Comment comment) {
+	if (comment == null || StringUtils.isBlank(comment.getText())) {
+	    return null;
+	}
 	logger.log(Level.WARNING, "saving comment: " + comment);
 	// TODO check param validity
 	// TODO this could be nicer, move this logic to service. the problem with that is calling content update from

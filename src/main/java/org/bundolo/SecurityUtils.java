@@ -121,7 +121,6 @@ public class SecurityUtils {
     // }
 
     public static String getUsername() {
-	// TODO cleanup SessionUtils, we don't keep user in session
 	UsernamePasswordAuthenticationToken authentication = (UsernamePasswordAuthenticationToken) SecurityContextHolder
 		.getContext().getAuthentication();
 	if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_USER"))) {
