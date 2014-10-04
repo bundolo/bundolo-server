@@ -200,6 +200,9 @@ public class ContentServiceImpl implements ContentService {
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     private Boolean saveContent(Content content) {
 	try {
+	    if (contentViolatesDBConstraints(content)) {
+		return false;
+	    }
 	    if (ContentKindType.episode.equals(content.getKind())) {
 		// if this is episode and the last one in the serial is pending, saving is not allowed
 		List<Content> episodes = contentDAO.findEpisodes(content.getParentContent().getContentId(), 0, -1);
@@ -264,6 +267,12 @@ public class ContentServiceImpl implements ContentService {
 			if (!((String) authentication.getPrincipal()).equals(contentDB.getAuthorUsername())) {
 			    // user is not the owner
 			    return false;
+			}
+			if (!contentDB.getName().equals(content.getName())) {
+			    content.setAuthorUsername(contentDB.getAuthorUsername());
+			    if (contentViolatesDBConstraints(content)) {
+				return false;
+			    }
 			}
 			if (ContentKindType.text.equals(content.getKind())) {
 			    Content descriptionContent = (Content) content.getDescription().toArray()[0];
@@ -423,5 +432,22 @@ public class ContentServiceImpl implements ContentService {
     public Long deleteTopic(String title) {
 	// TODO
 	return null;
+    }
+
+    private boolean contentViolatesDBConstraints(Content content) {
+	switch (content.getKind()) {
+	case news:
+	    return contentDAO.findByTitle(content.getName(), ContentKindType.news) != null;
+	case forum_topic:
+	    return contentDAO.findByTitle(content.getName(), ContentKindType.forum_topic) != null;
+	case text:
+	    return contentDAO.findText(content.getAuthorUsername(), content.getName()) != null;
+	case episode_group:
+	    return contentDAO.findByTitle(content.getName(), ContentKindType.episode_group) != null;
+	case episode:
+	    return contentDAO.findEpisode(content.getParentContent().getName(), content.getName()) != null;
+	default:
+	    return true;
+	}
     }
 }

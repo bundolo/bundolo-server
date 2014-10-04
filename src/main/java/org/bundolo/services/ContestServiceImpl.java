@@ -54,6 +54,10 @@ public class ContestServiceImpl implements ContestService {
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     private Boolean saveContest(Contest contest) {
 	try {
+	    if (contestDAO.findByTitle(contest.getDescriptionContent().getName()) != null) {
+		// contest title already taken
+		return false;
+	    }
 	    contest.setContestStatus(ContestStatusType.active);
 	    contest.setCreationDate(new Date());
 	    contest.setKind(ContestKindType.general);
@@ -137,6 +141,11 @@ public class ContestServiceImpl implements ContestService {
 			}
 			Content descriptionContent = contest.getDescriptionContent();
 			Content descriptionContentDB = contestDB.getDescriptionContent();
+			if (!descriptionContentDB.getName().equals(descriptionContent.getName())
+				&& contestDAO.findByTitle(descriptionContent.getName()) != null) {
+			    // new contest title already taken
+			    return false;
+			}
 			descriptionContentDB.setName(descriptionContent.getName());
 			descriptionContentDB.setText(descriptionContent.getText());
 			descriptionContentDB.setLastActivity(new Date());

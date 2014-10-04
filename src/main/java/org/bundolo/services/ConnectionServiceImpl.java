@@ -55,6 +55,10 @@ public class ConnectionServiceImpl implements ConnectionService {
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     private Boolean saveConnection(Connection connection) {
 	try {
+	    if (connectionDAO.findByTitle(connection.getDescriptionContent().getName()) != null) {
+		// connection title already taken
+		return false;
+	    }
 	    connection.setConnectionStatus(ConnectionStatusType.active);
 	    connection.setCreationDate(new Date());
 	    connection.setKind(ConnectionKindType.general);
@@ -138,8 +142,14 @@ public class ConnectionServiceImpl implements ConnectionService {
 			    // user is not the owner
 			    return false;
 			}
+
 			Content descriptionContent = connection.getDescriptionContent();
 			Content descriptionContentDB = connectionDB.getDescriptionContent();
+			if (!descriptionContentDB.getName().equals(descriptionContent.getName())
+				&& connectionDAO.findByTitle(descriptionContent.getName()) != null) {
+			    // new connection title already taken
+			    return false;
+			}
 			descriptionContentDB.setName(descriptionContent.getName());
 			descriptionContentDB.setText(descriptionContent.getText());
 			descriptionContentDB.setLastActivity(new Date());

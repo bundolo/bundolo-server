@@ -68,7 +68,7 @@ public class TextController {
 	if (result) {
 	    contentService.clearSession();
 	}
-//	logger.log(Level.WARNING, "saveOrUpdate, result: " + result);
+	// logger.log(Level.WARNING, "saveOrUpdate, result: " + result);
 	return result;
     }
 

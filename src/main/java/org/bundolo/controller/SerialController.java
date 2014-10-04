@@ -105,6 +105,7 @@ public class SerialController {
 	// TODO check param validity
 	Content serial = contentService.findSerial(serialTitle);
 	episode.getParentContent().setContentId(serial.getContentId());
+	episode.getParentContent().setName(serial.getName());
 	Date creationDate = new Date();
 	episode.setLastActivity(creationDate);
 	episode.setKind(ContentKindType.episode);
