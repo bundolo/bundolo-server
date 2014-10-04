@@ -17,20 +17,14 @@ import org.springframework.test.context.transaction.TransactionConfiguration;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "/applicationContext.xml")
 @ImportResource("/applicationContext.xml")
-// @ContextHierarchy(value = { @ContextConfiguration })
 @TransactionConfiguration(defaultRollback = true, transactionManager = "transactionManager")
 public class ConnectionServiceImplTest {
-
-    // @Autowired
-    // private ApplicationContext applicationContext;
 
     @Autowired
     private ConnectionService connectionService;
 
     @Test
     public void findConnections() {
-	// ConnectionService connectionService = (ConnectionService) applicationContext.getBean("connectionService");
-
 	List<Connection> connections = connectionService.findConnections(0, 4, null, null, new String[] {
 		ConnectionColumnType.url.getColumnName(), ConnectionColumnType.title.getColumnName() }, new String[] {
 		".hr", "borg" });

@@ -29,15 +29,39 @@ sourceSets {
         java.srcDir file('src/integration-test/java')
         resources.srcDir file('src/integration-test/resources')
     }
+    
+    acceptance_test {
+        java.srcDir file('src/acceptance-test/java')
+        resources.srcDir file('src/acceptance-test/resources')
+    }
 }
 
 task integration_test(type: Test) {
     testClassesDir = sourceSets.integration_test.output.classesDir
     classpath = sourceSets.integration_test.runtimeClasspath
-    enabled = false
+    enabled = true
+    outputs.upToDateWhen {
+    	false
+    }
+    testLogging {
+        events 'started', 'passed'
+    }
+}
+
+task acceptance_test(type: Test) {
+    testClassesDir = sourceSets.acceptance_test.output.classesDir
+    classpath = sourceSets.acceptance_test.runtimeClasspath
+    enabled = true
+    outputs.upToDateWhen {
+    	false
+    }
+    testLogging {
+        events 'started', 'passed'
+    }
 }
 
 check.dependsOn integration_test
+check.dependsOn acceptance_test
 
 dependencies {
     compile("org.springframework.boot:spring-boot-starter-web")
@@ -69,16 +93,21 @@ dependencies {
     
     testCompile 'org.springframework:spring-test'
     testCompile("junit:junit")
+    testCompile ("org.seleniumhq.selenium:selenium-java:2.8.0")
     
     integration_testCompile sourceSets.main.output
     integration_testCompile configurations.testCompile
     integration_testCompile sourceSets.test.output
-    integration_testRuntime configurations.testRuntime
+    integration_testRuntime configurations.testRuntime    
+    
+    acceptance_testCompile sourceSets.main.output
+    acceptance_testCompile configurations.testCompile
+    acceptance_testCompile sourceSets.test.output
+    acceptance_testRuntime configurations.testRuntime
 }
 
 test {
     testLogging {
-        // Show that tests are run in the command-line output
         events 'started', 'passed'
     }
 }

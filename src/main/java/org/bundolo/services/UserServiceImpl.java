@@ -2,6 +2,7 @@ package org.bundolo.services;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -24,6 +25,7 @@ import org.bundolo.model.enumeration.RatingKindType;
 import org.bundolo.model.enumeration.RatingStatusType;
 import org.bundolo.model.enumeration.UserProfileStatusType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,6 +45,10 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private MailingUtils mailingUtils;
+
+    @Autowired
+    @Qualifier("properties")
+    private Properties properties;
 
     @PostConstruct
     public void init() {
@@ -161,13 +167,15 @@ public class UserServiceImpl implements UserService {
 		    // to database and send it to the user
 		    // TODO i18n
 		    String emailSubject = "nova lozinka za bundolo";
-		    String emailBody = "tražili ste novu lozinku za vaš bundolo korisnički nalog.\n"
+		    String emailBody = "pozdrav, \n"
+			    + "tražili ste novu lozinku za vaš bundolo korisnički nalog.\n"
 			    + "prilikom sledećeg prijavljivanja, koristite sledeće podatke:\n"
 			    + "korisničko ime: "
 			    + recipientUserProfile.getUsername()
 			    + "\nlozinka: "
 			    + recipientUserProfile.getPassword()
-			    + "\nda biste povećali sigurnost vašeg korisničkoh naloga, promenite ovu lozinku što je pre moguće.";
+			    + "\nda biste povećali sigurnost vašeg korisničkoh naloga, promenite ovu lozinku što je pre moguće.\n\n"
+			    + "poštovanje,\nbundolo administracija";
 		    mailingUtils.sendEmail(emailBody, emailSubject, recipientUserProfile.getEmail());
 		    result = true;
 		}
@@ -208,7 +216,8 @@ public class UserServiceImpl implements UserService {
 		    + "ovo je privatna poruka poslata sa stranice bundolo.org od korisnika "
 		    + senderUsername
 		    + ".\n"
-		    + "adrese korisnika su sakrivene, na poruku možete odgovoriti slanjem privatne poruke sa bundola, a NE povratnom porukom (replay).";
+		    + "adrese korisnika su sakrivene, na poruku možete odgovoriti slanjem privatne poruke sa bundola, a NE povratnom porukom (replay).\n\n"
+		    + "poštovanje,\nbundolo administracija";
 	    mailingUtils.sendEmail(emailBody, emailSubject, recipientEmailAddress);
 	    return true;
 	} catch (Exception ex) {
@@ -256,9 +265,8 @@ public class UserServiceImpl implements UserService {
 		if (nonce != null) {
 		    userProfile.setNonce(nonce);
 		    userProfileDAO.persist(userProfile);
-
-		    // TODO compose this url
-		    String activationUrl = "http://localhost/validate?nonce=" + nonce + "&email=" + email;
+		    String activationUrl = properties.getProperty("application.root") + "/validate?nonce=" + nonce
+			    + "&email=" + email;
 		    // TODO i18n
 		    // TODO backlog: implement manual activation
 		    String emailBody = "pozdrav, "
@@ -268,7 +276,8 @@ public class UserServiceImpl implements UserService {
 			    + "neko, verovatno vi, se registrovao na sajtu bundolo.org\n"
 			    + "da biste potvrdili ispravnost ove adrese elektronske pošte i aktivirali svoj nalog, dovoljno je da kliknete na donji link.\n\n"
 			    + activationUrl
-			    + "\n\nukoliko vam link nije aktivan i ne može se kliknuti, možete ga kopirati i otvoriti u browseru.";
+			    + "\n\nukoliko vam link nije aktivan i ne može se kliknuti, možete ga kopirati i otvoriti u browseru.\n\n"
+			    + "poštovanje,\nbundolo administracija";
 		    // + "\n\nIf you prefer to enter this information manually, go to http://www.bundolo.org and\n"
 		    // + "enter the following Auth code:\n\n" + nonce;
 		    String emailSubject = "aktivacija bundolo korisničkog naloga";
@@ -350,9 +359,8 @@ public class UserServiceImpl implements UserService {
 	    userProfileDAO.merge(userProfileDB);
 	    // userProfileDAO.clear();
 	    if (StringUtils.isNotBlank(userProfileDB.getNewEmail())) {
-		// TODO compose this url
-		String activationUrl = "http://localhost/validate?nonce=" + userProfileDB.getNonce() + "&email="
-			+ userProfileDB.getNewEmail();
+		String activationUrl = properties.getProperty("application.root") + "/validate?nonce="
+			+ userProfileDB.getNonce() + "&email=" + userProfileDB.getNewEmail();
 		// TODO i18n
 		// TODO backlog: implement manual activation
 		String emailBody = "pozdrav, "
@@ -361,7 +369,8 @@ public class UserServiceImpl implements UserService {
 			+ "neko, verovatno vi, je zatražio izmenu adrese elektronske pošte na vašem bundolo korisničkom nalogu.\n"
 			+ "da biste potvrdili ispravnost ove adrese, dovoljno je da kliknete na donji link.\n\n"
 			+ activationUrl
-			+ "\n\nukoliko vam link nije aktivan i ne može se kliknuti, možete ga kopirati i otvoriti u browseru.";
+			+ "\n\nukoliko vam link nije aktivan i ne može se kliknuti, možete ga kopirati i otvoriti u browseru.\n\n"
+			+ "poštovanje,\nbundolo administracija";
 		// + "\n\nIf you prefer to enter this information manually, go to http://www.bundolo.org and\n"
 		// + "enter the following Auth code:\n\n" + userProfileDB.getNonce();
 		String emailSubject = "aktivacija nove adrese elektronske pošte za bundolo korisnički nalog";

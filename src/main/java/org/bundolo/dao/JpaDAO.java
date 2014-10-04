@@ -12,7 +12,7 @@ import org.hibernate.Session;
 
 public abstract class JpaDAO<K, E> {
 
-    @PersistenceContext(unitName = "BundoloPostgresPersistenceUnit", type = PersistenceContextType.EXTENDED)
+    @PersistenceContext(unitName = "BundoloPostgresPersistenceUnit", type = PersistenceContextType.TRANSACTION)
     protected EntityManager entityManager;
 
     protected Class<E> entityClass;
