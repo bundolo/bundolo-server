@@ -21,9 +21,6 @@ import org.bundolo.model.enumeration.RatingKindType;
 import org.bundolo.model.enumeration.RatingStatusType;
 import org.bundolo.model.enumeration.TextColumnType;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -243,55 +240,48 @@ public class ContentServiceImpl implements ContentService {
 		return false;
 	    }
 	    if (ContentKindType.episode.equals(content.getKind()) && content.getParentContent().getContentId() == null) {
-		// episode that is not attached to serial is not allowed
+		// episode that is not attached to a serial is not allowed
 		return false;
 	    }
-	    UsernamePasswordAuthenticationToken authentication = (UsernamePasswordAuthenticationToken) SecurityContextHolder
-		    .getContext().getAuthentication();
 
-	    logger.log(Level.WARNING, "saveOrUpdateContent authentication: " + authentication);
-	    if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_USER")) || anonymousAllowed) {
+	    String senderUsername = SecurityUtils.getUsername();
+	    if (senderUsername != null || anonymousAllowed) {
 		if (content.getContentId() == null) {
-		    if (!authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_USER"))) {
-			content.setAuthorUsername(null);
-		    } else {
-			content.setAuthorUsername((String) authentication.getPrincipal());
-		    }
+		    content.setAuthorUsername(senderUsername);
 		    return saveContent(content);
 		} else {
 		    Content contentDB = contentDAO.findById(content.getContentId());
 		    if (contentDB == null) {
 			// no such content
 			return false;
-		    } else {
-			if (!((String) authentication.getPrincipal()).equals(contentDB.getAuthorUsername())) {
-			    // user is not the owner
+		    }
+		    if (!senderUsername.equals(contentDB.getAuthorUsername())) {
+			// user is not the owner
+			return false;
+		    }
+		    if (!contentDB.getName().equals(content.getName())) {
+			content.setAuthorUsername(contentDB.getAuthorUsername());
+			if (contentViolatesDBConstraints(content)) {
 			    return false;
 			}
-			if (!contentDB.getName().equals(content.getName())) {
-			    content.setAuthorUsername(contentDB.getAuthorUsername());
-			    if (contentViolatesDBConstraints(content)) {
-				return false;
-			    }
-			}
-			if (ContentKindType.text.equals(content.getKind())) {
-			    Content descriptionContent = (Content) content.getDescription().toArray()[0];
-			    Content descriptionContentDB = (Content) contentDB.getDescription().toArray()[0];
-			    descriptionContentDB.setText(descriptionContent.getText());
-			}
-			contentDB.setName(content.getName());
-			contentDB.setText(content.getText());
-			if (content.getLastActivity() != null) {
-			    contentDB.setLastActivity(content.getLastActivity());
-			} else {
-			    contentDB.setLastActivity(new Date());
-			}
-			if (ContentKindType.episode.equals(content.getKind()) && content.getContentStatus() != null) {
-			    contentDB.setContentStatus(content.getContentStatus());
-			}
-			contentDAO.merge(contentDB);
-			return true;
 		    }
+		    if (ContentKindType.text.equals(content.getKind())) {
+			Content descriptionContent = (Content) content.getDescription().toArray()[0];
+			Content descriptionContentDB = (Content) contentDB.getDescription().toArray()[0];
+			descriptionContentDB.setText(descriptionContent.getText());
+		    }
+		    contentDB.setName(content.getName());
+		    contentDB.setText(content.getText());
+		    if (content.getLastActivity() != null) {
+			contentDB.setLastActivity(content.getLastActivity());
+		    } else {
+			contentDB.setLastActivity(new Date());
+		    }
+		    if (ContentKindType.episode.equals(content.getKind()) && content.getContentStatus() != null) {
+			contentDB.setContentStatus(content.getContentStatus());
+		    }
+		    contentDAO.merge(contentDB);
+		    return true;
 		}
 	    }
 	} catch (Exception ex) {
@@ -327,9 +317,10 @@ public class ContentServiceImpl implements ContentService {
 	if (episode != null) {
 	    Rating rating = episode.getRating();
 	    // if user that requested this is the author, do not increase rating
-	    long ratingIncrement = episode.getAuthorUsername().equals(SecurityUtils.getUsername()) ? 0
+	    String senderUsername = SecurityUtils.getUsername();
+	    long ratingIncrement = episode.getAuthorUsername().equals(senderUsername) ? 0
 		    : Constants.DEFAULT_RATING_INCREMENT;
-	    Date lastActivity = !episode.getAuthorUsername().equals(SecurityUtils.getUsername()) || rating == null ? new Date()
+	    Date lastActivity = !episode.getAuthorUsername().equals(senderUsername) || rating == null ? new Date()
 		    : rating.getLastActivity();
 	    if (rating == null) {
 		rating = new Rating(null, null, RatingKindType.general, lastActivity, RatingStatusType.active,

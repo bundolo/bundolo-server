@@ -26,9 +26,6 @@ import org.bundolo.model.enumeration.RatingStatusType;
 import org.bundolo.model.enumeration.UserProfileStatusType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -103,7 +100,6 @@ public class UserServiceImpl implements UserService {
 		// differently
 		if (password.equals(userProfile.getPassword())) {
 		    userProfile.setLastLoginDate(new Date());
-		    // this line fails
 		    userProfile.setLastIp(getRemoteHost());
 		    userProfileDAO.merge(userProfile);
 		    result = true;
@@ -306,10 +302,8 @@ public class UserServiceImpl implements UserService {
 	    if (userProfileDB == null) {
 		return saveUser(userProfile.getUsername(), userProfile.getEmail(), userProfile.getPassword());
 	    }
-	    UsernamePasswordAuthenticationToken authentication = (UsernamePasswordAuthenticationToken) SecurityContextHolder
-		    .getContext().getAuthentication();
-	    if (!authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_USER"))
-		    || !((String) authentication.getPrincipal()).equals(userProfile.getUsername())) {
+	    String senderUsername = SecurityUtils.getUsername();
+	    if (!userProfile.getUsername().equals(senderUsername)) {
 		// user is not the owner of the account he is updating
 		return false;
 	    }

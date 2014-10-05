@@ -22,9 +22,6 @@ import org.bundolo.model.enumeration.ContestStatusType;
 import org.bundolo.model.enumeration.RatingKindType;
 import org.bundolo.model.enumeration.RatingStatusType;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -123,11 +120,13 @@ public class ContestServiceImpl implements ContestService {
 		    || StringUtils.isBlank(contest.getDescriptionContent().getName())) {
 		return false;
 	    }
-	    UsernamePasswordAuthenticationToken authentication = (UsernamePasswordAuthenticationToken) SecurityContextHolder
-		    .getContext().getAuthentication();
-	    if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_USER"))) {
+	    String senderUsername = SecurityUtils.getUsername();
+	    // UsernamePasswordAuthenticationToken authentication = (UsernamePasswordAuthenticationToken)
+	    // SecurityContextHolder
+	    // .getContext().getAuthentication();
+	    if (senderUsername != null) {
 		if (contest.getContestId() == null) {
-		    contest.setAuthorUsername((String) authentication.getPrincipal());
+		    contest.setAuthorUsername(senderUsername);
 		    return saveContest(contest);
 		} else {
 		    Contest contestDB = contestDAO.findById(contest.getContestId());
@@ -135,7 +134,7 @@ public class ContestServiceImpl implements ContestService {
 			// no such contest
 			return false;
 		    } else {
-			if (!((String) authentication.getPrincipal()).equals(contestDB.getAuthorUsername())) {
+			if (!contestDB.getAuthorUsername().equals(senderUsername)) {
 			    // user is not the owner
 			    return false;
 			}

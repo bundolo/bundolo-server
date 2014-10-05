@@ -22,9 +22,6 @@ import org.bundolo.model.enumeration.ContentStatusType;
 import org.bundolo.model.enumeration.RatingKindType;
 import org.bundolo.model.enumeration.RatingStatusType;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -125,12 +122,11 @@ public class ConnectionServiceImpl implements ConnectionService {
 		    || StringUtils.isBlank(connection.getDescriptionContent().getName())) {
 		return false;
 	    }
-	    UsernamePasswordAuthenticationToken authentication = (UsernamePasswordAuthenticationToken) SecurityContextHolder
-		    .getContext().getAuthentication();
-	    if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_USER"))) {
+	    String senderUsername = SecurityUtils.getUsername();
+	    if (senderUsername != null) {
 		// TODO validate connection group id
 		if (connection.getConnectionId() == null) {
-		    connection.setAuthorUsername((String) authentication.getPrincipal());
+		    connection.setAuthorUsername(senderUsername);
 		    return saveConnection(connection);
 		} else {
 		    Connection connectionDB = connectionDAO.findById(connection.getConnectionId());
@@ -138,11 +134,10 @@ public class ConnectionServiceImpl implements ConnectionService {
 			// no such connection
 			return false;
 		    } else {
-			if (!((String) authentication.getPrincipal()).equals(connectionDB.getAuthorUsername())) {
+			if (!senderUsername.equals(connectionDB.getAuthorUsername())) {
 			    // user is not the owner
 			    return false;
 			}
-
 			Content descriptionContent = connection.getDescriptionContent();
 			Content descriptionContentDB = connectionDB.getDescriptionContent();
 			if (!descriptionContentDB.getName().equals(descriptionContent.getName())
