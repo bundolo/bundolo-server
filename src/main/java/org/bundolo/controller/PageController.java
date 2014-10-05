@@ -21,7 +21,6 @@ public class PageController {
     @RequestMapping(value = Constants.REST_PATH_PAGE + "/{pageKind}", method = RequestMethod.GET)
     public @ResponseBody
     Content page(@PathVariable PageKindType pageKind) {
-	// TODO check param validity
 	return contentService.getPageDescriptionContent(pageKind);
     }
 

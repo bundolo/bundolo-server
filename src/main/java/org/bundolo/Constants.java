@@ -59,4 +59,6 @@ public class Constants {
     public static final String REST_PATH_NEXT = "/next";
     public static final String REST_PATH_MESSAGE = "/message";
 
+    public static final String URL_SAFE_REGEX = "^[^~\\\\/\\[\\]\\{\\}\\(\\);\\:\\\"\\\'\\|<>\\?\\+=`#$%\\^&\\*]+$";
+    public static final String USERNAME_SAFE_REGEX = "^[A-Za-z0-9 _-]{3,25}$";
 }

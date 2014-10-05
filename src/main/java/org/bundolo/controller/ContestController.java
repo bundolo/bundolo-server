@@ -29,7 +29,6 @@ public class ContestController {
     public @ResponseBody
     Contest contest(HttpServletRequest request) {
 	String restOfTheUrl = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
-	// TODO check param validity
 	return contestService.findContest(restOfTheUrl.substring(Constants.REST_PATH_CONTEST.length() + 1));
     }
 
@@ -37,7 +36,6 @@ public class ContestController {
     public @ResponseBody
     Boolean delete(HttpServletRequest request) {
 	String restOfTheUrl = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
-	// TODO check param validity
 	return contestService.deleteContest(restOfTheUrl.substring(Constants.REST_PATH_CONTEST.length() + 1)) != null;
     }
 
@@ -45,7 +43,10 @@ public class ContestController {
     public @ResponseBody
     Boolean saveOrUpdate(@PathVariable String title, @RequestBody final Contest contest) {
 	logger.log(Level.WARNING, "saveOrUpdate, contest: " + contest);
-	// TODO check param validity
+	if (!title.matches(Constants.URL_SAFE_REGEX)) {
+	    return false;
+	}
+	contest.getDescriptionContent().setName(title.trim());
 	Boolean result = contestService.saveOrUpdateContest(contest);
 	if (result) {
 	    contestService.clearSession();

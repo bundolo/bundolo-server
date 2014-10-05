@@ -31,8 +31,6 @@ public class AnnouncementController {
     public Content announcement(HttpServletRequest request) {
 	String restOfTheUrl = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
 	logger.log(Level.WARNING, "announcement, restOfTheUrl: " + restOfTheUrl);
-
-	// TODO check param validity
 	return contentService.findAnnouncement(restOfTheUrl.substring(Constants.REST_PATH_ANNOUNCEMENT.length() + 1));
     }
 
@@ -41,8 +39,6 @@ public class AnnouncementController {
     public Boolean delete(HttpServletRequest request) {
 	String restOfTheUrl = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
 	logger.log(Level.WARNING, "delete announcement, restOfTheUrl: " + restOfTheUrl);
-
-	// TODO check param validity
 	return contentService.deleteAnnouncement(restOfTheUrl.substring(Constants.REST_PATH_ANNOUNCEMENT.length() + 1)) != null;
     }
 
@@ -50,8 +46,10 @@ public class AnnouncementController {
     public @ResponseBody
     Boolean saveOrUpdate(@PathVariable String title, @RequestBody final Content announcement) {
 	logger.log(Level.WARNING, "saveOrUpdate, announcement: " + announcement);
-	// TODO check param validity
-	announcement.setName(title);
+	if (!title.matches(Constants.URL_SAFE_REGEX)) {
+	    return false;
+	}
+	announcement.setName(title.trim());
 	announcement.setKind(ContentKindType.news);
 	Boolean result = contentService.saveOrUpdateContent(announcement, false);
 	if (result) {

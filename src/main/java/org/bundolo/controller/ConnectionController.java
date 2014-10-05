@@ -36,8 +36,6 @@ public class ConnectionController {
     Connection connection(HttpServletRequest request) {
 	String restOfTheUrl = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
 	logger.log(Level.WARNING, "connection, restOfTheUrl: " + restOfTheUrl);
-
-	// TODO check param validity
 	return connectionService.findConnection(restOfTheUrl.substring(Constants.REST_PATH_CONNECTION.length() + 1));
     }
 
@@ -46,8 +44,6 @@ public class ConnectionController {
     Boolean delete(HttpServletRequest request) {
 	String restOfTheUrl = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
 	logger.log(Level.WARNING, "delete connection, restOfTheUrl: " + restOfTheUrl);
-
-	// TODO check param validity
 	return connectionService.deleteConnection(restOfTheUrl.substring(Constants.REST_PATH_CONNECTION.length() + 1)) != null;
     }
 
@@ -55,8 +51,10 @@ public class ConnectionController {
     public @ResponseBody
     Boolean saveOrUpdate(@PathVariable String title, @RequestBody final Connection connection) {
 	logger.log(Level.WARNING, "saveOrUpdate, connection: " + connection);
-	// TODO check param validity
-	connection.getDescriptionContent().setName(title);
+	if (!title.matches(Constants.URL_SAFE_REGEX)) {
+	    return false;
+	}
+	connection.getDescriptionContent().setName(title.trim());
 	Boolean result = connectionService.saveOrUpdateConnection(connection);
 	if (result) {
 	    connectionService.clearSession();

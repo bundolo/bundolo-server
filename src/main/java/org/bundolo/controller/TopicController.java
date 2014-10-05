@@ -35,7 +35,6 @@ public class TopicController {
     public @ResponseBody
     Content topic(HttpServletRequest request) {
 	String restOfTheUrl = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
-	// TODO check param validity
 	return contentService.findTopic(restOfTheUrl.substring(Constants.REST_PATH_TOPIC.length() + 1));
     }
 
@@ -43,7 +42,6 @@ public class TopicController {
     public @ResponseBody
     Boolean delete(HttpServletRequest request) {
 	String restOfTheUrl = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
-	// TODO check param validity
 	return contentService.deleteTopic(restOfTheUrl.substring(Constants.REST_PATH_TOPIC.length() + 1)) != null;
     }
 
@@ -57,9 +55,11 @@ public class TopicController {
     public @ResponseBody
     Boolean saveOrUpdate(@PathVariable String title, @RequestBody final Content topic) {
 	logger.log(Level.WARNING, "saveOrUpdate, topic: " + topic);
-	// TODO check param validity
+	if (!title.matches(Constants.URL_SAFE_REGEX)) {
+	    return false;
+	}
 	topic.setKind(ContentKindType.forum_topic);
-	topic.setName(title);
+	topic.setName(title.trim());
 	Boolean result = contentService.saveOrUpdateContent(topic, true);
 	if (result) {
 	    contentService.clearSession();
@@ -72,7 +72,6 @@ public class TopicController {
     List<Content> topics(@RequestParam(required = true) Long parentId,
 	    @RequestParam(required = false, defaultValue = "0") Integer start,
 	    @RequestParam(required = false, defaultValue = "-1") Integer end) {
-	// TODO check param validity
 	return contentService.findPosts(parentId, start, end);
     }
 
@@ -83,7 +82,6 @@ public class TopicController {
     public @ResponseBody
     Boolean save(@RequestBody final Content post) {
 	logger.log(Level.WARNING, "saving post: " + post);
-	// TODO check param validity
 	Date creationDate = new Date();
 	post.setLastActivity(creationDate);
 	post.setKind(ContentKindType.forum_post);

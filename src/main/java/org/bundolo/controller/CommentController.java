@@ -49,7 +49,6 @@ public class CommentController {
     @RequestMapping(value = Constants.REST_PATH_PARENT_COMMENTS + "/{parentId}", method = RequestMethod.GET)
     public @ResponseBody
     List<Comment> comments(@PathVariable Long parentId) {
-	// TODO check param validity
 	return commentService.findCommentsByParentId(parentId);
     }
 
@@ -63,7 +62,6 @@ public class CommentController {
 	    return null;
 	}
 	logger.log(Level.WARNING, "saving comment: " + comment);
-	// TODO check param validity
 	// TODO this could be nicer, move this logic to service. the problem with that is calling content update from
 	// comment save method. transactions collide.
 	Date creationDate = new Date();

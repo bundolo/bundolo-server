@@ -35,28 +35,24 @@ public class AuthorController {
     public @ResponseBody
     User author(@PathVariable String username) {
 	logger.log(Level.WARNING, "author, username: " + username);
-	// TODO check param validity
 	return userService.findUser(username);
     }
 
     @RequestMapping(value = Constants.REST_PATH_AUTHOR + "/{username:.+}", method = RequestMethod.DELETE)
     public @ResponseBody
     Boolean delete(@PathVariable String username) {
-	// TODO check param validity
 	return userService.deleteUser(username) != null;
     }
 
     @RequestMapping(value = Constants.REST_PATH_AUTH + "/{username:.+}", method = RequestMethod.POST)
     public @ResponseBody
     Boolean auth(@PathVariable String username, @RequestParam String password) {
-	// TODO check param validity
 	return userService.authenticateUser(username, password);
     }
 
     @RequestMapping(value = Constants.REST_PATH_PASSWORD + "/{username:.+}", method = RequestMethod.POST)
     public @ResponseBody
     Boolean password(@PathVariable String username, @RequestParam String email) {
-	// TODO check param validity
 	return userService.sendNewPassword(username, email);
     }
 
@@ -64,9 +60,10 @@ public class AuthorController {
     public @ResponseBody
     Boolean saveOrUpdate(@PathVariable String username, @RequestBody final UserProfile userProfile) {
 	logger.log(Level.WARNING, "saveOrUpdate, userProfile: " + userProfile);
-	// TODO check param validity
-	// TODO security checks
-	userProfile.setUsername(username);
+	if (!username.matches(Constants.USERNAME_SAFE_REGEX)) {
+	    return false;
+	}
+	userProfile.setUsername(username.trim());
 	Boolean result = userService.saveOrUpdateUser(userProfile);
 	if (result) {
 	    userService.clearSession();
@@ -78,7 +75,6 @@ public class AuthorController {
     public @ResponseBody
     Boolean validate(@PathVariable String nonce, @RequestParam String email) {
 	logger.log(Level.WARNING, "activate, nonce: " + nonce + ", email: " + email);
-	// TODO check param validity
 	Boolean result = userService.activateUserEmailAddress(email, nonce);
 	if (result) {
 	    userService.clearSession();
@@ -89,7 +85,6 @@ public class AuthorController {
     @RequestMapping(value = Constants.REST_PATH_STATISTICS + "/{username:.+}", method = RequestMethod.GET)
     public @ResponseBody
     List<Content> statistics(@PathVariable String username) {
-	// TODO check param validity
 	return contentService.findStatistics(username);
     }
 
@@ -97,7 +92,6 @@ public class AuthorController {
     public @ResponseBody
     Boolean message(@PathVariable String username, @RequestBody final Map<String, String> message) {
 	logger.log(Level.WARNING, "message, username: " + username + ", message: " + message);
-	// TODO check param validity
 	return userService.sendMessage(message.get("title"), message.get("text"), username);
     }
 
@@ -105,7 +99,6 @@ public class AuthorController {
     public @ResponseBody
     Boolean messageToBundolo(@RequestBody final Map<String, String> message) {
 	logger.log(Level.WARNING, "messageToBundolo, message: " + message);
-	// TODO check param validity
 	return userService.sendMessage(message.get("title"), message.get("text"), null);
     }
 }

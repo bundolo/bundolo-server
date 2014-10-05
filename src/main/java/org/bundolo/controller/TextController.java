@@ -35,8 +35,6 @@ public class TextController {
     Content text(@PathVariable String username, HttpServletRequest request) {
 	String restOfTheUrl = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
 	String urlAndTitle = restOfTheUrl.substring(Constants.REST_PATH_TEXT.length() + 1);
-	// TODO if title is not set this does not work properly
-	// TODO check param validity
 	return contentService.findText(username, urlAndTitle.substring(urlAndTitle.indexOf("/") + 1));
     }
 
@@ -45,8 +43,6 @@ public class TextController {
     Boolean delete(@PathVariable String username, HttpServletRequest request) {
 	String restOfTheUrl = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
 	String urlAndTitle = restOfTheUrl.substring(Constants.REST_PATH_TEXT.length() + 1);
-	// TODO if title is not set this does not work properly
-	// TODO check param validity
 	Long textId = contentService.deleteText(username, urlAndTitle.substring(urlAndTitle.indexOf("/") + 1));
 	Boolean result = textId != null;
 	if (result) {
@@ -61,14 +57,15 @@ public class TextController {
     public @ResponseBody
     Boolean saveOrUpdate(@PathVariable String username, @PathVariable String title, @RequestBody final Content text) {
 	logger.log(Level.WARNING, "saveOrUpdate, title: " + title + ", text: " + text);
-	// TODO check param validity
+	if (!title.matches(Constants.URL_SAFE_REGEX)) {
+	    return false;
+	}
 	text.setKind(ContentKindType.text);
-	text.setName(title);
+	text.setName(title.trim());
 	Boolean result = contentService.saveOrUpdateContent(text, false);
 	if (result) {
 	    contentService.clearSession();
 	}
-	// logger.log(Level.WARNING, "saveOrUpdate, result: " + result);
 	return result;
     }
 

@@ -59,7 +59,6 @@ public class ListController {
     List<Connection> connections(@RequestParam(required = false, defaultValue = "0") Integer start,
 	    @RequestParam(required = false, defaultValue = "0") Integer end,
 	    @RequestParam(required = false) String orderBy, @RequestParam(required = false) String filterBy) {
-	// TODO check param validity
 	List<String> orderByColumns = new ArrayList<String>();
 	List<String> orderByDirections = new ArrayList<String>();
 	if (StringUtils.isNotBlank(orderBy)) {
@@ -91,7 +90,6 @@ public class ListController {
     List<Contest> contests(@RequestParam(required = false, defaultValue = "0") Integer start,
 	    @RequestParam(required = false, defaultValue = "0") Integer end,
 	    @RequestParam(required = false) String orderBy, @RequestParam(required = false) String filterBy) {
-	// TODO check param validity
 	List<String> orderByColumns = new ArrayList<String>();
 	List<String> orderByDirections = new ArrayList<String>();
 	if (StringUtils.isNotBlank(orderBy)) {
@@ -123,7 +121,6 @@ public class ListController {
     List<User> authors(@RequestParam(required = false, defaultValue = "0") Integer start,
 	    @RequestParam(required = false, defaultValue = "0") Integer end,
 	    @RequestParam(required = false) String orderBy, @RequestParam(required = false) String filterBy) {
-	// TODO check param validity
 	List<String> orderByColumns = new ArrayList<String>();
 	List<String> orderByDirections = new ArrayList<String>();
 	if (StringUtils.isNotBlank(orderBy)) {
@@ -155,7 +152,6 @@ public class ListController {
     List<Content> texts(@RequestParam(required = false, defaultValue = "0") Integer start,
 	    @RequestParam(required = false, defaultValue = "0") Integer end,
 	    @RequestParam(required = false) String orderBy, @RequestParam(required = false) String filterBy) {
-	// TODO check param validity
 	List<String> orderByColumns = new ArrayList<String>();
 	List<String> orderByDirections = new ArrayList<String>();
 	if (StringUtils.isNotBlank(orderBy)) {
@@ -187,7 +183,6 @@ public class ListController {
     List<Content> announcements(@RequestParam(required = false, defaultValue = "0") Integer start,
 	    @RequestParam(required = false, defaultValue = "0") Integer end,
 	    @RequestParam(required = false) String orderBy, @RequestParam(required = false) String filterBy) {
-	// TODO check param validity
 	List<String> orderByColumns = new ArrayList<String>();
 	List<String> orderByDirections = new ArrayList<String>();
 	if (StringUtils.isNotBlank(orderBy)) {
@@ -219,7 +214,6 @@ public class ListController {
     List<Content> serials(@RequestParam(required = false, defaultValue = "0") Integer start,
 	    @RequestParam(required = false, defaultValue = "0") Integer end,
 	    @RequestParam(required = false) String orderBy, @RequestParam(required = false) String filterBy) {
-	// TODO check param validity
 	List<String> orderByColumns = new ArrayList<String>();
 	List<String> orderByDirections = new ArrayList<String>();
 	if (StringUtils.isNotBlank(orderBy)) {
@@ -251,7 +245,6 @@ public class ListController {
     List<Content> topics(@RequestParam(required = false, defaultValue = "0") Integer start,
 	    @RequestParam(required = false, defaultValue = "0") Integer end,
 	    @RequestParam(required = false) String orderBy, @RequestParam(required = false) String filterBy) {
-	// TODO check param validity
 	List<String> orderByColumns = new ArrayList<String>();
 	List<String> orderByDirections = new ArrayList<String>();
 	if (StringUtils.isNotBlank(orderBy)) {
@@ -283,7 +276,6 @@ public class ListController {
     List<Comment> comments(@RequestParam(required = false, defaultValue = "0") Integer start,
 	    @RequestParam(required = false, defaultValue = "0") Integer end,
 	    @RequestParam(required = false) String orderBy, @RequestParam(required = false) String filterBy) {
-	// TODO check param validity
 	List<String> orderByColumns = new ArrayList<String>();
 	List<String> orderByDirections = new ArrayList<String>();
 	if (StringUtils.isNotBlank(orderBy)) {
@@ -319,7 +311,6 @@ public class ListController {
 	logger.log(Level.WARNING, "next, type: " + type + ", id: " + id + ", orderBy: " + orderBy + ", ascending: "
 		+ ascending);
 	Object result = null;
-	// TODO check param validity
 	switch (type) {
 	case "connection":
 	    result = connectionService.findNext(Long.valueOf(id),

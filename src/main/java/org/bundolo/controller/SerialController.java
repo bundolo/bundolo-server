@@ -37,7 +37,6 @@ public class SerialController {
     public @ResponseBody
     Content serial(HttpServletRequest request) {
 	String restOfTheUrl = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
-	// TODO check param validity
 	return contentService.findSerial(restOfTheUrl.substring(Constants.REST_PATH_SERIAL.length() + 1));
     }
 
@@ -45,7 +44,6 @@ public class SerialController {
     public @ResponseBody
     Boolean deleteSerial(HttpServletRequest request) {
 	String restOfTheUrl = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
-	// TODO check param validity
 	return contentService.deleteSerial(restOfTheUrl.substring(Constants.REST_PATH_SERIAL.length() + 1)) != null;
     }
 
@@ -53,9 +51,11 @@ public class SerialController {
     public @ResponseBody
     Boolean saveOrUpdate(@PathVariable String title, @RequestBody final Content serial) {
 	logger.log(Level.WARNING, "saveOrUpdate, serial: " + serial);
-	// TODO check param validity
+	if (!title.matches(Constants.URL_SAFE_REGEX)) {
+	    return false;
+	}
 	serial.setKind(ContentKindType.episode_group);
-	serial.setName(title);
+	serial.setName(title.trim());
 	Boolean result = contentService.saveOrUpdateContent(serial, false);
 	if (result) {
 	    contentService.clearSession();
@@ -68,7 +68,6 @@ public class SerialController {
     List<Content> episodes(@RequestParam(required = true) Long parentId,
 	    @RequestParam(required = false, defaultValue = "0") Integer start,
 	    @RequestParam(required = false, defaultValue = "-1") Integer end) {
-	// TODO check param validity
 	return contentService.findEpisodes(parentId, start, end);
     }
 
@@ -77,7 +76,6 @@ public class SerialController {
     Content episode(@PathVariable String serialTitle, HttpServletRequest request) {
 	String restOfTheUrl = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
 	restOfTheUrl = restOfTheUrl.substring(restOfTheUrl.indexOf(serialTitle));
-	// TODO check param validity
 	return contentService.findEpisode(serialTitle, restOfTheUrl.substring(serialTitle.length() + 1));
     }
 
@@ -86,7 +84,6 @@ public class SerialController {
     Boolean deleteEpisode(@PathVariable String serialTitle, HttpServletRequest request) {
 	String restOfTheUrl = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
 	restOfTheUrl = restOfTheUrl.substring(restOfTheUrl.indexOf(serialTitle));
-	// TODO check param validity
 	Long episodeId = contentService.deleteEpisode(serialTitle, restOfTheUrl.substring(serialTitle.length() + 1));
 	Boolean result = episodeId != null;
 	if (result) {
@@ -102,14 +99,16 @@ public class SerialController {
     Boolean saveOrUpdateEpisode(@PathVariable String serialTitle, @PathVariable String title,
 	    @RequestBody final Content episode) {
 	logger.log(Level.WARNING, "saveOrUpdate, episode: " + episode);
-	// TODO check param validity
+	if (!title.matches(Constants.URL_SAFE_REGEX)) {
+	    return false;
+	}
 	Content serial = contentService.findSerial(serialTitle);
 	episode.getParentContent().setContentId(serial.getContentId());
 	episode.getParentContent().setName(serial.getName());
 	Date creationDate = new Date();
 	episode.setLastActivity(creationDate);
 	episode.setKind(ContentKindType.episode);
-	episode.setName(title);
+	episode.setName(title.trim());
 	Boolean result = contentService.saveOrUpdateContent(episode, false);
 	if (result) {
 	    contentService.updateLastActivity(episode.getParentContent().getContentId(), creationDate);
