@@ -1,5 +1,7 @@
 package org.bundolo.services;
 
+import java.math.BigInteger;
+import java.security.SecureRandom;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
@@ -93,17 +95,44 @@ public class UserServiceImpl implements UserService {
     public Boolean authenticateUser(String username, String password) {
 	logger.log(Level.WARNING, "login: " + username + ", " + password);
 	Boolean result = false;
+	// we intentionally set default values to make the method run the same amount of time regardless of being
+	// successful or not
+	String proposedUsername;
+	String proposedPassword;
+	if (StringUtils.isBlank(username)) {
+	    proposedUsername = Constants.DEFAULT_GUEST_USERNAME;
+	} else {
+	    proposedUsername = username;
+	}
+	if (StringUtils.isBlank(password)) {
+	    proposedPassword = " ";
+	} else {
+	    proposedPassword = password;
+	}
 	try {
-	    UserProfile userProfile = userProfileDAO.findByField("username", username);
-	    if ((userProfile != null) && (UserProfileStatusType.active.equals(userProfile.getUserProfileStatus()))) {
-		// TODO once password hashing is implemented, we will check password
-		// differently
-		if (password.equals(userProfile.getPassword())) {
-		    userProfile.setLastLoginDate(new Date());
-		    userProfile.setLastIp(getRemoteHost());
-		    userProfileDAO.merge(userProfile);
-		    result = true;
-		}
+	    UserProfile userProfile = userProfileDAO.findByField("username", proposedUsername);
+	    String dbSalt;
+	    String dbPassword;
+	    UserProfileStatusType dbStatus;
+	    if (userProfile != null) {
+		dbSalt = userProfile.getSalt();
+		dbPassword = userProfile.getPassword();
+		dbStatus = userProfile.getUserProfileStatus();
+	    } else {
+		dbSalt = "";
+		dbPassword = "";
+		dbStatus = UserProfileStatusType.disabled;
+	    }
+	    // update guest account in case of failed login to make this run the same amount of time regardless of being
+	    // successful or not
+	    userProfile.setLastLoginDate(new Date());
+	    userProfile.setLastIp(getRemoteHost());
+	    userProfileDAO.merge(userProfile);
+	    if (SecurityUtils.getHashWithPredefinedSalt(proposedPassword, dbSalt).equals(dbPassword)
+		    && (UserProfileStatusType.active.equals(dbStatus))) {
+		result = true;
+	    } else {
+		result = false;
 	    }
 	} catch (Exception ex) {
 	    logger.log(Level.SEVERE, "authenticateUser exception: " + ex);
@@ -153,17 +182,23 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public Boolean sendNewPassword(String username, String email) {
-	boolean result = false;
 	try {
 	    if (StringUtils.isNotBlank(username)) {
 		UserProfile recipientUserProfile = userProfileDAO.findByField("username", username);
 		if (recipientUserProfile == null || !recipientUserProfile.getEmail().equals(email)) {
-		    // ServerValidation.exception(LabelType.user_not_found.name(), LabelType.email_address.name());
-		    // TODO
+		    return false;
 		} else {
-		    // TODO instead of just sending the password, generate new, save it
-		    // to database and send it to the user
+		    SecureRandom random = new SecureRandom();
+		    String newPassword = new BigInteger(130, random).toString(32);
+		    // String newPassword = RandomStringUtils.randomAscii(Constants.DEFAULT_PASSWORD_LENGTH);
+		    List<String> hashResult = SecurityUtils.getHashWithSalt(newPassword);
+		    if ((hashResult != null) && (hashResult.size() == 2)) {
+			recipientUserProfile.setPassword(hashResult.get(0));
+			recipientUserProfile.setSalt(hashResult.get(1));
+			userProfileDAO.merge(recipientUserProfile);
+		    }
 		    // TODO i18n
 		    String emailSubject = "nova lozinka za bundolo";
 		    String emailBody = "pozdrav, \n"
@@ -172,17 +207,17 @@ public class UserServiceImpl implements UserService {
 			    + "korisničko ime: "
 			    + recipientUserProfile.getUsername()
 			    + "\nlozinka: "
-			    + recipientUserProfile.getPassword()
+			    + newPassword
 			    + "\nda biste povećali sigurnost vašeg korisničkoh naloga, promenite ovu lozinku što je pre moguće.\n\n"
 			    + "poštovanje,\nbundolo administracija";
 		    mailingUtils.sendEmail(emailBody, emailSubject, recipientUserProfile.getEmail());
-		    result = true;
+		    return true;
 		}
 	    }
 	} catch (Exception ex) {
 	    logger.log(Level.SEVERE, "sendNewPassword exception: " + ex);
 	}
-	return result;
+	return false;
     }
 
     @Override
@@ -204,7 +239,7 @@ public class UserServiceImpl implements UserService {
 		    return false;
 		}
 	    } else {
-		recipientEmailAddress = Constants.BUNDOLO_EMAIL_ADDRESS;
+		recipientEmailAddress = properties.getProperty("mail.to");
 	    }
 	    if (StringUtils.isBlank(senderUsername)) {
 		senderUsername = Constants.DEFAULT_GUEST_USERNAME;
@@ -256,8 +291,7 @@ public class UserServiceImpl implements UserService {
 
 		List<String> hashResult = SecurityUtils.getHashWithSalt(password);
 		if ((hashResult != null) && (hashResult.size() == 2)) {
-		    // TODO enable password hashing later
-		    // userProfile.setPassword(hashResult.get(0));
+		    userProfile.setPassword(hashResult.get(0));
 		    userProfile.setSalt(hashResult.get(1));
 		}
 		String nonce = SecurityUtils.getHashWithoutSalt(email + ":" + userProfile.getSalt());
@@ -332,14 +366,12 @@ public class UserServiceImpl implements UserService {
 	    }
 	    userProfileDB.setDescriptionContent(descriptionContent);
 
-	    // TODO this check will look differently when hashing is implemented
-	    if ((StringUtils.isNotBlank(userProfile.getPassword()))
-		    && (!userProfileDB.getPassword().equals(userProfile.getPassword()))) {
+	    if (StringUtils.isNotBlank(userProfile.getPassword())
+		    && !SecurityUtils.getHashWithPredefinedSalt(userProfile.getPassword(), userProfileDB.getSalt())
+			    .equals(userProfileDB.getPassword())) {
 		List<String> hashResult = SecurityUtils.getHashWithSalt(userProfile.getPassword());
 		if ((hashResult != null) && (hashResult.size() == 2)) {
-		    // TODO enable password hashing later
-		    // userProfileDB.setPassword(hashResult.get(0));
-		    userProfileDB.setPassword(userProfile.getPassword());
+		    userProfileDB.setPassword(hashResult.get(0));
 		    userProfileDB.setSalt(hashResult.get(1));
 		}
 	    }
@@ -357,13 +389,8 @@ public class UserServiceImpl implements UserService {
 		userProfileDB.setNewEmail(null);
 	    }
 	    userProfileDB.setShowPersonal(userProfile.getShowPersonal());
-	    // userProfileDB.setSignupDate(userProfile.getSignupDate());
-	    // userProfileDB.setLastLoginDate(userProfile.getLastLoginDate());
-	    // userProfile.setLastIp(userProfileDTO.getLastIp());
-	    // userProfile.setUserProfileStatus(userProfileDTO.getUserProfileStatus());
 	    userProfileDB.setAvatarUrl(userProfile.getAvatarUrl());
 	    userProfileDAO.merge(userProfileDB);
-	    // userProfileDAO.clear();
 	    if (StringUtils.isNotBlank(userProfileDB.getNewEmail())) {
 		String activationUrl = properties.getProperty("application.root") + "/validate?nonce="
 			+ userProfileDB.getNonce() + "&email=" + userProfileDB.getNewEmail();
@@ -408,5 +435,27 @@ public class UserServiceImpl implements UserService {
     private String getRemoteHost() {
 	ServletRequestAttributes sra = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
 	return sra.getRequest().getRemoteHost();
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    public void migratePasswords() {
+	logger.log(Level.WARNING, "starting password migration");
+	try {
+	    List<UserProfile> userProfiles = userProfileDAO.findAll();
+	    for (UserProfile userProfile : userProfiles) {
+		logger.log(Level.WARNING, "migrate user: " + userProfile.getUsername());
+		logger.log(Level.WARNING, "before: " + userProfile.getPassword());
+		List<String> hashResult = SecurityUtils.getHashWithSalt(userProfile.getPassword());
+		if ((hashResult != null) && (hashResult.size() == 2)) {
+		    userProfile.setPassword(hashResult.get(0));
+		    userProfile.setSalt(hashResult.get(1));
+		    logger.log(Level.WARNING, "after: " + userProfile.getPassword());
+		    userProfileDAO.merge(userProfile);
+		}
+	    }
+	} catch (Exception ex) {
+	    logger.log(Level.SEVERE, "migratePasswords exception: " + ex);
+	}
     }
 }

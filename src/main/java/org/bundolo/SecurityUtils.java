@@ -1,6 +1,5 @@
 package org.bundolo;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -44,6 +43,13 @@ public class SecurityUtils {
 	// Digest computation
 	byte[] bDigest = getHash(textToHash);
 	// return byteToBase64(bDigest);
+	return Base64.encodeBase64URLSafeString(bDigest);
+    }
+
+    public static String getHashWithPredefinedSalt(String textToHash, String salt) throws NoSuchAlgorithmException,
+	    UnsupportedEncodingException {
+	byte[] bSalt = Base64.decodeBase64(salt);
+	byte[] bDigest = getHash(ITERATION_NUMBER, textToHash, bSalt);
 	return Base64.encodeBase64URLSafeString(bDigest);
     }
 
@@ -93,32 +99,6 @@ public class SecurityUtils {
 	digest.reset();
 	return digest.digest(textToHash.getBytes("UTF-8"));
     }
-
-    /**
-     * From a base 64 representation, returns the corresponding byte[]
-     * 
-     * @param data
-     *            String The base64 representation
-     * @return byte[]
-     * @throws IOException
-     */
-    // public static byte[] base64ToByte(String data) throws IOException {
-    // BASE64Decoder decoder = new BASE64Decoder();
-    // return decoder.decodeBuffer(data);
-    // }
-
-    /**
-     * From a byte[] returns a base 64 representation
-     * 
-     * @param data
-     *            byte[]
-     * @return String
-     * @throws IOException
-     */
-    // public static String byteToBase64(byte[] data){
-    // BASE64Encoder endecoder = new BASE64Encoder();
-    // return endecoder.encode(data);
-    // }
 
     public static String getUsername() {
 	UsernamePasswordAuthenticationToken authentication = (UsernamePasswordAuthenticationToken) SecurityContextHolder

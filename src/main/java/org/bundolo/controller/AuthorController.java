@@ -46,13 +46,13 @@ public class AuthorController {
 
     @RequestMapping(value = Constants.REST_PATH_AUTH + "/{username:.+}", method = RequestMethod.POST)
     public @ResponseBody
-    Boolean auth(@PathVariable String username, @RequestParam String password) {
+    Boolean auth(@PathVariable String username, @RequestParam(required = true) String password) {
 	return userService.authenticateUser(username, password);
     }
 
     @RequestMapping(value = Constants.REST_PATH_PASSWORD + "/{username:.+}", method = RequestMethod.POST)
     public @ResponseBody
-    Boolean password(@PathVariable String username, @RequestParam String email) {
+    Boolean password(@PathVariable String username, @RequestParam(required = true) String email) {
 	return userService.sendNewPassword(username, email);
     }
 
@@ -73,7 +73,7 @@ public class AuthorController {
 
     @RequestMapping(value = Constants.REST_PATH_VALIDATE + "/{nonce}", method = RequestMethod.POST)
     public @ResponseBody
-    Boolean validate(@PathVariable String nonce, @RequestParam String email) {
+    Boolean validate(@PathVariable String nonce, @RequestParam(required = true) String email) {
 	logger.log(Level.WARNING, "activate, nonce: " + nonce + ", email: " + email);
 	Boolean result = userService.activateUserEmailAddress(email, nonce);
 	if (result) {
