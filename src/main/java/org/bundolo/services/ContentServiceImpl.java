@@ -196,6 +196,7 @@ public class ContentServiceImpl implements ContentService {
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     private Boolean saveContent(Content content) {
+	// logger.log(Level.WARNING, "saveContent: " + content);
 	try {
 	    if (contentViolatesDBConstraints(content)) {
 		return false;
@@ -437,6 +438,8 @@ public class ContentServiceImpl implements ContentService {
 	    return contentDAO.findByTitle(content.getName(), ContentKindType.episode_group) != null;
 	case episode:
 	    return contentDAO.findEpisode(content.getParentContent().getName(), content.getName()) != null;
+	case forum_post:
+	    return false;
 	default:
 	    return true;
 	}
