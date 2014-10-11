@@ -18,6 +18,7 @@ public class UserProfileDAO extends JpaDAO<Long, UserProfile> {
     public UserProfile findByField(final String field, final String value) {
 	String queryString = "SELECT u FROM " + entityClass.getName() + " u";
 	queryString += " WHERE " + field + " " + ((value == null) ? "IS NULL" : "='" + value + "'");
+	queryString += " AND (user_profile_status='active' OR user_profile_status='pending')";
 	logger.log(Level.FINE, "queryString: " + queryString);
 
 	Query q = entityManager.createQuery(queryString);

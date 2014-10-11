@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.bundolo.model.Content;
 import org.bundolo.model.enumeration.PageKindType;
+import org.bundolo.model.enumeration.ReturnMessageType;
 
 public interface ContentService {
 
@@ -47,7 +48,7 @@ public interface ContentService {
 
     // public Boolean saveOrUpdateContent(Content content);
 
-    public Boolean saveOrUpdateContent(Content content, boolean anonymousAllowed);
+    public ReturnMessageType saveOrUpdateContent(Content content, boolean anonymousAllowed);
 
     public Boolean updateLastActivity(Long contentId, Date lastActivity);
 

@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.bundolo.Constants;
 import org.bundolo.model.Connection;
 import org.bundolo.model.Content;
+import org.bundolo.model.enumeration.ReturnMessageType;
 import org.bundolo.services.ConnectionService;
 import org.bundolo.services.ContentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,14 +50,14 @@ public class ConnectionController {
 
     @RequestMapping(value = Constants.REST_PATH_CONNECTION + "/{title}", method = RequestMethod.PUT)
     public @ResponseBody
-    Boolean saveOrUpdate(@PathVariable String title, @RequestBody final Connection connection) {
+    ReturnMessageType saveOrUpdate(@PathVariable String title, @RequestBody final Connection connection) {
 	logger.log(Level.WARNING, "saveOrUpdate, connection: " + connection);
 	if (!title.matches(Constants.URL_SAFE_REGEX)) {
-	    return false;
+	    return ReturnMessageType.title_not_url_safe;
 	}
 	connection.getDescriptionContent().setName(title.trim());
-	Boolean result = connectionService.saveOrUpdateConnection(connection);
-	if (result) {
+	ReturnMessageType result = connectionService.saveOrUpdateConnection(connection);
+	if (ReturnMessageType.success.equals(result)) {
 	    connectionService.clearSession();
 	}
 	return result;

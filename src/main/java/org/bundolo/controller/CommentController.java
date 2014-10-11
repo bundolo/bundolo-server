@@ -11,6 +11,7 @@ import org.bundolo.Constants;
 import org.bundolo.model.Comment;
 import org.bundolo.model.Content;
 import org.bundolo.model.enumeration.ContentKindType;
+import org.bundolo.model.enumeration.ReturnMessageType;
 import org.bundolo.services.CommentService;
 import org.bundolo.services.ConnectionService;
 import org.bundolo.services.ContentService;
@@ -57,7 +58,7 @@ public class CommentController {
     @RequestMapping(value = Constants.REST_PATH_COMMENT, method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
     public @ResponseBody
-    Long save(@RequestBody final Comment comment) {
+    ReturnMessageType save(@RequestBody final Comment comment) {
 	if (comment == null || StringUtils.isBlank(comment.getText())) {
 	    return null;
 	}
@@ -76,8 +77,8 @@ public class CommentController {
 	}
 	commentAncestors.add(rootCommentAncestor);
 	comment.setKind(getCommentContentKind(rootCommentAncestor.getKind()));
-	Long result = commentService.saveComment(comment);
-	if (result != null) {
+	ReturnMessageType result = commentService.saveComment(comment);
+	if (ReturnMessageType.success.equals(result)) {
 	    // logger.log(Level.WARNING, "saving comment; result not null: " + result);
 	    for (Content commentAncestor : commentAncestors) {
 		contentService.updateLastActivity(commentAncestor.getContentId(), creationDate);

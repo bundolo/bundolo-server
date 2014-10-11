@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.bundolo.Constants;
 import org.bundolo.model.Content;
 import org.bundolo.model.enumeration.ContentKindType;
+import org.bundolo.model.enumeration.ReturnMessageType;
 import org.bundolo.services.CommentService;
 import org.bundolo.services.ContentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,15 +56,16 @@ public class TextController {
 
     @RequestMapping(value = Constants.REST_PATH_TEXT + "/{username}/{title}", method = RequestMethod.PUT)
     public @ResponseBody
-    Boolean saveOrUpdate(@PathVariable String username, @PathVariable String title, @RequestBody final Content text) {
+    ReturnMessageType saveOrUpdate(@PathVariable String username, @PathVariable String title,
+	    @RequestBody final Content text) {
 	logger.log(Level.WARNING, "saveOrUpdate, title: " + title + ", text: " + text);
 	if (!title.matches(Constants.URL_SAFE_REGEX)) {
-	    return false;
+	    return ReturnMessageType.title_not_url_safe;
 	}
 	text.setKind(ContentKindType.text);
 	text.setName(title.trim());
-	Boolean result = contentService.saveOrUpdateContent(text, false);
-	if (result) {
+	ReturnMessageType result = contentService.saveOrUpdateContent(text, false);
+	if (ReturnMessageType.success.equals(result)) {
 	    contentService.clearSession();
 	}
 	return result;

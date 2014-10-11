@@ -21,6 +21,7 @@ import org.bundolo.model.enumeration.ContentKindType;
 import org.bundolo.model.enumeration.ContentStatusType;
 import org.bundolo.model.enumeration.RatingKindType;
 import org.bundolo.model.enumeration.RatingStatusType;
+import org.bundolo.model.enumeration.ReturnMessageType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -50,11 +51,11 @@ public class ConnectionServiceImpl implements ConnectionService {
     }
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    private Boolean saveConnection(Connection connection) {
+    private ReturnMessageType saveConnection(Connection connection) {
 	try {
 	    if (connectionDAO.findByTitle(connection.getDescriptionContent().getName()) != null) {
 		// connection title already taken
-		return false;
+		return ReturnMessageType.title_taken;
 	    }
 	    connection.setConnectionStatus(ConnectionStatusType.active);
 	    connection.setCreationDate(new Date());
@@ -68,11 +69,11 @@ public class ConnectionServiceImpl implements ConnectionService {
 	    descriptionContent.setLocale(Constants.DEFAULT_LOCALE);
 	    descriptionContent.setLastActivity(new Date());
 	    connectionDAO.persist(connection);
-	    return true;
+	    return ReturnMessageType.success;
 	} catch (Exception ex) {
 	    logger.log(Level.SEVERE, "saveConnection exception: " + ex);
+	    return ReturnMessageType.exception;
 	}
-	return false;
     }
 
     // @Override
@@ -116,11 +117,11 @@ public class ConnectionServiceImpl implements ConnectionService {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public Boolean saveOrUpdateConnection(Connection connection) {
+    public ReturnMessageType saveOrUpdateConnection(Connection connection) {
 	try {
 	    if (connection == null || connection.getDescriptionContent() == null
 		    || StringUtils.isBlank(connection.getDescriptionContent().getName())) {
-		return false;
+		return ReturnMessageType.no_data;
 	    }
 	    String senderUsername = SecurityUtils.getUsername();
 	    if (senderUsername != null) {
@@ -132,18 +133,18 @@ public class ConnectionServiceImpl implements ConnectionService {
 		    Connection connectionDB = connectionDAO.findById(connection.getConnectionId());
 		    if (connectionDB == null) {
 			// no such connection
-			return false;
+			return ReturnMessageType.not_found;
 		    } else {
 			if (!senderUsername.equals(connectionDB.getAuthorUsername())) {
 			    // user is not the owner
-			    return false;
+			    return ReturnMessageType.not_owner;
 			}
 			Content descriptionContent = connection.getDescriptionContent();
 			Content descriptionContentDB = connectionDB.getDescriptionContent();
 			if (!descriptionContentDB.getName().equals(descriptionContent.getName())
 				&& connectionDAO.findByTitle(descriptionContent.getName()) != null) {
 			    // new connection title already taken
-			    return false;
+			    return ReturnMessageType.title_taken;
 			}
 			descriptionContentDB.setName(descriptionContent.getName());
 			descriptionContentDB.setText(descriptionContent.getText());
@@ -151,14 +152,16 @@ public class ConnectionServiceImpl implements ConnectionService {
 			connectionDB.setEmail(connection.getEmail());
 			connectionDB.setUrl(connection.getUrl());
 			connectionDAO.merge(connectionDB);
-			return true;
+			return ReturnMessageType.success;
 		    }
 		}
+	    } else {
+		return ReturnMessageType.anonymous_not_allowed;
 	    }
 	} catch (Exception ex) {
 	    logger.log(Level.SEVERE, "saveOrUpdateConnection exception: " + ex);
+	    return ReturnMessageType.exception;
 	}
-	return false;
     }
 
     @Override

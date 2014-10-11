@@ -21,6 +21,7 @@ import org.bundolo.model.enumeration.ContestKindType;
 import org.bundolo.model.enumeration.ContestStatusType;
 import org.bundolo.model.enumeration.RatingKindType;
 import org.bundolo.model.enumeration.RatingStatusType;
+import org.bundolo.model.enumeration.ReturnMessageType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -49,11 +50,11 @@ public class ContestServiceImpl implements ContestService {
     }
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    private Boolean saveContest(Contest contest) {
+    private ReturnMessageType saveContest(Contest contest) {
 	try {
 	    if (contestDAO.findByTitle(contest.getDescriptionContent().getName()) != null) {
 		// contest title already taken
-		return false;
+		return ReturnMessageType.title_taken;
 	    }
 	    contest.setContestStatus(ContestStatusType.active);
 	    contest.setCreationDate(new Date());
@@ -66,11 +67,11 @@ public class ContestServiceImpl implements ContestService {
 	    descriptionContent.setLocale(Constants.DEFAULT_LOCALE);
 	    descriptionContent.setLastActivity(new Date());
 	    contestDAO.persist(contest);
-	    return true;
+	    return ReturnMessageType.success;
 	} catch (Exception ex) {
 	    logger.log(Level.SEVERE, "saveContest exception: " + ex);
+	    return ReturnMessageType.exception;
 	}
-	return false;
     }
 
     // @Override
@@ -114,11 +115,11 @@ public class ContestServiceImpl implements ContestService {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public Boolean saveOrUpdateContest(Contest contest) {
+    public ReturnMessageType saveOrUpdateContest(Contest contest) {
 	try {
 	    if (contest == null || contest.getDescriptionContent() == null
 		    || StringUtils.isBlank(contest.getDescriptionContent().getName())) {
-		return false;
+		return ReturnMessageType.no_data;
 	    }
 	    String senderUsername = SecurityUtils.getUsername();
 	    // UsernamePasswordAuthenticationToken authentication = (UsernamePasswordAuthenticationToken)
@@ -132,32 +133,34 @@ public class ContestServiceImpl implements ContestService {
 		    Contest contestDB = contestDAO.findById(contest.getContestId());
 		    if (contestDB == null) {
 			// no such contest
-			return false;
+			return ReturnMessageType.not_found;
 		    } else {
 			if (!contestDB.getAuthorUsername().equals(senderUsername)) {
 			    // user is not the owner
-			    return false;
+			    return ReturnMessageType.not_owner;
 			}
 			Content descriptionContent = contest.getDescriptionContent();
 			Content descriptionContentDB = contestDB.getDescriptionContent();
 			if (!descriptionContentDB.getName().equals(descriptionContent.getName())
 				&& contestDAO.findByTitle(descriptionContent.getName()) != null) {
 			    // new contest title already taken
-			    return false;
+			    return ReturnMessageType.title_taken;
 			}
 			descriptionContentDB.setName(descriptionContent.getName());
 			descriptionContentDB.setText(descriptionContent.getText());
 			descriptionContentDB.setLastActivity(new Date());
 			contestDB.setExpirationDate(contest.getExpirationDate());
 			contestDAO.merge(contestDB);
-			return true;
+			return ReturnMessageType.success;
 		    }
 		}
+	    } else {
+		return ReturnMessageType.anonymous_not_allowed;
 	    }
 	} catch (Exception ex) {
 	    logger.log(Level.SEVERE, "saveOrUpdateContest exception: " + ex);
+	    return ReturnMessageType.exception;
 	}
-	return false;
     }
 
     @Override

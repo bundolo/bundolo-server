@@ -9,6 +9,7 @@ import org.bundolo.Constants;
 import org.bundolo.model.Content;
 import org.bundolo.model.User;
 import org.bundolo.model.UserProfile;
+import org.bundolo.model.enumeration.ReturnMessageType;
 import org.bundolo.services.ContentService;
 import org.bundolo.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,26 +47,26 @@ public class AuthorController {
 
     @RequestMapping(value = Constants.REST_PATH_AUTH + "/{username:.+}", method = RequestMethod.POST)
     public @ResponseBody
-    Boolean auth(@PathVariable String username, @RequestParam(required = true) String password) {
+    ReturnMessageType auth(@PathVariable String username, @RequestParam(required = true) String password) {
 	return userService.authenticateUser(username, password);
     }
 
     @RequestMapping(value = Constants.REST_PATH_PASSWORD + "/{username:.+}", method = RequestMethod.POST)
     public @ResponseBody
-    Boolean password(@PathVariable String username, @RequestParam(required = true) String email) {
+    ReturnMessageType password(@PathVariable String username, @RequestParam(required = true) String email) {
 	return userService.sendNewPassword(username, email);
     }
 
     @RequestMapping(value = Constants.REST_PATH_AUTHOR + "/{username:.+}", method = RequestMethod.PUT)
     public @ResponseBody
-    Boolean saveOrUpdate(@PathVariable String username, @RequestBody final UserProfile userProfile) {
+    ReturnMessageType saveOrUpdate(@PathVariable String username, @RequestBody final UserProfile userProfile) {
 	logger.log(Level.WARNING, "saveOrUpdate, userProfile: " + userProfile);
 	if (!username.matches(Constants.USERNAME_SAFE_REGEX)) {
-	    return false;
+	    return ReturnMessageType.username_not_url_safe;
 	}
 	userProfile.setUsername(username.trim());
-	Boolean result = userService.saveOrUpdateUser(userProfile);
-	if (result) {
+	ReturnMessageType result = userService.saveOrUpdateUser(userProfile);
+	if (ReturnMessageType.success.equals(result)) {
 	    userService.clearSession();
 	}
 	return result;
@@ -73,10 +74,10 @@ public class AuthorController {
 
     @RequestMapping(value = Constants.REST_PATH_VALIDATE + "/{nonce}", method = RequestMethod.POST)
     public @ResponseBody
-    Boolean validate(@PathVariable String nonce, @RequestParam(required = true) String email) {
+    ReturnMessageType validate(@PathVariable String nonce, @RequestParam(required = true) String email) {
 	logger.log(Level.WARNING, "activate, nonce: " + nonce + ", email: " + email);
-	Boolean result = userService.activateUserEmailAddress(email, nonce);
-	if (result) {
+	ReturnMessageType result = userService.activateUserEmailAddress(email, nonce);
+	if (ReturnMessageType.success.equals(result)) {
 	    userService.clearSession();
 	}
 	return result;
@@ -90,14 +91,14 @@ public class AuthorController {
 
     @RequestMapping(value = Constants.REST_PATH_MESSAGE + "/{username:.+}", method = RequestMethod.POST)
     public @ResponseBody
-    Boolean message(@PathVariable String username, @RequestBody final Map<String, String> message) {
+    ReturnMessageType message(@PathVariable String username, @RequestBody final Map<String, String> message) {
 	logger.log(Level.WARNING, "message, username: " + username + ", message: " + message);
 	return userService.sendMessage(message.get("title"), message.get("text"), username);
     }
 
     @RequestMapping(value = Constants.REST_PATH_MESSAGE, method = RequestMethod.POST)
     public @ResponseBody
-    Boolean messageToBundolo(@RequestBody final Map<String, String> message) {
+    ReturnMessageType messageToBundolo(@RequestBody final Map<String, String> message) {
 	logger.log(Level.WARNING, "messageToBundolo, message: " + message);
 	return userService.sendMessage(message.get("title"), message.get("text"), null);
     }

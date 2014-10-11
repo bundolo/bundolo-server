@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.bundolo.Constants;
 import org.bundolo.model.Content;
 import org.bundolo.model.enumeration.ContentKindType;
+import org.bundolo.model.enumeration.ReturnMessageType;
 import org.bundolo.services.ContentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -53,15 +54,15 @@ public class TopicController {
 
     @RequestMapping(value = Constants.REST_PATH_TOPIC + "/{title}", method = RequestMethod.PUT)
     public @ResponseBody
-    Boolean saveOrUpdate(@PathVariable String title, @RequestBody final Content topic) {
+    ReturnMessageType saveOrUpdate(@PathVariable String title, @RequestBody final Content topic) {
 	logger.log(Level.WARNING, "saveOrUpdate, topic: " + topic);
 	if (!title.matches(Constants.URL_SAFE_REGEX)) {
-	    return false;
+	    return ReturnMessageType.title_not_url_safe;
 	}
 	topic.setKind(ContentKindType.forum_topic);
 	topic.setName(title.trim());
-	Boolean result = contentService.saveOrUpdateContent(topic, true);
-	if (result) {
+	ReturnMessageType result = contentService.saveOrUpdateContent(topic, true);
+	if (ReturnMessageType.success.equals(result)) {
 	    contentService.clearSession();
 	}
 	return result;
@@ -80,13 +81,13 @@ public class TopicController {
     @RequestMapping(value = Constants.REST_PATH_POST, method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
     public @ResponseBody
-    Boolean save(@RequestBody final Content post) {
+    ReturnMessageType save(@RequestBody final Content post) {
 	logger.log(Level.WARNING, "saving post: " + post);
 	Date creationDate = new Date();
 	post.setLastActivity(creationDate);
 	post.setKind(ContentKindType.forum_post);
-	Boolean result = contentService.saveOrUpdateContent(post, true);
-	if (result) {
+	ReturnMessageType result = contentService.saveOrUpdateContent(post, true);
+	if (ReturnMessageType.success.equals(result)) {
 	    contentService.updateLastActivity(post.getParentContent().getContentId(), creationDate);
 	    contentService.clearSession();
 	}

@@ -3,6 +3,7 @@ package org.bundolo.services;
 import java.util.List;
 
 import org.bundolo.model.Contest;
+import org.bundolo.model.enumeration.ReturnMessageType;
 
 public interface ContestService {
 
@@ -10,7 +11,7 @@ public interface ContestService {
 
     public Contest findContest(String title);
 
-    public Boolean saveOrUpdateContest(Contest contest);
+    public ReturnMessageType saveOrUpdateContest(Contest contest);
 
     public List<Contest> findContests(Integer start, Integer end, String[] orderBy, String[] order, String[] filterBy,
 	    String[] filter);

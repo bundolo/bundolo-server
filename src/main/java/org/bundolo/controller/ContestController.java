@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.bundolo.Constants;
 import org.bundolo.model.Contest;
+import org.bundolo.model.enumeration.ReturnMessageType;
 import org.bundolo.services.ContestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -41,14 +42,14 @@ public class ContestController {
 
     @RequestMapping(value = Constants.REST_PATH_CONTEST + "/{title}", method = RequestMethod.PUT)
     public @ResponseBody
-    Boolean saveOrUpdate(@PathVariable String title, @RequestBody final Contest contest) {
+    ReturnMessageType saveOrUpdate(@PathVariable String title, @RequestBody final Contest contest) {
 	logger.log(Level.WARNING, "saveOrUpdate, contest: " + contest);
 	if (!title.matches(Constants.URL_SAFE_REGEX)) {
-	    return false;
+	    return ReturnMessageType.title_not_url_safe;
 	}
 	contest.getDescriptionContent().setName(title.trim());
-	Boolean result = contestService.saveOrUpdateContest(contest);
-	if (result) {
+	ReturnMessageType result = contestService.saveOrUpdateContest(contest);
+	if (ReturnMessageType.success.equals(result)) {
 	    contestService.clearSession();
 	}
 	return result;

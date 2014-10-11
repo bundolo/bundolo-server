@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.bundolo.Constants;
 import org.bundolo.model.Content;
 import org.bundolo.model.enumeration.ContentKindType;
+import org.bundolo.model.enumeration.ReturnMessageType;
 import org.bundolo.services.ContentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -44,18 +45,17 @@ public class AnnouncementController {
 
     @RequestMapping(value = Constants.REST_PATH_ANNOUNCEMENT + "/{title}", method = RequestMethod.PUT)
     public @ResponseBody
-    Boolean saveOrUpdate(@PathVariable String title, @RequestBody final Content announcement) {
+    ReturnMessageType saveOrUpdate(@PathVariable String title, @RequestBody final Content announcement) {
 	logger.log(Level.WARNING, "saveOrUpdate, announcement: " + announcement);
 	if (!title.matches(Constants.URL_SAFE_REGEX)) {
-	    return false;
+	    return ReturnMessageType.title_not_url_safe;
 	}
 	announcement.setName(title.trim());
 	announcement.setKind(ContentKindType.news);
-	Boolean result = contentService.saveOrUpdateContent(announcement, false);
-	if (result) {
+	ReturnMessageType result = contentService.saveOrUpdateContent(announcement, false);
+	if (ReturnMessageType.success.equals(result)) {
 	    contentService.clearSession();
 	}
 	return result;
     }
-
 }

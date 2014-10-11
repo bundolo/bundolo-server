@@ -11,6 +11,7 @@ import org.bundolo.SecurityUtils;
 import org.bundolo.dao.CommentDAO;
 import org.bundolo.model.Comment;
 import org.bundolo.model.enumeration.ContentStatusType;
+import org.bundolo.model.enumeration.ReturnMessageType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -39,16 +40,18 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public Long saveComment(Comment comment) {
-	Long result = null;
-	// TODO check if comment exists
-	comment.setContentStatus(ContentStatusType.active);
-	comment.setLocale("sr");
-	comment.setAuthorUsername(SecurityUtils.getUsername());
-	commentDAO.persist(comment);
-	result = comment.getContentId();
-	logger.log(Level.WARNING, "++++++++saving comment after: " + result);
-	return result;
+    public ReturnMessageType saveComment(Comment comment) {
+	try {
+	    // TODO check if comment exists
+	    comment.setContentStatus(ContentStatusType.active);
+	    comment.setLocale("sr");
+	    comment.setAuthorUsername(SecurityUtils.getUsername());
+	    commentDAO.persist(comment);
+	    return ReturnMessageType.success;
+	} catch (Exception ex) {
+	    logger.log(Level.SEVERE, "saveComment exception: " + ex);
+	    return ReturnMessageType.exception;
+	}
     }
 
     @Override

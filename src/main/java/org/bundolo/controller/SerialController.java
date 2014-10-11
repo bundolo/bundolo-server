@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.bundolo.Constants;
 import org.bundolo.model.Content;
 import org.bundolo.model.enumeration.ContentKindType;
+import org.bundolo.model.enumeration.ReturnMessageType;
 import org.bundolo.services.CommentService;
 import org.bundolo.services.ContentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,15 +50,15 @@ public class SerialController {
 
     @RequestMapping(value = Constants.REST_PATH_SERIAL + "/{title}", method = RequestMethod.PUT)
     public @ResponseBody
-    Boolean saveOrUpdate(@PathVariable String title, @RequestBody final Content serial) {
+    ReturnMessageType saveOrUpdate(@PathVariable String title, @RequestBody final Content serial) {
 	logger.log(Level.WARNING, "saveOrUpdate, serial: " + serial);
 	if (!title.matches(Constants.URL_SAFE_REGEX)) {
-	    return false;
+	    return ReturnMessageType.title_not_url_safe;
 	}
 	serial.setKind(ContentKindType.episode_group);
 	serial.setName(title.trim());
-	Boolean result = contentService.saveOrUpdateContent(serial, false);
-	if (result) {
+	ReturnMessageType result = contentService.saveOrUpdateContent(serial, false);
+	if (ReturnMessageType.success.equals(result)) {
 	    contentService.clearSession();
 	}
 	return result;
@@ -96,11 +97,11 @@ public class SerialController {
 
     @RequestMapping(value = Constants.REST_PATH_EPISODE + "/{serialTitle}/{title}", method = RequestMethod.PUT)
     public @ResponseBody
-    Boolean saveOrUpdateEpisode(@PathVariable String serialTitle, @PathVariable String title,
+    ReturnMessageType saveOrUpdateEpisode(@PathVariable String serialTitle, @PathVariable String title,
 	    @RequestBody final Content episode) {
 	logger.log(Level.WARNING, "saveOrUpdate, episode: " + episode);
 	if (!title.matches(Constants.URL_SAFE_REGEX)) {
-	    return false;
+	    return ReturnMessageType.title_not_url_safe;
 	}
 	Content serial = contentService.findSerial(serialTitle);
 	episode.getParentContent().setContentId(serial.getContentId());
@@ -109,8 +110,8 @@ public class SerialController {
 	episode.setLastActivity(creationDate);
 	episode.setKind(ContentKindType.episode);
 	episode.setName(title.trim());
-	Boolean result = contentService.saveOrUpdateContent(episode, false);
-	if (result) {
+	ReturnMessageType result = contentService.saveOrUpdateContent(episode, false);
+	if (ReturnMessageType.success.equals(result)) {
 	    contentService.updateLastActivity(episode.getParentContent().getContentId(), creationDate);
 	    contentService.clearSession();
 	}

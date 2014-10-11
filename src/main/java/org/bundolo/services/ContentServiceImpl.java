@@ -19,6 +19,7 @@ import org.bundolo.model.enumeration.ContentStatusType;
 import org.bundolo.model.enumeration.PageKindType;
 import org.bundolo.model.enumeration.RatingKindType;
 import org.bundolo.model.enumeration.RatingStatusType;
+import org.bundolo.model.enumeration.ReturnMessageType;
 import org.bundolo.model.enumeration.TextColumnType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -195,18 +196,18 @@ public class ContentServiceImpl implements ContentService {
     }
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    private Boolean saveContent(Content content) {
+    private ReturnMessageType saveContent(Content content) {
 	// logger.log(Level.WARNING, "saveContent: " + content);
 	try {
 	    if (contentViolatesDBConstraints(content)) {
-		return false;
+		return ReturnMessageType.title_taken;
 	    }
 	    if (ContentKindType.episode.equals(content.getKind())) {
 		// if this is episode and the last one in the serial is pending, saving is not allowed
 		List<Content> episodes = contentDAO.findEpisodes(content.getParentContent().getContentId(), 0, -1);
 		if (episodes != null && episodes.size() > 0
 			&& ContentStatusType.pending.equals(episodes.get(episodes.size() - 1).getContentStatus())) {
-		    return false;
+		    return ReturnMessageType.serial_pending;
 		}
 	    }
 	    if (content.getContentStatus() == null) {
@@ -226,23 +227,23 @@ public class ContentServiceImpl implements ContentService {
 		descriptionContent.setLocale(Constants.DEFAULT_LOCALE);
 	    }
 	    contentDAO.persist(content);
-	    return true;
+	    return ReturnMessageType.success;
 	} catch (Exception ex) {
 	    logger.log(Level.SEVERE, "saveContent exception: " + ex);
+	    return ReturnMessageType.exception;
 	}
-	return false;
     }
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public Boolean saveOrUpdateContent(Content content, boolean anonymousAllowed) {
+    public ReturnMessageType saveOrUpdateContent(Content content, boolean anonymousAllowed) {
 	try {
 	    if (content == null) {
-		return false;
+		return ReturnMessageType.no_data;
 	    }
 	    if (ContentKindType.episode.equals(content.getKind()) && content.getParentContent().getContentId() == null) {
 		// episode that is not attached to a serial is not allowed
-		return false;
+		return ReturnMessageType.episode_detached;
 	    }
 
 	    String senderUsername = SecurityUtils.getUsername();
@@ -254,16 +255,16 @@ public class ContentServiceImpl implements ContentService {
 		    Content contentDB = contentDAO.findById(content.getContentId());
 		    if (contentDB == null) {
 			// no such content
-			return false;
+			return ReturnMessageType.not_found;
 		    }
 		    if (!senderUsername.equals(contentDB.getAuthorUsername())) {
 			// user is not the owner
-			return false;
+			return ReturnMessageType.not_owner;
 		    }
 		    if (!contentDB.getName().equals(content.getName())) {
 			content.setAuthorUsername(contentDB.getAuthorUsername());
 			if (contentViolatesDBConstraints(content)) {
-			    return false;
+			    return ReturnMessageType.title_taken;
 			}
 		    }
 		    if (ContentKindType.text.equals(content.getKind())) {
@@ -282,13 +283,15 @@ public class ContentServiceImpl implements ContentService {
 			contentDB.setContentStatus(content.getContentStatus());
 		    }
 		    contentDAO.merge(contentDB);
-		    return true;
+		    return ReturnMessageType.success;
 		}
+	    } else {
+		return ReturnMessageType.anonymous_not_allowed;
 	    }
 	} catch (Exception ex) {
 	    logger.log(Level.SEVERE, "saveOrUpdateContent exception: " + ex);
+	    return ReturnMessageType.exception;
 	}
-	return false;
     }
 
     @Override

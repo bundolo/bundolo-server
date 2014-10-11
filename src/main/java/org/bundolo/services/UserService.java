@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.bundolo.model.User;
 import org.bundolo.model.UserProfile;
+import org.bundolo.model.enumeration.ReturnMessageType;
 
 public interface UserService {
 
@@ -12,15 +13,15 @@ public interface UserService {
     public List<User> findUsers(Integer start, Integer end, String[] orderBy, String[] order, String[] filterBy,
 	    String[] filter);
 
-    public Boolean authenticateUser(String username, String password);
+    public ReturnMessageType authenticateUser(String username, String password);
 
-    public Boolean activateUserEmailAddress(String email, String nonce);
+    public ReturnMessageType activateUserEmailAddress(String email, String nonce);
 
-    public Boolean sendMessage(String title, String text, String recipientUsername);
+    public ReturnMessageType sendMessage(String title, String text, String recipientUsername);
 
-    public Boolean sendNewPassword(String username, String email);
+    public ReturnMessageType sendNewPassword(String username, String email);
 
-    public Boolean saveOrUpdateUser(UserProfile userProfile);
+    public ReturnMessageType saveOrUpdateUser(UserProfile userProfile);
 
     public User findNext(String username, String orderBy, String fixBy, boolean ascending);
 
