@@ -120,9 +120,8 @@ public class UserServiceImpl implements UserService {
 		dbPassword = userProfile.getPassword();
 		dbStatus = userProfile.getUserProfileStatus();
 	    } else {
-		dbSalt = "";
-		dbPassword = "";
-		dbStatus = UserProfileStatusType.disabled;
+		// if user is not found it is ok to skip the rest since usernames are not secret
+		return ReturnMessageType.login_failed;
 	    }
 	    // update guest account in case of failed login to make this run the same amount of time regardless of being
 	    // successful or not
