@@ -60,7 +60,13 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	}
 	q.setFirstResult(start);
 	q.setMaxResults(end - start + 1);
-	return q.getResultList();
+	// strip text to make the request run faster
+	List<Content> texts = q.getResultList();
+	for (Content text : texts) {
+	    text.setText("");
+	    text.setRating(null);
+	}
+	return texts;
     }
 
     @SuppressWarnings("unchecked")

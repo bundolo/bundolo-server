@@ -9,6 +9,7 @@ import javax.persistence.Query;
 import org.apache.commons.lang3.ArrayUtils;
 import org.bundolo.model.Comment;
 import org.bundolo.model.Content;
+import org.bundolo.model.enumeration.ContentKindType;
 import org.springframework.stereotype.Repository;
 
 @Repository("commentDAO")
@@ -50,10 +51,11 @@ public class CommentDAO extends JpaDAO<Long, Comment> {
 		queryString.append("'||?" + filterParamCounter + "||'");
 		queryString.append(postfix);
 	    }
-	    // TODO consider making these links functional by keeping old ids in database
 	    // avoid old links
+	    // TODO consider making these links functional by keeping old ids in database
 	    queryString.append("AND content_text NOT LIKE '%http://www.bundolo.org/%'");
 	    queryString.append("AND content_text NOT LIKE '%http://bundolo.org/%'");
+	    queryString.append("AND content_text NOT LIKE '%http://bundolo.f2o.org/%'");
 	}
 	if (ArrayUtils.isNotEmpty(orderBy) && ArrayUtils.isSameLength(orderBy, order)) {
 	    String firstPrefix = " ORDER BY ";
@@ -89,8 +91,12 @@ public class CommentDAO extends JpaDAO<Long, Comment> {
 	    while (commentAncestor.getParentContent() != null) {
 		commentAncestor = commentAncestor.getParentContent();
 	    }
+	    // strip parent to the minimum that is going to be used, to make the request run faster
+	    commentAncestor.setRating(null);
+	    if (!ContentKindType.page_description.equals(commentAncestor.getKind())) {
+		commentAncestor.setText("");
+	    }
 	    // logger.log(Level.INFO, "commentAncestor: " + commentAncestor);
-
 	    comment.setParentContent(commentAncestor);
 	}
 	return comments;
