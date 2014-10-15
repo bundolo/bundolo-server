@@ -29,7 +29,11 @@ public class CommentDAO extends JpaDAO<Long, Comment> {
 	    Query q = entityManager.createQuery(queryString);
 	    q.setParameter(1, parentId);
 	    result = q.getResultList();
+	    for (Comment comment : result) {
+		comment.setParentContent(null);
+	    }
 	}
+
 	return result;
     }
 
