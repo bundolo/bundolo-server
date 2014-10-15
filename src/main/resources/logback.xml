@@ -30,8 +30,8 @@
             </layout>           
         </encoder>
     </appender> 
-
-    <root level="INFO">
+<!-- TRACE DEBUG INFO WARN ERROR OFF -->
+    <root level="WARN">
         <appender-ref ref="STDOUT" />
         <appender-ref ref="FILE" />     
     </root>

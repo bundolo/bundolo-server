@@ -36,7 +36,7 @@ public class ConnectionController {
     public @ResponseBody
     Connection connection(HttpServletRequest request) {
 	String restOfTheUrl = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
-	logger.log(Level.WARNING, "connection, restOfTheUrl: " + restOfTheUrl);
+	logger.log(Level.INFO, "connection, restOfTheUrl: " + restOfTheUrl);
 	return connectionService.findConnection(restOfTheUrl.substring(Constants.REST_PATH_CONNECTION.length() + 1));
     }
 
@@ -44,14 +44,14 @@ public class ConnectionController {
     public @ResponseBody
     Boolean delete(HttpServletRequest request) {
 	String restOfTheUrl = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
-	logger.log(Level.WARNING, "delete connection, restOfTheUrl: " + restOfTheUrl);
+	logger.log(Level.INFO, "delete connection, restOfTheUrl: " + restOfTheUrl);
 	return connectionService.deleteConnection(restOfTheUrl.substring(Constants.REST_PATH_CONNECTION.length() + 1)) != null;
     }
 
     @RequestMapping(value = Constants.REST_PATH_CONNECTION + "/{title}", method = RequestMethod.PUT)
     public @ResponseBody
     ReturnMessageType saveOrUpdate(@PathVariable String title, @RequestBody final Connection connection) {
-	logger.log(Level.WARNING, "saveOrUpdate, connection: " + connection);
+	logger.log(Level.INFO, "saveOrUpdate, connection: " + connection);
 	if (!title.matches(Constants.URL_SAFE_REGEX)) {
 	    return ReturnMessageType.title_not_url_safe;
 	}

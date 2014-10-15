@@ -24,7 +24,7 @@ public class CommentDAO extends JpaDAO<Long, Comment> {
 	    queryString += " AND parent_content_id =?1";
 	    queryString += " AND kind like '%comment%'";
 	    queryString += " ORDER BY creationDate";
-	    logger.log(Level.WARNING, "queryString: " + queryString);
+	    logger.log(Level.INFO, "queryString: " + queryString);
 	    Query q = entityManager.createQuery(queryString);
 	    q.setParameter(1, parentId);
 	    result = q.getResultList();
@@ -68,7 +68,7 @@ public class CommentDAO extends JpaDAO<Long, Comment> {
 		prefix = nextPrefix;
 	    }
 	}
-	logger.log(Level.WARNING, "queryString: " + queryString.toString() + ", start: " + start + ", max results: "
+	logger.log(Level.INFO, "queryString: " + queryString.toString() + ", start: " + start + ", max results: "
 		+ (end - start + 1));
 	Query q = entityManager.createQuery(queryString.toString());
 	if (filterParamCounter > 0) {
@@ -82,14 +82,14 @@ public class CommentDAO extends JpaDAO<Long, Comment> {
 	// go up and return parents
 	// TODO make sure that parents do not hold comments, we are not using them
 	List<Comment> comments = q.getResultList();
-	// logger.log(Level.WARNING, "comments: " + comments);
+	// logger.log(Level.INFO, "comments: " + comments);
 	for (Comment comment : comments) {
-	    // logger.log(Level.WARNING, "comment: " + comment);
+	    // logger.log(Level.INFO, "comment: " + comment);
 	    Content commentAncestor = comment.getParentContent();
 	    while (commentAncestor.getParentContent() != null) {
 		commentAncestor = commentAncestor.getParentContent();
 	    }
-	    // logger.log(Level.WARNING, "commentAncestor: " + commentAncestor);
+	    // logger.log(Level.INFO, "commentAncestor: " + commentAncestor);
 
 	    comment.setParentContent(commentAncestor);
 	}

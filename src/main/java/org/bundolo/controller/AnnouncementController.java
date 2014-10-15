@@ -31,7 +31,7 @@ public class AnnouncementController {
     @ResponseBody
     public Content announcement(HttpServletRequest request) {
 	String restOfTheUrl = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
-	logger.log(Level.WARNING, "announcement, restOfTheUrl: " + restOfTheUrl);
+	logger.log(Level.INFO, "announcement, restOfTheUrl: " + restOfTheUrl);
 	return contentService.findAnnouncement(restOfTheUrl.substring(Constants.REST_PATH_ANNOUNCEMENT.length() + 1));
     }
 
@@ -39,14 +39,14 @@ public class AnnouncementController {
     @ResponseBody
     public Boolean delete(HttpServletRequest request) {
 	String restOfTheUrl = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
-	logger.log(Level.WARNING, "delete announcement, restOfTheUrl: " + restOfTheUrl);
+	logger.log(Level.INFO, "delete announcement, restOfTheUrl: " + restOfTheUrl);
 	return contentService.deleteAnnouncement(restOfTheUrl.substring(Constants.REST_PATH_ANNOUNCEMENT.length() + 1)) != null;
     }
 
     @RequestMapping(value = Constants.REST_PATH_ANNOUNCEMENT + "/{title}", method = RequestMethod.PUT)
     public @ResponseBody
     ReturnMessageType saveOrUpdate(@PathVariable String title, @RequestBody final Content announcement) {
-	logger.log(Level.WARNING, "saveOrUpdate, announcement: " + announcement);
+	logger.log(Level.INFO, "saveOrUpdate, announcement: " + announcement);
 	if (!title.matches(Constants.URL_SAFE_REGEX)) {
 	    return ReturnMessageType.title_not_url_safe;
 	}

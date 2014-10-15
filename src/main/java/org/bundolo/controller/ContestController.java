@@ -43,7 +43,7 @@ public class ContestController {
     @RequestMapping(value = Constants.REST_PATH_CONTEST + "/{title}", method = RequestMethod.PUT)
     public @ResponseBody
     ReturnMessageType saveOrUpdate(@PathVariable String title, @RequestBody final Contest contest) {
-	logger.log(Level.WARNING, "saveOrUpdate, contest: " + contest);
+	logger.log(Level.INFO, "saveOrUpdate, contest: " + contest);
 	if (!title.matches(Constants.URL_SAFE_REGEX)) {
 	    return ReturnMessageType.title_not_url_safe;
 	}

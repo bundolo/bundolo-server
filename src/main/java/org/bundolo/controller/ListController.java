@@ -308,7 +308,7 @@ public class ListController {
 	    @RequestParam(required = false, defaultValue = "creationDate") String orderBy,
 	    @RequestParam(required = false) String fixBy,
 	    @RequestParam(required = false, defaultValue = "true") Boolean ascending) {
-	logger.log(Level.WARNING, "next, type: " + type + ", id: " + id + ", orderBy: " + orderBy + ", ascending: "
+	logger.log(Level.INFO, "next, type: " + type + ", id: " + id + ", orderBy: " + orderBy + ", ascending: "
 		+ ascending);
 	Object result = null;
 	switch (type) {
@@ -348,7 +348,7 @@ public class ListController {
 		    StringUtils.isNotBlank(fixBy) ? EpisodeColumnType.valueOf(fixBy).getColumnName() : null, ascending);
 	    break;
 	}
-	logger.log(Level.WARNING, "next, result: " + result);
+	// logger.log(Level.INFO, "next, result: " + result);
 	return result;
     }
 

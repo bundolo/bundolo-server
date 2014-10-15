@@ -35,7 +35,7 @@ public class AuthorController {
     @RequestMapping(value = Constants.REST_PATH_AUTHOR + "/{username:.+}", method = RequestMethod.GET)
     public @ResponseBody
     User author(@PathVariable String username) {
-	logger.log(Level.WARNING, "author, username: " + username);
+	logger.log(Level.INFO, "author, username: " + username);
 	return userService.findUser(username);
     }
 
@@ -60,7 +60,7 @@ public class AuthorController {
     @RequestMapping(value = Constants.REST_PATH_AUTHOR + "/{username:.+}", method = RequestMethod.PUT)
     public @ResponseBody
     ReturnMessageType saveOrUpdate(@PathVariable String username, @RequestBody final UserProfile userProfile) {
-	logger.log(Level.WARNING, "saveOrUpdate, userProfile: " + userProfile);
+	logger.log(Level.INFO, "saveOrUpdate, userProfile: " + userProfile);
 	if (!username.matches(Constants.USERNAME_SAFE_REGEX)) {
 	    return ReturnMessageType.username_not_url_safe;
 	}
@@ -75,7 +75,7 @@ public class AuthorController {
     @RequestMapping(value = Constants.REST_PATH_VALIDATE + "/{nonce}", method = RequestMethod.POST)
     public @ResponseBody
     ReturnMessageType validate(@PathVariable String nonce, @RequestParam(required = true) String email) {
-	logger.log(Level.WARNING, "activate, nonce: " + nonce + ", email: " + email);
+	logger.log(Level.INFO, "activate, nonce: " + nonce + ", email: " + email);
 	ReturnMessageType result = userService.activateUserEmailAddress(email, nonce);
 	if (ReturnMessageType.success.equals(result)) {
 	    userService.clearSession();
@@ -92,14 +92,14 @@ public class AuthorController {
     @RequestMapping(value = Constants.REST_PATH_MESSAGE + "/{username:.+}", method = RequestMethod.POST)
     public @ResponseBody
     ReturnMessageType message(@PathVariable String username, @RequestBody final Map<String, String> message) {
-	logger.log(Level.WARNING, "message, username: " + username + ", message: " + message);
+	logger.log(Level.INFO, "message, username: " + username + ", message: " + message);
 	return userService.sendMessage(message.get("title"), message.get("text"), username);
     }
 
     @RequestMapping(value = Constants.REST_PATH_MESSAGE, method = RequestMethod.POST)
     public @ResponseBody
     ReturnMessageType messageToBundolo(@RequestBody final Map<String, String> message) {
-	logger.log(Level.WARNING, "messageToBundolo, message: " + message);
+	logger.log(Level.INFO, "messageToBundolo, message: " + message);
 	return userService.sendMessage(message.get("title"), message.get("text"), null);
     }
 }

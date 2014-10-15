@@ -58,7 +58,7 @@ public class TextController {
     public @ResponseBody
     ReturnMessageType saveOrUpdate(@PathVariable String username, @PathVariable String title,
 	    @RequestBody final Content text) {
-	logger.log(Level.WARNING, "saveOrUpdate, title: " + title + ", text: " + text);
+	logger.log(Level.INFO, "saveOrUpdate, title: " + title + ", text: " + text);
 	if (!title.matches(Constants.URL_SAFE_REGEX)) {
 	    return ReturnMessageType.title_not_url_safe;
 	}

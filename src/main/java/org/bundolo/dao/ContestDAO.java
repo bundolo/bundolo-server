@@ -49,7 +49,7 @@ public class ContestDAO extends JpaDAO<Long, Contest> {
 		prefix = nextPrefix;
 	    }
 	}
-	logger.log(Level.WARNING, "queryString: " + queryString.toString() + ", start: " + start + ", max results: "
+	logger.log(Level.INFO, "queryString: " + queryString.toString() + ", start: " + start + ", max results: "
 		+ (end - start + 1));
 	Query q = entityManager.createQuery(queryString.toString());
 	if (filterParamCounter > 0) {
@@ -72,7 +72,7 @@ public class ContestDAO extends JpaDAO<Long, Contest> {
 	queryString += " AND c2.name = ?1";
 	queryString += " AND c1.contestStatus='active'";
 	queryString += " AND c1.descriptionContent.contentId=c2.contentId";
-	logger.log(Level.WARNING, "queryString: " + queryString);
+	logger.log(Level.INFO, "queryString: " + queryString);
 
 	Query q = entityManager.createQuery(queryString);
 	q.setParameter(1, title);
@@ -99,7 +99,7 @@ public class ContestDAO extends JpaDAO<Long, Contest> {
 	}
 	queryString.append(" AND c1." + orderBy + (ascending ? ">" : "<") + "c2." + orderBy);
 	queryString.append(" ORDER BY c1." + orderBy + " " + (ascending ? "ASC" : "DESC"));
-	logger.log(Level.WARNING, "queryString: " + queryString.toString());
+	logger.log(Level.INFO, "queryString: " + queryString.toString());
 	Query q = entityManager.createQuery(queryString.toString());
 	q.setParameter(1, contestId);
 	q.setMaxResults(1);

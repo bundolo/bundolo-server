@@ -51,7 +51,7 @@ public class SerialController {
     @RequestMapping(value = Constants.REST_PATH_SERIAL + "/{title}", method = RequestMethod.PUT)
     public @ResponseBody
     ReturnMessageType saveOrUpdate(@PathVariable String title, @RequestBody final Content serial) {
-	logger.log(Level.WARNING, "saveOrUpdate, serial: " + serial);
+	logger.log(Level.INFO, "saveOrUpdate, serial: " + serial);
 	if (!title.matches(Constants.URL_SAFE_REGEX)) {
 	    return ReturnMessageType.title_not_url_safe;
 	}
@@ -99,7 +99,7 @@ public class SerialController {
     public @ResponseBody
     ReturnMessageType saveOrUpdateEpisode(@PathVariable String serialTitle, @PathVariable String title,
 	    @RequestBody final Content episode) {
-	logger.log(Level.WARNING, "saveOrUpdate, episode: " + episode);
+	logger.log(Level.INFO, "saveOrUpdate, episode: " + episode);
 	if (!title.matches(Constants.URL_SAFE_REGEX)) {
 	    return ReturnMessageType.title_not_url_safe;
 	}

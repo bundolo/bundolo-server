@@ -62,7 +62,7 @@ public class CommentController {
 	if (comment == null || StringUtils.isBlank(comment.getText())) {
 	    return null;
 	}
-	logger.log(Level.WARNING, "saving comment: " + comment);
+	logger.log(Level.INFO, "saving comment: " + comment);
 	// TODO this could be nicer, move this logic to service. the problem with that is calling content update from
 	// comment save method. transactions collide.
 	Date creationDate = new Date();
@@ -79,7 +79,7 @@ public class CommentController {
 	comment.setKind(getCommentContentKind(rootCommentAncestor.getKind()));
 	ReturnMessageType result = commentService.saveComment(comment);
 	if (ReturnMessageType.success.equals(result)) {
-	    // logger.log(Level.WARNING, "saving comment; result not null: " + result);
+	    // logger.log(Level.INFO, "saving comment; result not null: " + result);
 	    for (Content commentAncestor : commentAncestors) {
 		contentService.updateLastActivity(commentAncestor.getContentId(), creationDate);
 	    }
@@ -99,7 +99,7 @@ public class CommentController {
 	    }
 
 	}
-	// logger.log(Level.WARNING, "saving comment; result: " + result);
+	// logger.log(Level.INFO, "saving comment; result: " + result);
 	return result;
     }
 

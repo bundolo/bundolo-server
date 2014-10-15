@@ -55,7 +55,7 @@ public class TopicController {
     @RequestMapping(value = Constants.REST_PATH_TOPIC + "/{title}", method = RequestMethod.PUT)
     public @ResponseBody
     ReturnMessageType saveOrUpdate(@PathVariable String title, @RequestBody final Content topic) {
-	logger.log(Level.WARNING, "saveOrUpdate, topic: " + topic);
+	logger.log(Level.INFO, "saveOrUpdate, topic: " + topic);
 	if (!title.matches(Constants.URL_SAFE_REGEX)) {
 	    return ReturnMessageType.title_not_url_safe;
 	}
@@ -82,7 +82,7 @@ public class TopicController {
     @ResponseStatus(HttpStatus.CREATED)
     public @ResponseBody
     ReturnMessageType save(@RequestBody final Content post) {
-	logger.log(Level.WARNING, "saving post: " + post);
+	logger.log(Level.INFO, "saving post: " + post);
 	Date creationDate = new Date();
 	post.setLastActivity(creationDate);
 	post.setKind(ContentKindType.forum_post);

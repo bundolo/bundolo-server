@@ -49,7 +49,7 @@ public class UserDAO extends JpaDAO<String, User> {
 		prefix = nextPrefix;
 	    }
 	}
-	logger.log(Level.WARNING, "queryString: " + queryString.toString() + ", start: " + start + ", max results: "
+	logger.log(Level.INFO, "queryString: " + queryString.toString() + ", start: " + start + ", max results: "
 		+ (end - start + 1));
 	Query q = entityManager.createQuery(queryString.toString());
 	if (filterParamCounter > 0) {
@@ -77,7 +77,7 @@ public class UserDAO extends JpaDAO<String, User> {
 	}
 	queryString.append(" AND u1." + orderBy + (ascending ? ">" : "<") + "u2." + orderBy);
 	queryString.append(" ORDER BY u1." + orderBy + " " + (ascending ? "ASC" : "DESC"));
-	logger.log(Level.WARNING, "queryString: " + queryString.toString());
+	logger.log(Level.INFO, "queryString: " + queryString.toString());
 	Query q = entityManager.createQuery(queryString.toString());
 	q.setParameter(1, username);
 	q.setMaxResults(1);
