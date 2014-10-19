@@ -16,12 +16,10 @@ import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-import org.bundolo.CustomDateSerializer;
 import org.bundolo.model.enumeration.ContestKindType;
 import org.bundolo.model.enumeration.ContestStatusType;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @Entity
 @Table(name = "contest")
@@ -109,7 +107,6 @@ public class Contest implements java.io.Serializable {
 	this.kind = kind;
     }
 
-    @JsonSerialize(using = CustomDateSerializer.class)
     public Date getCreationDate() {
 	return creationDate;
     }
@@ -118,7 +115,6 @@ public class Contest implements java.io.Serializable {
 	this.creationDate = creationDate;
     }
 
-    @JsonSerialize(using = CustomDateSerializer.class)
     public Date getExpirationDate() {
 	return expirationDate;
     }

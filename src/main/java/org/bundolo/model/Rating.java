@@ -16,12 +16,10 @@ import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-import org.bundolo.CustomDateSerializer;
 import org.bundolo.model.enumeration.RatingKindType;
 import org.bundolo.model.enumeration.RatingStatusType;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @Entity
 @Table(name = "rating")
@@ -125,7 +123,6 @@ public class Rating implements java.io.Serializable {
 	return lastActivity;
     }
 
-    @JsonSerialize(using = CustomDateSerializer.class)
     public void setLastActivity(Date lastActivity) {
 	this.lastActivity = lastActivity;
     }

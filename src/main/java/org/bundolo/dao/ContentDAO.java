@@ -10,6 +10,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bundolo.model.Content;
 import org.bundolo.model.enumeration.ContentKindType;
+import org.bundolo.model.enumeration.ContentStatusType;
 import org.bundolo.model.enumeration.PageKindType;
 import org.springframework.stereotype.Repository;
 
@@ -423,5 +424,22 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	} else {
 	    return null;
 	}
+    }
+
+    @SuppressWarnings("unchecked")
+    public void disable(Content content) {
+	String queryString = "SELECT c FROM Content c";
+	queryString += " WHERE parent_content_id =?1";
+	logger.log(Level.INFO, "queryString: " + queryString);
+	Query q = entityManager.createQuery(queryString);
+	q.setParameter(1, content.getContentId());
+	List<Content> children = q.getResultList();
+	if (children != null && children.size() > 0) {
+	    for (Content child : children) {
+		disable(child);
+	    }
+	}
+	content.setContentStatus(ContentStatusType.disabled);
+	merge(content);
     }
 }

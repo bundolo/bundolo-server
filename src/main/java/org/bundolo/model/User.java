@@ -13,10 +13,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
-import org.bundolo.CustomDateSerializer;
 import org.bundolo.model.enumeration.UserProfileGenderType;
-
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @Entity
 @Table(name = "user_profile")
@@ -97,7 +94,6 @@ public class User implements java.io.Serializable {
 	this.lastName = lastName;
     }
 
-    @JsonSerialize(using = CustomDateSerializer.class)
     public Date getBirthDate() {
 	return birthDate;
     }
@@ -122,7 +118,6 @@ public class User implements java.io.Serializable {
 	this.showPersonal = showPersonal;
     }
 
-    @JsonSerialize(using = CustomDateSerializer.class)
     public Date getSignupDate() {
 	return signupDate;
     }
@@ -131,7 +126,6 @@ public class User implements java.io.Serializable {
 	this.signupDate = signupDate;
     }
 
-    @JsonSerialize(using = CustomDateSerializer.class)
     public Date getLastLoginDate() {
 	return lastLoginDate;
     }

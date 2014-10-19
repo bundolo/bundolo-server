@@ -17,12 +17,10 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
-import org.bundolo.CustomDateSerializer;
 import org.bundolo.model.enumeration.UserProfileGenderType;
 import org.bundolo.model.enumeration.UserProfileStatusType;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @Entity
 @Table(name = "user_profile")
@@ -82,18 +80,11 @@ public class UserProfile implements java.io.Serializable {
     @Column(name = "avatar_url")
     private String avatarUrl;
 
-    // @Column(name = "session_id")
-    // private String sessionId;
-
     @Column(name = "nonce")
     private String nonce;
 
     @Column(name = "new_email")
     private String newEmail;
-
-    // @Column(name="description_content_id")
-    // @Transient
-    // private Long descriptionContentId;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "description_content_id")
@@ -201,7 +192,6 @@ public class UserProfile implements java.io.Serializable {
 	this.showPersonal = showPersonal;
     }
 
-    @JsonSerialize(using = CustomDateSerializer.class)
     public Date getSignupDate() {
 	return signupDate;
     }
@@ -210,7 +200,6 @@ public class UserProfile implements java.io.Serializable {
 	this.signupDate = signupDate;
     }
 
-    @JsonSerialize(using = CustomDateSerializer.class)
     public Date getLastLoginDate() {
 	return lastLoginDate;
     }
@@ -243,7 +232,6 @@ public class UserProfile implements java.io.Serializable {
 	this.avatarUrl = avatarUrl;
     }
 
-    @JsonSerialize(using = CustomDateSerializer.class)
     public Date getBirthDate() {
 	return birthDate;
     }
@@ -251,14 +239,6 @@ public class UserProfile implements java.io.Serializable {
     public void setBirthDate(Date birthDate) {
 	this.birthDate = birthDate;
     }
-
-    // public String getSessionId() {
-    // return sessionId;
-    // }
-    //
-    // public void setSessionId(String sessionId) {
-    // this.sessionId = sessionId;
-    // }
 
     public String getNonce() {
 	return nonce;
@@ -293,12 +273,4 @@ public class UserProfile implements java.io.Serializable {
 		+ userProfileStatus + ", avatarUrl=" + avatarUrl + ", nonce=" + nonce + ", newEmail=" + newEmail
 		+ ", descriptionContent=" + descriptionContent + "]";
     }
-
-    // public Long getDescriptionContentId() {
-    // return descriptionContentId;
-    // }
-    //
-    // public void setDescriptionContentId(Long descriptionContentId) {
-    // this.descriptionContentId = descriptionContentId;
-    // }
 }

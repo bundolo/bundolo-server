@@ -19,14 +19,12 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.bundolo.CustomDateSerializer;
 import org.bundolo.model.enumeration.ContentKindType;
 import org.bundolo.model.enumeration.ContentStatusType;
 import org.hibernate.annotations.Where;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @Entity
 @Table(name = "content")
@@ -142,7 +140,6 @@ public class Content implements java.io.Serializable {
 	this.locale = locale;
     }
 
-    @JsonSerialize(using = CustomDateSerializer.class)
     public Date getCreationDate() {
 	return creationDate;
     }
@@ -191,7 +188,6 @@ public class Content implements java.io.Serializable {
 	this.description = description;
     }
 
-    @JsonSerialize(using = CustomDateSerializer.class)
     public Date getLastActivity() {
 	return lastActivity;
     }

@@ -396,10 +396,7 @@ public class ContentServiceImpl implements ContentService {
 		// there is subsequent episode
 		return null;
 	    }
-	    episode.setContentStatus(ContentStatusType.disabled);
-
-	    // TODO disable all children
-	    contentDAO.merge(episode);
+	    contentDAO.disable(episode);
 	    return episode.getContentId();
 	}
     }
@@ -417,8 +414,7 @@ public class ContentServiceImpl implements ContentService {
 		// user is not the owner
 		return null;
 	    }
-	    text.setContentStatus(ContentStatusType.disabled);
-	    contentDAO.merge(text);
+	    contentDAO.disable(text);
 	    return text.getContentId();
 	}
     }
