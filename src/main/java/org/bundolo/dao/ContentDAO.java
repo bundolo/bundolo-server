@@ -1,5 +1,6 @@
 package org.bundolo.dao;
 
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -441,5 +442,33 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	}
 	content.setContentStatus(ContentStatusType.disabled);
 	merge(content);
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<Content> findRecent(Date fromDate) {
+	StringBuilder queryString = new StringBuilder();
+	queryString.append("SELECT c FROM Content c WHERE content_status='active'");
+	if (fromDate != null) {
+	    queryString.append(" AND last_activity >=?");
+	}
+	queryString.append(" AND (kind='text' OR kind='forum_topic' OR kind='connection_description' OR kind='news' "
+		+ "OR kind='contest_description' OR kind='episode' OR kind='user_description')");
+	queryString.append(" ORDER BY last_activity desc");
+	Query q = entityManager.createQuery(queryString.toString());
+	if (fromDate != null) {
+	    q.setParameter(1, fromDate);
+	}
+	q.setMaxResults(20);
+	// strip text to make the request run faster
+	List<Content> recentContent = q.getResultList();
+	for (Content content : recentContent) {
+	    content.setText("");
+	    content.setRating(null);
+	    content.setDescription(null);
+	    if (ContentKindType.episode.equals(content.getKind())) {
+		content.setParentGroup(content.getParentContent().getName());
+	    }
+	}
+	return recentContent;
     }
 }

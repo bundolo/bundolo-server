@@ -70,7 +70,7 @@ public class TopicController {
 
     @RequestMapping(Constants.REST_PATH_POSTS)
     public @ResponseBody
-    List<Content> topics(@RequestParam(required = true) Long parentId,
+    List<Content> posts(@RequestParam(required = true) Long parentId,
 	    @RequestParam(required = false, defaultValue = "0") Integer start,
 	    @RequestParam(required = false, defaultValue = "-1") Integer end) {
 	return contentService.findPosts(parentId, start, end);

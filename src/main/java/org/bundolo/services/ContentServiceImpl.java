@@ -404,7 +404,7 @@ public class ContentServiceImpl implements ContentService {
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public Long deleteText(String username, String title) {
-	logger.log(Level.WARNING, "deleteText: username: " + username + ", title: " + title);
+	logger.log(Level.INFO, "deleteText: username: " + username + ", title: " + title);
 	Content text = contentDAO.findText(username, title);
 	if (text == null) {
 	    // no such content
@@ -442,5 +442,10 @@ public class ContentServiceImpl implements ContentService {
 	default:
 	    return true;
 	}
+    }
+
+    @Override
+    public List<Content> findRecent(Date fromDate) {
+	return contentDAO.findRecent(fromDate);
     }
 }

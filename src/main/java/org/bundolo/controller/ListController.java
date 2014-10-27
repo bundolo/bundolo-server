@@ -1,6 +1,7 @@
 package org.bundolo.controller;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -350,6 +351,12 @@ public class ListController {
 	}
 	// logger.log(Level.INFO, "next, result: " + result);
 	return result;
+    }
+
+    @RequestMapping(value = Constants.REST_PATH_RECENT, method = RequestMethod.GET)
+    public @ResponseBody
+    List<Content> recent(@RequestParam(required = false) Date fromDate) {
+	return contentService.findRecent(fromDate);
     }
 
     private String getFilterByColumn(String columnName, ColumnDataType columnDataType) {

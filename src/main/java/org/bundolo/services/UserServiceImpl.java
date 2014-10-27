@@ -173,6 +173,7 @@ public class UserServiceImpl implements UserService {
 		    if (serverNonce.equals(nonce)) {
 			userProfile.setUserProfileStatus(UserProfileStatusType.active);
 			userProfile.setNonce(null);
+			userProfile.getDescriptionContent().setAuthorUsername(userProfile.getUsername());
 			userProfileDAO.merge(userProfile);
 			result = ReturnMessageType.success;
 		    }

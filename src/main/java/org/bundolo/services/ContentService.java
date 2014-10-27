@@ -65,4 +65,6 @@ public interface ContentService {
     public Long deleteText(String username, String title);
 
     public Long deleteTopic(String title);
+
+    public List<Content> findRecent(Date fromDate);
 }
