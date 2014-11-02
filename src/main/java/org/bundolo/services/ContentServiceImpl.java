@@ -344,7 +344,7 @@ public class ContentServiceImpl implements ContentService {
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public Boolean updateLastActivity(Long contentId, Date lastActivity) {
-	logger.log(Level.WARNING, "updateLastActivity: " + contentId);
+	logger.log(Level.INFO, "updateLastActivity: " + contentId);
 	Content contentDB = contentDAO.findById(contentId);
 	if (contentDB == null) {
 	    // no such content

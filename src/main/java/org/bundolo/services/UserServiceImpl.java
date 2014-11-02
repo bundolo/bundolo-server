@@ -94,7 +94,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public ReturnMessageType authenticateUser(String username, String password) {
-	logger.log(Level.WARNING, "login: " + username + ", " + password);
+	logger.log(Level.INFO, "login: " + username + ", " + password);
 	ReturnMessageType result = ReturnMessageType.login_failed;
 	// we intentionally set default values to make the method run the same amount of time regardless of being
 	// successful or not
