@@ -173,9 +173,11 @@ public class ContentServiceImpl implements ContentService {
 	if (topic != null) {
 	    Rating rating = topic.getRating();
 	    // if user that requested this is the author, do not increase rating
-	    long ratingIncrement = topic.getAuthorUsername().equals(SecurityUtils.getUsername()) ? 0
+	    long ratingIncrement = topic.getAuthorUsername() != null
+		    && topic.getAuthorUsername().equals(SecurityUtils.getUsername()) ? 0
 		    : Constants.DEFAULT_RATING_INCREMENT;
-	    Date lastActivity = !topic.getAuthorUsername().equals(SecurityUtils.getUsername()) || rating == null ? new Date()
+	    Date lastActivity = topic.getAuthorUsername() == null
+		    || !topic.getAuthorUsername().equals(SecurityUtils.getUsername()) || rating == null ? new Date()
 		    : rating.getLastActivity();
 	    if (rating == null) {
 		rating = new Rating(null, null, RatingKindType.general, lastActivity, RatingStatusType.active,
