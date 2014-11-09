@@ -1,5 +1,7 @@
 package org.bundolo.services;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
@@ -96,7 +98,13 @@ public class ConnectionServiceImpl implements ConnectionService {
     public Connection findConnection(String title) {
 	Connection connection = connectionDAO.findByTitle(title);
 	if (connection != null) {
-	    Rating rating = connection.getDescriptionContent().getRating();
+	    Collection<Rating> ratings = connection.getDescriptionContent().getRating();
+	    if (ratings == null) {
+		ratings = new ArrayList<Rating>();
+		connection.getDescriptionContent().setRating(ratings);
+	    }
+	    Rating rating = connection.getDescriptionContent().getRating().size() > 0 ? (Rating) connection
+		    .getDescriptionContent().getRating().toArray()[0] : null;
 	    // if user that requested this is the author, do not increase rating
 	    long ratingIncrement = connection.getAuthorUsername().equals(SecurityUtils.getUsername()) ? 0
 		    : Constants.DEFAULT_RATING_INCREMENT;
@@ -105,7 +113,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 	    if (rating == null) {
 		rating = new Rating(null, null, RatingKindType.general, lastActivity, RatingStatusType.active,
 			ratingIncrement, connection.getDescriptionContent());
-		connection.getDescriptionContent().setRating(rating);
+		connection.getDescriptionContent().getRating().add(rating);
 	    } else {
 		rating.setValue(rating.getValue() + ratingIncrement);
 		rating.setLastActivity(lastActivity);

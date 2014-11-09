@@ -61,6 +61,7 @@ public class Comment implements java.io.Serializable {
     @Enumerated(EnumType.STRING)
     private ContentStatusType contentStatus;
 
+    // not used for now. it will be needed for personalised hiding of comments
     // @OneToOne(mappedBy = "parentContent", cascade = CascadeType.ALL)
     // @OneToOne(cascade=CascadeType.ALL)
     @Transient

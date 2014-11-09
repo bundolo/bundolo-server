@@ -1,5 +1,7 @@
 package org.bundolo.services;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
@@ -80,11 +82,17 @@ public class ContentServiceImpl implements ContentService {
     public Content getPageDescriptionContent(PageKindType pageKind) {
 	Content pageDescriptionContent = contentDAO.getPageDescriptionContent(pageKind);
 	if (pageDescriptionContent != null) {
-	    Rating rating = pageDescriptionContent.getRating();
+	    Collection<Rating> ratings = pageDescriptionContent.getRating();
+	    if (ratings == null) {
+		ratings = new ArrayList<Rating>();
+		pageDescriptionContent.setRating(ratings);
+	    }
+	    Rating rating = pageDescriptionContent.getRating().size() > 0 ? (Rating) pageDescriptionContent.getRating()
+		    .toArray()[0] : null;
 	    if (rating == null) {
 		rating = new Rating(null, null, RatingKindType.general, new Date(), RatingStatusType.active,
 			Constants.DEFAULT_RATING_INCREMENT, pageDescriptionContent);
-		pageDescriptionContent.setRating(rating);
+		pageDescriptionContent.getRating().add(rating);
 	    } else {
 		rating.setValue(rating.getValue() + Constants.DEFAULT_RATING_INCREMENT);
 		rating.setLastActivity(new Date());
@@ -99,7 +107,12 @@ public class ContentServiceImpl implements ContentService {
     public Content findAnnouncement(String title) {
 	Content announcement = contentDAO.findByTitle(title, ContentKindType.news);
 	if (announcement != null) {
-	    Rating rating = announcement.getRating();
+	    Collection<Rating> ratings = announcement.getRating();
+	    if (ratings == null) {
+		ratings = new ArrayList<Rating>();
+		announcement.setRating(ratings);
+	    }
+	    Rating rating = announcement.getRating().size() > 0 ? (Rating) announcement.getRating().toArray()[0] : null;
 	    // if user that requested this is the author, do not increase rating
 	    long ratingIncrement = announcement.getAuthorUsername().equals(SecurityUtils.getUsername()) ? 0
 		    : Constants.DEFAULT_RATING_INCREMENT;
@@ -108,7 +121,7 @@ public class ContentServiceImpl implements ContentService {
 	    if (rating == null) {
 		rating = new Rating(null, null, RatingKindType.general, lastActivity, RatingStatusType.active,
 			ratingIncrement, announcement);
-		announcement.setRating(rating);
+		announcement.getRating().add(rating);
 	    } else {
 		rating.setValue(rating.getValue() + ratingIncrement);
 		rating.setLastActivity(lastActivity);
@@ -123,7 +136,12 @@ public class ContentServiceImpl implements ContentService {
     public Content findSerial(String title) {
 	Content serial = contentDAO.findByTitle(title, ContentKindType.episode_group);
 	if (serial != null) {
-	    Rating rating = serial.getRating();
+	    Collection<Rating> ratings = serial.getRating();
+	    if (ratings == null) {
+		ratings = new ArrayList<Rating>();
+		serial.setRating(ratings);
+	    }
+	    Rating rating = serial.getRating().size() > 0 ? (Rating) serial.getRating().toArray()[0] : null;
 	    // if user that requested this is the author, do not increase rating
 	    long ratingIncrement = serial.getAuthorUsername().equals(SecurityUtils.getUsername()) ? 0
 		    : Constants.DEFAULT_RATING_INCREMENT;
@@ -132,7 +150,7 @@ public class ContentServiceImpl implements ContentService {
 	    if (rating == null) {
 		rating = new Rating(null, null, RatingKindType.general, lastActivity, RatingStatusType.active,
 			ratingIncrement, serial);
-		serial.setRating(rating);
+		serial.getRating().add(rating);
 	    } else {
 		rating.setValue(rating.getValue() + ratingIncrement);
 		rating.setLastActivity(lastActivity);
@@ -147,7 +165,12 @@ public class ContentServiceImpl implements ContentService {
     public Content findText(String username, String title) {
 	Content text = contentDAO.findText(username, title);
 	if (text != null) {
-	    Rating rating = text.getRating();
+	    Collection<Rating> ratings = text.getRating();
+	    if (ratings == null) {
+		ratings = new ArrayList<Rating>();
+		text.setRating(ratings);
+	    }
+	    Rating rating = text.getRating().size() > 0 ? (Rating) text.getRating().toArray()[0] : null;
 	    // if user that requested this is the author, do not increase rating
 	    long ratingIncrement = text.getAuthorUsername().equals(SecurityUtils.getUsername()) ? 0
 		    : Constants.DEFAULT_RATING_INCREMENT;
@@ -156,7 +179,7 @@ public class ContentServiceImpl implements ContentService {
 	    if (rating == null) {
 		rating = new Rating(null, null, RatingKindType.general, lastActivity, RatingStatusType.active,
 			ratingIncrement, text);
-		text.setRating(rating);
+		text.getRating().add(rating);
 	    } else {
 		rating.setValue(rating.getValue() + ratingIncrement);
 		rating.setLastActivity(lastActivity);
@@ -171,7 +194,12 @@ public class ContentServiceImpl implements ContentService {
     public Content findTopic(String title) {
 	Content topic = contentDAO.findByTitle(title, ContentKindType.forum_topic);
 	if (topic != null) {
-	    Rating rating = topic.getRating();
+	    Collection<Rating> ratings = topic.getRating();
+	    if (ratings == null) {
+		ratings = new ArrayList<Rating>();
+		topic.setRating(ratings);
+	    }
+	    Rating rating = topic.getRating().size() > 0 ? (Rating) topic.getRating().toArray()[0] : null;
 	    // if user that requested this is the author, do not increase rating
 	    long ratingIncrement = topic.getAuthorUsername() != null
 		    && topic.getAuthorUsername().equals(SecurityUtils.getUsername()) ? 0
@@ -182,7 +210,7 @@ public class ContentServiceImpl implements ContentService {
 	    if (rating == null) {
 		rating = new Rating(null, null, RatingKindType.general, lastActivity, RatingStatusType.active,
 			ratingIncrement, topic);
-		topic.setRating(rating);
+		topic.getRating().add(rating);
 	    } else {
 		rating.setValue(rating.getValue() + ratingIncrement);
 		rating.setLastActivity(lastActivity);
@@ -321,7 +349,12 @@ public class ContentServiceImpl implements ContentService {
     public Content findEpisode(String serialTitle, String title) {
 	Content episode = contentDAO.findEpisode(serialTitle, title);
 	if (episode != null) {
-	    Rating rating = episode.getRating();
+	    Collection<Rating> ratings = episode.getRating();
+	    if (ratings == null) {
+		ratings = new ArrayList<Rating>();
+		episode.setRating(ratings);
+	    }
+	    Rating rating = episode.getRating().size() > 0 ? (Rating) episode.getRating().toArray()[0] : null;
 	    // if user that requested this is the author, do not increase rating
 	    String senderUsername = SecurityUtils.getUsername();
 	    long ratingIncrement = episode.getAuthorUsername().equals(senderUsername) ? 0
@@ -331,7 +364,7 @@ public class ContentServiceImpl implements ContentService {
 	    if (rating == null) {
 		rating = new Rating(null, null, RatingKindType.general, lastActivity, RatingStatusType.active,
 			ratingIncrement, episode);
-		episode.setRating(rating);
+		episode.getRating().add(rating);
 	    } else {
 		rating.setValue(rating.getValue() + ratingIncrement);
 		rating.setLastActivity(lastActivity);

@@ -60,6 +60,7 @@ public class CommentController {
     public @ResponseBody
     ReturnMessageType save(@RequestBody final Comment comment) {
 	if (comment == null || StringUtils.isBlank(comment.getText())) {
+	    // TODO do proper validation and return messages
 	    return null;
 	}
 	logger.log(Level.INFO, "saving comment: " + comment);

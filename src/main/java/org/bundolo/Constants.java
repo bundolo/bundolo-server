@@ -4,6 +4,9 @@ public class Constants {
 
     public static final String DEFAULT_LOCALE = "sr";
     public static final long DEFAULT_RATING_INCREMENT = 1l;
+    public static final long DEFAULT_PERSONAL_RATING = 0l;
+    public static final long MAX_PERSONAL_RATING = 3l;
+    public static final long MIN_PERSONAL_RATING = -3l;
 
     // TODO i18n
     public static final String DEFAULT_DATE_FORMAT = "dd.MM.yyyy.";
@@ -41,6 +44,7 @@ public class Constants {
     public static final String REST_PATH_NEXT = "/next";
     public static final String REST_PATH_MESSAGE = "/message";
     public static final String REST_PATH_RECENT = "/recent";
+    public static final String REST_PATH_RATING = "/rating";
 
     public static final String URL_SAFE_REGEX = "^[^~\\\\/\\[\\]\\{\\}\\(\\);\\:\\\"\\\'\\|<>\\?\\+=`#$%\\^&\\*]+$";
     public static final String USERNAME_SAFE_REGEX = "^[A-Za-z0-9 _-]{3,25}$";

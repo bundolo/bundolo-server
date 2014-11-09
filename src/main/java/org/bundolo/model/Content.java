@@ -14,7 +14,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -64,8 +63,9 @@ public class Content implements java.io.Serializable {
     @Enumerated(EnumType.STRING)
     private ContentStatusType contentStatus;
 
-    @OneToOne(mappedBy = "parentContent", cascade = CascadeType.ALL)
-    private Rating rating;
+    @OneToMany(mappedBy = "parentContent", cascade = CascadeType.ALL)
+    @Where(clause = "kind = 'general'")
+    private Collection<Rating> rating;
 
     @ManyToOne(optional = true)
     @JoinColumn(name = "parent_content_id", referencedColumnName = "content_id")
@@ -86,7 +86,8 @@ public class Content implements java.io.Serializable {
     }
 
     public Content(Long contentId, String authorUsername, ContentKindType kind, String name, String text,
-	    String locale, Date creationDate, Date lastActivity, ContentStatusType contentStatus, Rating rating) {
+	    String locale, Date creationDate, Date lastActivity, ContentStatusType contentStatus,
+	    Collection<Rating> rating) {
 	super();
 	this.contentId = contentId;
 	this.authorUsername = authorUsername;
@@ -164,11 +165,11 @@ public class Content implements java.io.Serializable {
 	this.name = name;
     }
 
-    public Rating getRating() {
+    public Collection<Rating> getRating() {
 	return rating;
     }
 
-    public void setRating(Rating rating) {
+    public void setRating(Collection<Rating> rating) {
 	this.rating = rating;
     }
 

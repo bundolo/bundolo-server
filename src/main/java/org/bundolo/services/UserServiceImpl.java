@@ -2,6 +2,8 @@ package org.bundolo.services;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
@@ -66,7 +68,13 @@ public class UserServiceImpl implements UserService {
     public User findUser(String username) {
 	User user = userDAO.findById(username);
 	if (user != null) {
-	    Rating rating = user.getDescriptionContent().getRating();
+	    Collection<Rating> ratings = user.getDescriptionContent().getRating();
+	    if (ratings == null) {
+		ratings = new ArrayList<Rating>();
+		user.getDescriptionContent().setRating(ratings);
+	    }
+	    Rating rating = user.getDescriptionContent().getRating().size() > 0 ? (Rating) user.getDescriptionContent()
+		    .getRating().toArray()[0] : null;
 	    // if user that requested this is the author, do not increase rating
 	    long ratingIncrement = user.getUsername().equals(SecurityUtils.getUsername()) ? 0
 		    : Constants.DEFAULT_RATING_INCREMENT;
@@ -75,7 +83,7 @@ public class UserServiceImpl implements UserService {
 	    if (rating == null) {
 		rating = new Rating(null, null, RatingKindType.general, lastActivity, RatingStatusType.active,
 			ratingIncrement, user.getDescriptionContent());
-		user.getDescriptionContent().setRating(rating);
+		user.getDescriptionContent().getRating().add(rating);
 	    } else {
 		rating.setValue(rating.getValue() + ratingIncrement);
 		rating.setLastActivity(lastActivity);

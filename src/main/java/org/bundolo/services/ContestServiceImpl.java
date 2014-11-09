@@ -1,5 +1,7 @@
 package org.bundolo.services;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
@@ -94,7 +96,13 @@ public class ContestServiceImpl implements ContestService {
     public Contest findContest(String title) {
 	Contest contest = contestDAO.findByTitle(title);
 	if (contest != null) {
-	    Rating rating = contest.getDescriptionContent().getRating();
+	    Collection<Rating> ratings = contest.getDescriptionContent().getRating();
+	    if (ratings == null) {
+		ratings = new ArrayList<Rating>();
+		contest.getDescriptionContent().setRating(ratings);
+	    }
+	    Rating rating = contest.getDescriptionContent().getRating().size() > 0 ? (Rating) contest
+		    .getDescriptionContent().getRating().toArray()[0] : null;
 	    // if user that requested this is the author, do not increase rating
 	    long ratingIncrement = contest.getAuthorUsername().equals(SecurityUtils.getUsername()) ? 0
 		    : Constants.DEFAULT_RATING_INCREMENT;
@@ -103,7 +111,7 @@ public class ContestServiceImpl implements ContestService {
 	    if (rating == null) {
 		rating = new Rating(null, null, RatingKindType.general, lastActivity, RatingStatusType.active,
 			ratingIncrement, contest.getDescriptionContent());
-		contest.getDescriptionContent().setRating(rating);
+		contest.getDescriptionContent().getRating().add(rating);
 	    } else {
 		rating.setValue(rating.getValue() + ratingIncrement);
 		rating.setLastActivity(lastActivity);
