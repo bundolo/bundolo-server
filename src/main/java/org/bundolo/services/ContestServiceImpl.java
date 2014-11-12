@@ -76,15 +76,6 @@ public class ContestServiceImpl implements ContestService {
 	}
     }
 
-    // @Override
-    // @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    // public void deleteContest(Long contestId) throws Exception {
-    // Contest contest = contestDAO.findById(contestId);
-    // if (contest != null) {
-    // contestDAO.remove(contest);
-    // }
-    // }
-
     @Override
     public List<Contest> findContests(Integer start, Integer end, String[] orderBy, String[] order, String[] filterBy,
 	    String[] filter) {
@@ -130,9 +121,6 @@ public class ContestServiceImpl implements ContestService {
 		return ReturnMessageType.no_data;
 	    }
 	    String senderUsername = SecurityUtils.getUsername();
-	    // UsernamePasswordAuthenticationToken authentication = (UsernamePasswordAuthenticationToken)
-	    // SecurityContextHolder
-	    // .getContext().getAuthentication();
 	    if (senderUsername != null) {
 		if (contest.getContestId() == null) {
 		    contest.setAuthorUsername(senderUsername);

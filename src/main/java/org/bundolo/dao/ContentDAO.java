@@ -9,6 +9,7 @@ import javax.persistence.Query;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.bundolo.SecurityUtils;
 import org.bundolo.model.Content;
 import org.bundolo.model.enumeration.ContentKindType;
 import org.bundolo.model.enumeration.ContentStatusType;
@@ -239,9 +240,7 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	}
 	String queryString = "SELECT c FROM Content c";
 	queryString += " WHERE kind = '" + kind + "'";
-	// queryString += " AND content_name =''||?1||''";
 	queryString += " AND content_name =?1";
-	// queryString += " AND content_name ='" + title + "'";
 	if (ContentKindType.episode_group.equals(kind)) {
 	    queryString += " AND (content_status='active' OR content_status='pending')";
 	} else {
@@ -377,7 +376,13 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	}
 	String queryString = "SELECT c FROM Content c";
 	queryString += " WHERE author_username =?1";
-	queryString += " AND (kind='text' OR kind='episode')";
+	queryString += " AND (kind='" + ContentKindType.text + "' OR kind='" + ContentKindType.episode + "'";
+	String senderUsername = SecurityUtils.getUsername();
+	if (senderUsername != null) {
+	    queryString += "  OR (author_username='" + senderUsername + "' AND kind='"
+		    + ContentKindType.item_list_description + "')";
+	}
+	queryString += ")";
 	queryString += " AND (content_status='active' OR content_status='pending')";
 	queryString += " ORDER BY creationDate";
 	logger.log(Level.INFO, "queryString: " + queryString.toString());
@@ -463,6 +468,31 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	List<Content> recentContent = q.getResultList();
 	for (Content content : recentContent) {
 	    content.setText("");
+	    content.setRating(null);
+	    content.setDescription(null);
+	    if (ContentKindType.episode.equals(content.getKind())) {
+		content.setParentGroup(content.getParentContent().getName());
+	    }
+	}
+	return recentContent;
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<Content> findItemListItems(String itemListIds) {
+	if (StringUtils.isBlank(itemListIds)) {
+	    return null;
+	}
+	StringBuilder queryString = new StringBuilder();
+	queryString.append("SELECT c FROM Content c WHERE content_status='active'");
+	queryString.append(" AND content_id IN " + itemListIds.replace("[", "(").replace("]", ")"));
+	Query q = entityManager.createQuery(queryString.toString());
+	// q.setParameter(1, itemListIds.replace("[", "(").replace("]", ")"));
+	// strip to make the request run faster
+	List<Content> recentContent = q.getResultList();
+	for (Content content : recentContent) {
+	    if (!ContentKindType.page_description.equals(content.getKind())) {
+		content.setText("");
+	    }
 	    content.setRating(null);
 	    content.setDescription(null);
 	    if (ContentKindType.episode.equals(content.getKind())) {

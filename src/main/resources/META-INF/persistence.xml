@@ -13,6 +13,7 @@
 		 <class>org.bundolo.model.UserProfile</class>
 		 <class>org.bundolo.model.User</class>
 		 <class>org.bundolo.model.Comment</class>
+		 <class>org.bundolo.model.ItemList</class>
 		 <exclude-unlisted-classes>true</exclude-unlisted-classes>
 		 <properties>
 			<property name="hibernate.hbm2ddl.auto" value="validate" />

@@ -12,6 +12,7 @@ import org.bundolo.model.Comment;
 import org.bundolo.model.Connection;
 import org.bundolo.model.Content;
 import org.bundolo.model.Contest;
+import org.bundolo.model.ItemList;
 import org.bundolo.model.User;
 import org.bundolo.model.enumeration.AnnouncementColumnType;
 import org.bundolo.model.enumeration.AuthorColumnType;
@@ -20,6 +21,7 @@ import org.bundolo.model.enumeration.CommentColumnType;
 import org.bundolo.model.enumeration.ConnectionColumnType;
 import org.bundolo.model.enumeration.ContestColumnType;
 import org.bundolo.model.enumeration.EpisodeColumnType;
+import org.bundolo.model.enumeration.ItemListColumnType;
 import org.bundolo.model.enumeration.SerialColumnType;
 import org.bundolo.model.enumeration.TextColumnType;
 import org.bundolo.model.enumeration.TopicColumnType;
@@ -27,6 +29,7 @@ import org.bundolo.services.CommentService;
 import org.bundolo.services.ConnectionService;
 import org.bundolo.services.ContentService;
 import org.bundolo.services.ContestService;
+import org.bundolo.services.ItemListService;
 import org.bundolo.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -54,6 +57,9 @@ public class ListController {
 
     @Autowired
     private CommentService commentService;
+
+    @Autowired
+    private ItemListService itemListService;
 
     @RequestMapping(value = Constants.REST_PATH_CONNECTIONS, method = RequestMethod.GET)
     public @ResponseBody
@@ -298,6 +304,37 @@ public class ListController {
 	    }
 	}
 	return commentService.findComments(start, end, orderByColumns.toArray(new String[orderByColumns.size()]),
+		orderByDirections.toArray(new String[orderByDirections.size()]),
+		filterByColumns.toArray(new String[filterByColumns.size()]),
+		filterByTexts.toArray(new String[filterByTexts.size()]));
+    }
+
+    @RequestMapping(value = Constants.REST_PATH_ITEM_LISTS, method = RequestMethod.GET)
+    public @ResponseBody
+    List<ItemList> itemLists(@RequestParam(required = false, defaultValue = "0") Integer start,
+	    @RequestParam(required = false, defaultValue = "0") Integer end,
+	    @RequestParam(required = false) String orderBy, @RequestParam(required = false) String filterBy) {
+	List<String> orderByColumns = new ArrayList<String>();
+	List<String> orderByDirections = new ArrayList<String>();
+	if (StringUtils.isNotBlank(orderBy)) {
+	    String[] params = orderBy.split(",");
+	    for (int i = 0; i < params.length; i += 2) {
+		orderByColumns.add(ItemListColumnType.valueOf(params[i]).getColumnName());
+		orderByDirections.add(getOrderByDirection(params[i + 1]));
+	    }
+	}
+	List<String> filterByColumns = new ArrayList<String>();
+	List<String> filterByTexts = new ArrayList<String>();
+	if (StringUtils.isNotBlank(filterBy)) {
+	    String[] params = filterBy.split(",");
+	    for (int i = 0; i < params.length; i += 2) {
+		ItemListColumnType itemListColumnType = ItemListColumnType.valueOf(params[i]);
+		filterByColumns.add(getFilterByColumn(itemListColumnType.getColumnName(),
+			itemListColumnType.getColumnDataType()));
+		filterByTexts.add(params[i + 1]);
+	    }
+	}
+	return itemListService.findItemLists(start, end, orderByColumns.toArray(new String[orderByColumns.size()]),
 		orderByDirections.toArray(new String[orderByDirections.size()]),
 		filterByColumns.toArray(new String[filterByColumns.size()]),
 		filterByTexts.toArray(new String[filterByTexts.size()]));
