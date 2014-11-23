@@ -182,6 +182,7 @@ public class UserServiceImpl implements UserService {
 			userProfile.setUserProfileStatus(UserProfileStatusType.active);
 			userProfile.setNonce(null);
 			userProfile.getDescriptionContent().setAuthorUsername(userProfile.getUsername());
+			userProfile.getDescriptionContent().setContentStatus(ContentStatusType.active);
 			userProfileDAO.merge(userProfile);
 			result = ReturnMessageType.success;
 		    }
@@ -300,7 +301,7 @@ public class UserServiceImpl implements UserService {
 
 	    Date creationDate = new Date();
 	    Content descriptionContent = new Content(null, null, ContentKindType.user_description, null, "",
-		    Constants.DEFAULT_LOCALE, creationDate, creationDate, ContentStatusType.active, null);
+		    Constants.DEFAULT_LOCALE, creationDate, creationDate, ContentStatusType.pending, null);
 	    userProfile.setDescriptionContent(descriptionContent);
 
 	    List<String> hashResult = SecurityUtils.getHashWithSalt(password);
@@ -448,27 +449,5 @@ public class UserServiceImpl implements UserService {
     private String getRemoteHost() {
 	ServletRequestAttributes sra = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
 	return sra.getRequest().getRemoteHost();
-    }
-
-    @Override
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public void migratePasswords() {
-	logger.log(Level.WARNING, "starting password migration");
-	try {
-	    List<UserProfile> userProfiles = userProfileDAO.findAll();
-	    for (UserProfile userProfile : userProfiles) {
-		logger.log(Level.WARNING, "migrate user: " + userProfile.getUsername());
-		logger.log(Level.WARNING, "before: " + userProfile.getPassword());
-		List<String> hashResult = SecurityUtils.getHashWithSalt(userProfile.getPassword());
-		if ((hashResult != null) && (hashResult.size() == 2)) {
-		    userProfile.setPassword(hashResult.get(0));
-		    userProfile.setSalt(hashResult.get(1));
-		    logger.log(Level.WARNING, "after: " + userProfile.getPassword());
-		    userProfileDAO.merge(userProfile);
-		}
-	    }
-	} catch (Exception ex) {
-	    logger.log(Level.SEVERE, "migratePasswords exception: " + ex);
-	}
     }
 }

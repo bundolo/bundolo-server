@@ -29,6 +29,4 @@ public interface UserService {
 
     public Long deleteUser(String username);
 
-    public void migratePasswords();
-
 }
