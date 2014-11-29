@@ -305,6 +305,7 @@ public class ContentServiceImpl implements ContentService {
 		    contentDB.setName(content.getName());
 		    contentDB.setText(content.getText());
 		    if (content.getLastActivity() != null) {
+			// this normally will not happen, we want last activity to be updated
 			contentDB.setLastActivity(content.getLastActivity());
 		    } else {
 			contentDB.setLastActivity(new Date());

@@ -72,7 +72,8 @@ public class CommentController {
 	Content rootCommentAncestor = contentService.findContent(comment.getParentContent().getContentId());
 	// make list of ancestors, so that all comments ancestors are updated
 	List<Content> commentAncestors = new ArrayList<Content>();
-	while (rootCommentAncestor != null && rootCommentAncestor.getKind().name().contains("comment")) {
+	// while (rootCommentAncestor != null && rootCommentAncestor.getKind().name().contains("comment")) {
+	while (rootCommentAncestor != null && rootCommentAncestor.getParentContent() != null) {
 	    commentAncestors.add(rootCommentAncestor);
 	    rootCommentAncestor = rootCommentAncestor.getParentContent();
 	}
