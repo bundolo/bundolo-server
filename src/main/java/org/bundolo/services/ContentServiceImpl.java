@@ -483,4 +483,9 @@ public class ContentServiceImpl implements ContentService {
     public List<Content> findRecent(Date fromDate) {
 	return contentDAO.findRecent(fromDate);
     }
+
+    @Override
+    public List<Content> findItemListItems(String itemListIds) {
+	return contentDAO.findItemListItems(itemListIds);
+    }
 }

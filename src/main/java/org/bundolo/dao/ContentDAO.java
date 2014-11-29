@@ -486,16 +486,14 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	queryString.append("SELECT c FROM Content c WHERE content_status='active'");
 	queryString.append(" AND content_id IN " + itemListIds.replace("[", "(").replace("]", ")"));
 	Query q = entityManager.createQuery(queryString.toString());
-	// q.setParameter(1, itemListIds.replace("[", "(").replace("]", ")"));
 	// strip to make the request run faster
-	// TODO this is a critical bug! since this is in transaction striped content gets saved in database!
 	List<Content> recentContent = q.getResultList();
 	for (Content content : recentContent) {
-	    // if (!ContentKindType.page_description.equals(content.getKind())) {
-	    // content.setText("");
-	    // }
-	    // content.setRating(null);
-	    // content.setDescription(null);
+	    if (!ContentKindType.page_description.equals(content.getKind())) {
+		content.setText("");
+	    }
+	    content.setRating(null);
+	    content.setDescription(null);
 	    if (ContentKindType.episode.equals(content.getKind())) {
 		content.setParentGroup(content.getParentContent().getName());
 	    }

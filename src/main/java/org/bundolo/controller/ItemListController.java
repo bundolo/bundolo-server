@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.bundolo.Constants;
 import org.bundolo.model.ItemList;
 import org.bundolo.model.enumeration.ReturnMessageType;
+import org.bundolo.services.ContentService;
 import org.bundolo.services.ItemListService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -26,13 +27,20 @@ public class ItemListController {
     @Autowired
     private ItemListService itemListService;
 
+    @Autowired
+    private ContentService contentService;
+
     @RequestMapping(value = Constants.REST_PATH_ITEM_LIST + "/**", method = RequestMethod.GET)
     public @ResponseBody
     ItemList itemList(HttpServletRequest request) {
 	String restOfTheUrl = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
 	String title = restOfTheUrl.substring(Constants.REST_PATH_ITEM_LIST.length() + 1);
 	logger.log(Level.INFO, "itemList, title: " + title);
-	return itemListService.findItemList(title);
+	ItemList result = itemListService.findItemList(title);
+	if (result != null) {
+	    result.setItems(contentService.findItemListItems(result.getQuery()));
+	}
+	return result;
     }
 
     @RequestMapping(value = Constants.REST_PATH_ITEM_LIST + "/**", method = RequestMethod.DELETE)

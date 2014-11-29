@@ -114,7 +114,6 @@ public class ItemListServiceImpl implements ItemListService {
 		rating.setLastActivity(lastActivity);
 	    }
 	    itemListDAO.merge(itemList);
-	    itemList.setItems(contentDAO.findItemListItems(itemList.getQuery()));
 	}
 	return itemList;
     }
