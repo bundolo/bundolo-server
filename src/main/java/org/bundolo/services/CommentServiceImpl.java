@@ -68,6 +68,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public Boolean deleteCommentsByParentId(Long parentId) {
+	// TODO this could be transformed to use ancestor id
 	try {
 	    List<Comment> comments = commentDAO.findCommentsByParentId(parentId);
 	    for (Comment comment : comments) {

@@ -42,7 +42,12 @@ public class CommentDAO extends JpaDAO<Long, Comment> {
 	    String[] filterBy, String[] filter) {
 	int filterParamCounter = 0;
 	StringBuilder queryString = new StringBuilder();
-	queryString.append("SELECT c FROM Comment c WHERE kind like '%comment%' AND content_status='active'");
+	queryString.append("SELECT c FROM Comment c WHERE c.kind like '%comment%' AND c.contentStatus='active'");
+
+	// do not retrieve comments on personal item lists
+	queryString
+		.append("AND ((c.kind = 'item_list_comment' AND (select i.kind from ItemList i where c.ancestorContent.contentId = i.descriptionContent.contentId and (i.kind='elected' OR i.kind='general')) is not null )OR (c.kind <> 'item_list_comment')) ");
+
 	if (ArrayUtils.isNotEmpty(filterBy)) {
 	    String prefix = " AND LOWER(";
 	    String suffix = ") LIKE '%";
@@ -57,9 +62,9 @@ public class CommentDAO extends JpaDAO<Long, Comment> {
 	    }
 	    // avoid old links
 	    // TODO consider making these links functional by keeping old ids in database
-	    queryString.append("AND content_text NOT LIKE '%http://www.bundolo.org/%'");
-	    queryString.append("AND content_text NOT LIKE '%http://bundolo.org/%'");
-	    queryString.append("AND content_text NOT LIKE '%http://bundolo.f2o.org/%'");
+	    queryString.append("AND c.text NOT LIKE '%http://www.bundolo.org/%'");
+	    queryString.append("AND  c.text NOT LIKE '%http://bundolo.org/%'");
+	    queryString.append("AND  c.text NOT LIKE '%http://bundolo.f2o.org/%'");
 	}
 	if (ArrayUtils.isNotEmpty(orderBy) && ArrayUtils.isSameLength(orderBy, order)) {
 	    String firstPrefix = " ORDER BY ";
@@ -87,6 +92,7 @@ public class CommentDAO extends JpaDAO<Long, Comment> {
 
 	// go up and return parents
 	// TODO make sure that parents do not hold comments, we are not using them
+	// TODO we can use ancestor content instead of this
 	List<Comment> comments = q.getResultList();
 	// logger.log(Level.INFO, "comments: " + comments);
 	for (Comment comment : comments) {
