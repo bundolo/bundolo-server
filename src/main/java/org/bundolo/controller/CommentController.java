@@ -78,6 +78,7 @@ public class CommentController {
 	}
 	commentAncestors.add(rootCommentAncestor);
 	comment.setKind(getCommentContentKind(rootCommentAncestor.getKind()));
+	comment.setAncestorContent(rootCommentAncestor);
 	ReturnMessageType result = commentService.saveComment(comment);
 	if (ReturnMessageType.success.equals(result)) {
 	    // logger.log(Level.INFO, "saving comment; result not null: " + result);
