@@ -78,6 +78,11 @@ public class Comment implements java.io.Serializable {
     @OrderBy("creationDate")
     private Collection<Comment> comments;
 
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "ancestor_content_id", referencedColumnName = "content_id")
+    // @JsonBackReference
+    private Content ancestorContent;
+
     public Comment() {
 	super();
     }
@@ -170,12 +175,20 @@ public class Comment implements java.io.Serializable {
 	this.lastActivity = lastActivity;
     }
 
+    public Content getAncestorContent() {
+	return ancestorContent;
+    }
+
+    public void setAncestorContent(Content ancestorContent) {
+	this.ancestorContent = ancestorContent;
+    }
+
     @Override
     public String toString() {
 	return "Comment [contentId=" + contentId + ", authorUsername=" + authorUsername + ", kind=" + kind + ", text="
 		+ text + ", locale=" + locale + ", creationDate=" + creationDate + ", lastActivity=" + lastActivity
 		+ ", contentStatus=" + contentStatus + ", rating=" + rating + ", parentContent=" + parentContent
-		+ ", comments=" + comments + "]";
+		+ ", ancestorContent=" + ancestorContent + ", comments=" + comments + "]";
     }
 
 }
