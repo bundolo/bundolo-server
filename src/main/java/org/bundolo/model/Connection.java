@@ -151,4 +151,12 @@ public class Connection implements java.io.Serializable {
     public void setDescriptionContent(Content descriptionContent) {
 	this.descriptionContent = descriptionContent;
     }
+
+    @Override
+    public String toString() {
+	return "Connection [connectionId=" + connectionId + ", authorUsername=" + authorUsername + ", parentContent="
+		+ parentContent + ", kind=" + kind + ", creationDate=" + creationDate + ", connectionStatus="
+		+ connectionStatus + ", email=" + email + ", url=" + url + ", descriptionContent=" + descriptionContent
+		+ "]";
+    }
 }
