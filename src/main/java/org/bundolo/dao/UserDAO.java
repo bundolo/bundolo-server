@@ -43,6 +43,9 @@ public class UserDAO extends JpaDAO<String, User> {
 	    String suffix = " ";
 	    for (int i = 0; i < orderBy.length; i++) {
 		queryString.append(prefix);
+		// null values should be at the beginning if asc, at the end if desc
+		queryString.append("CASE WHEN " + orderBy[i] + " IS NULL THEN " + ("desc".equals(order[i]) ? "1" : "0")
+			+ " ELSE " + ("desc".equals(order[i]) ? "0" : "1") + " END,");
 		queryString.append(orderBy[i]);
 		queryString.append(suffix);
 		queryString.append(order[i]);
