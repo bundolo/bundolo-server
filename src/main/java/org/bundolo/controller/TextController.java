@@ -44,6 +44,7 @@ public class TextController {
     Boolean delete(@PathVariable String username, HttpServletRequest request) {
 	String restOfTheUrl = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
 	String urlAndTitle = restOfTheUrl.substring(Constants.REST_PATH_TEXT.length() + 1);
+	logger.log(Level.INFO, "delete, text: " + urlAndTitle);
 	Long textId = contentService.deleteText(username, urlAndTitle.substring(urlAndTitle.indexOf("/") + 1));
 	Boolean result = textId != null;
 	if (result) {
