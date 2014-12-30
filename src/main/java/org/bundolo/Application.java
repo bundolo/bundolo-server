@@ -1,8 +1,8 @@
 package org.bundolo;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-import java.util.logging.Logger;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -16,7 +16,6 @@ import org.springframework.web.filter.DelegatingFilterProxy;
 // @Configuration
 @ImportResource("/applicationContext.xml")
 public class Application {
-    private static final Logger logger = Logger.getLogger(Application.class.getName());
 
     @Bean
     public FilterRegistrationBean springSecurityFilterChain() {
@@ -31,6 +30,9 @@ public class Application {
     }
 
     public static void main(String[] args) {
-	SpringApplication.run(Application.class, args);
+	System.out.println("bundolo " + System.getProperty("env") + " startup at " + new Date());
+	SpringApplication application = new SpringApplication(Application.class);
+	application.setShowBanner(false);
+	application.run(args);
     }
 }

@@ -9,11 +9,13 @@
         </encoder>
     </appender>
 
+	<property resource="${env}.properties"/>
+
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>/var/log/bundolo_log.html</file>
+        <file>${application.log.path}/bundolo_log.html</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- daily rollover -->
-            <fileNamePattern>/var/log/bundolo_log.%d{yyyy-MM-dd}.%i.html</fileNamePattern>
+            <fileNamePattern>${application.log.path}/bundolo_log.%d{yyyy-MM-dd}.%i.html</fileNamePattern>
             <timeBasedFileNamingAndTriggeringPolicy
                 class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <!-- or whenever the file size reaches 100MB -->

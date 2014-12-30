@@ -20,7 +20,7 @@
 	<bean id="properties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
   		<property name="locations">
             <list>
-                <value>classpath:dev.properties</value>
+                <value>classpath:#{systemProperties.env}.properties</value>
             </list>
         </property>
 	</bean>
