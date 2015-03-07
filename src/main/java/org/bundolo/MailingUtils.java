@@ -49,7 +49,7 @@ public class MailingUtils {
 	mailProps.put("mail.smtp.from", properties.getProperty("mail.from"));
 	mailProps.put("mail.smtp.host", properties.getProperty("mail.host"));
 	mailProps.put("mail.smtp.port", properties.getProperty("mail.port"));
-	mailProps.put("mail.smtp.auth", true);
+	mailProps.put("mail.smtp.auth", "true");
 	mailProps.put("mail.smtp.socketFactory.port", properties.getProperty("mail.port"));
 	mailProps.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
 	mailProps.put("mail.smtp.socketFactory.fallback", "false");
