@@ -298,6 +298,7 @@ public class UserServiceImpl implements UserService {
 	    userProfile.setUserProfileStatus(UserProfileStatusType.pending);
 	    userProfile.setSignupDate(new Date());
 	    userProfile.setLastIp(getRemoteHost());
+	    // TODO set subscribed and newsletter_sent
 
 	    Date creationDate = new Date();
 	    Content descriptionContent = new Content(null, null, ContentKindType.user_description, null, "",

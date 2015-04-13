@@ -1,5 +1,7 @@
 package org.bundolo.controller;
 
+import java.util.HashMap;
+
 import org.bundolo.Constants;
 import org.bundolo.model.Content;
 import org.bundolo.model.enumeration.PageKindType;
@@ -22,6 +24,14 @@ public class PageController {
     public @ResponseBody
     Content page(@PathVariable PageKindType pageKind) {
 	return contentService.getPageDescriptionContent(pageKind);
+    }
+
+    // TODO
+    // take date range
+    @RequestMapping(value = Constants.REST_PATH_METRICS + "/{pageKind}", method = RequestMethod.GET)
+    public @ResponseBody
+    HashMap metrics(@PathVariable PageKindType pageKind) {
+	return null;
     }
 
 }

@@ -47,9 +47,12 @@ public class Constants {
     public static final String REST_PATH_RATING = "/rating";
     public static final String REST_PATH_ITEM_LISTS = "/item_lists";
     public static final String REST_PATH_ITEM_LIST = "/item_list";
+    public static final String REST_PATH_METRICS = "/metrics";
 
     public static final String URL_SAFE_REGEX = "^[^~\\\\/\\[\\]\\{\\}\\(\\);\\:\\\"\\\'\\|<>\\?\\+=`#$%\\^&\\*]+$";
     public static final String USERNAME_SAFE_REGEX = "^[A-Za-z0-9 _-]{3,25}$";
 
     public static final int DEFAULT_PASSWORD_LENGTH = 8;
+
+    public static final int NEWSLETTER_SENDER_INTERVAL = 5000;
 }

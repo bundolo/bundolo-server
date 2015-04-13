@@ -1,6 +1,14 @@
 package org.bundolo;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,8 +25,16 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
+import org.apache.commons.lang3.StringUtils;
+import org.bundolo.dao.UserProfileDAO;
+import org.bundolo.model.UserProfile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
+
+import freemarker.template.Configuration;
+import freemarker.template.Template;
 
 public class MailingUtils {
 
@@ -27,6 +43,12 @@ public class MailingUtils {
     @Autowired
     @Qualifier("properties")
     private Properties properties;
+
+    @Autowired
+    private Configuration freemarkerConfiguration;
+
+    @Autowired
+    private UserProfileDAO userProfileDAO;
 
     public void sendEmail(String body, String subject, String recipient) throws MessagingException,
 	    UnsupportedEncodingException {
@@ -115,5 +137,82 @@ public class MailingUtils {
 	    i++;
 	}
 	return s;
+    }
+
+    @Scheduled(fixedRate = Constants.NEWSLETTER_SENDER_INTERVAL)
+    public void newsletterSender() {
+	Calendar now = Calendar.getInstance();
+	logger.log(Level.WARNING, "newsletterSender " + now);
+
+	// update undeliverables if it's a next day
+	Calendar previousRun = (Calendar) now.clone();
+	previousRun.add(Calendar.MILLISECOND, -Constants.NEWSLETTER_SENDER_INTERVAL);
+	if (now.get(Calendar.DAY_OF_MONTH) != previousRun.get(Calendar.DAY_OF_MONTH)) {
+	    userProfileDAO.unsubscribeUndeliverables();
+	}
+
+	String newsletterDate = properties.getProperty("newsletter.date");
+	String newsletterBatchSize = properties.getProperty("newsletter.batch.size");
+	String newsletterDailyMax = properties.getProperty("newsletter.daily.recipients");
+	String newsletterUndeliverablesMax = properties.getProperty("newsletter.daily.undeliverables");
+	if (StringUtils.isNotBlank(newsletterDate) && StringUtils.isNotBlank(newsletterBatchSize)
+		&& StringUtils.isNotBlank(newsletterDailyMax) && StringUtils.isNotBlank(newsletterUndeliverablesMax)) {
+	    SimpleDateFormat formatter = new SimpleDateFormat("yyyyddMM");
+	    Date sendingStart;
+	    try {
+		sendingStart = formatter.parse(newsletterDate);
+		int batchSize = Integer.parseInt(newsletterBatchSize);
+		int dailyMax = Integer.parseInt(newsletterDailyMax);
+		int undeliverablesMax = Integer.parseInt(newsletterUndeliverablesMax);
+
+		// check has time for newsletter sending arrived
+		// check have we reached max daily recipients
+		// check have we reached max daily undeliverables
+		long dailyRecipientsCount = userProfileDAO.dailyRecipientsCount(now.getTime());
+		long dailyUndeliverablesCount = userProfileDAO.dailyUndeliverablesCount();
+		if ((now.after(sendingStart)) && (dailyRecipientsCount < dailyMax)
+			&& (dailyUndeliverablesCount < undeliverablesMax)) {
+		    List<UserProfile> recipients = userProfileDAO.findNewsletterUsers(sendingStart, batchSize);
+		    if (recipients != null && recipients.size() > 0) {
+
+			Template bodyTemplate;
+			Template subjectTemplate;
+			try {
+			    bodyTemplate = freemarkerConfiguration.getTemplate("newsletter_" + newsletterDate + ".ftl");
+			    subjectTemplate = freemarkerConfiguration.getTemplate("newsletter_subject_"
+				    + newsletterDate + ".ftl");
+			} catch (IOException ex) {
+			    logger.log(Level.SEVERE, "newsletter template retrieval exception: " + ex);
+			    return;
+			}
+			for (UserProfile recipient : recipients) {
+			    if ((recipient != null) && (dailyRecipientsCount < dailyMax)
+				    && (dailyUndeliverablesCount < undeliverablesMax)) {
+				try {
+				    Map<String, Object> data = new HashMap<String, Object>();
+				    data.put("recipient", recipient);
+				    String newsletterBody = FreeMarkerTemplateUtils.processTemplateIntoString(
+					    bodyTemplate, data);
+				    String newsletterSubject = FreeMarkerTemplateUtils.processTemplateIntoString(
+					    subjectTemplate, data);
+				    sendEmail(newsletterBody, newsletterSubject, recipient.getEmail());
+				    dailyRecipientsCount++;
+				    recipient.setNewsletterSendingDate(now.getTime());
+				    userProfileDAO.merge(recipient);
+				} catch (Exception ex) {
+				    logger.log(Level.WARNING, "newsletter undeliverable to: " + recipient.getUsername());
+				    dailyUndeliverablesCount++;
+				    recipient.setNewsletterSendingDate(null);
+				    userProfileDAO.merge(recipient);
+				}
+			    }
+			}
+		    }
+		}
+	    } catch (ParseException e) {
+		logger.log(Level.SEVERE, "newsletterSender currentNewsletter date format exception: " + newsletterDate);
+		return;
+	    }
+	}
     }
 }

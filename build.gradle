@@ -15,7 +15,7 @@ apply plugin: 'spring-boot'
 
 jar {
     baseName = 'bundolo-server'
-    version =  '1.0.8'
+    version =  '1.0.9'
 }
 
 repositories {
@@ -66,12 +66,11 @@ check.dependsOn acceptance_test
 dependencies {
     compile("org.springframework.boot:spring-boot-starter-web")
     compile("org.springframework:spring-tx")
-    //compile("org.springframework:spring-orm")
     compile 'org.springframework:spring-orm:3.1.2.RELEASE'
+    compile("org.springframework:spring-context-support")
     
     compile("org.springframework.security:spring-security-web")
     compile("org.springframework.security:spring-security-config")
-    
     
     compile("com.fasterxml.jackson.core:jackson-databind")
     compile 'javax.mail:mail:1.4'
@@ -81,13 +80,13 @@ dependencies {
     
     compile 'org.hibernate:hibernate-validator:4.3.1.Final'
     compile 'org.hibernate:hibernate-c3p0:4.1.5.SP1'
-	
 	compile 'org.hibernate:hibernate-entitymanager:4.1.5.SP1'
-	
-	
 	compile 'org.hibernate:hibernate-core:4.1.5.SP1'
+
     compile 'postgresql:postgresql:9.1-901.jdbc3'
     compile 'org.apache.commons:commons-lang3:3.3.2'
+    
+    compile 'org.freemarker:freemarker:2.3.22'
     
     //compile 'net.sf.dozer:dozer:5.5.1'
     

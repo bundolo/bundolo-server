@@ -77,4 +77,8 @@
     returning an AuthenticationToken matching the user requesting the resource and the user's access level.
     This is the place where you would normally hook into a more complex authentication system and user data layer. -->
     <bean id="restAuthenticationProvider" class="org.bundolo.security.RestAuthenticationProvider" />
+    
+    <bean id="freemarkerConfiguration" class="org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean">
+		<property name="templateLoaderPath" value="classpath:/freemarker/"/>
+ 	</bean>
 </beans>
