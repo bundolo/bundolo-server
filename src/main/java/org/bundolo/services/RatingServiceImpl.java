@@ -1,6 +1,5 @@
 package org.bundolo.services;
 
-import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -8,6 +7,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import org.bundolo.Constants;
+import org.bundolo.DateUtils;
 import org.bundolo.SecurityUtils;
 import org.bundolo.dao.ContentDAO;
 import org.bundolo.dao.RatingDAO;
@@ -32,6 +32,9 @@ public class RatingServiceImpl implements RatingService {
     @Autowired
     private ContentDAO contentDAO;
 
+    @Autowired
+    private DateUtils dateUtils;
+
     @PostConstruct
     public void init() throws Exception {
     }
@@ -49,12 +52,12 @@ public class RatingServiceImpl implements RatingService {
 	    if (result == null) {
 		Content content = contentDAO.findById(contentId);
 		if (content != null) {
-		    result = new Rating(null, senderUsername, RatingKindType.personal, new Date(),
+		    result = new Rating(null, senderUsername, RatingKindType.personal, dateUtils.newDate(),
 			    RatingStatusType.active, Constants.DEFAULT_PERSONAL_RATING, content);
 		    ratingDAO.persist(result);
 		}
 	    } else {
-		result.setLastActivity(new Date());
+		result.setLastActivity(dateUtils.newDate());
 		ratingDAO.merge(result);
 	    }
 	    return result;
@@ -83,7 +86,7 @@ public class RatingServiceImpl implements RatingService {
 	    if (ratingDB == null) {
 		return ReturnMessageType.not_found;
 	    }
-	    ratingDB.setLastActivity(new Date());
+	    ratingDB.setLastActivity(dateUtils.newDate());
 	    ratingDB.setValue(rating.getValue());
 	    ratingDAO.merge(ratingDB);
 	    return ReturnMessageType.success;

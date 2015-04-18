@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 
 import org.bundolo.Constants;
+import org.bundolo.DateUtils;
 import org.bundolo.model.Content;
 import org.bundolo.model.enumeration.ContentKindType;
 import org.bundolo.model.enumeration.ReturnMessageType;
@@ -31,6 +32,9 @@ public class TopicController {
 
     @Autowired
     private ContentService contentService;
+
+    @Autowired
+    private DateUtils dateUtils;
 
     @RequestMapping(value = Constants.REST_PATH_TOPIC + "/**", method = RequestMethod.GET)
     public @ResponseBody
@@ -83,7 +87,7 @@ public class TopicController {
     public @ResponseBody
     ReturnMessageType save(@RequestBody final Content post) {
 	logger.log(Level.INFO, "saving post: " + post);
-	Date creationDate = new Date();
+	Date creationDate = dateUtils.newDate();
 	post.setLastActivity(creationDate);
 	post.setKind(ContentKindType.forum_post);
 	ReturnMessageType result = contentService.saveOrUpdateContent(post, true);

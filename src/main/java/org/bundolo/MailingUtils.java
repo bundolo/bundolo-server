@@ -30,7 +30,6 @@ import org.bundolo.dao.UserProfileDAO;
 import org.bundolo.model.UserProfile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 
 import freemarker.template.Configuration;
@@ -49,6 +48,9 @@ public class MailingUtils {
 
     @Autowired
     private UserProfileDAO userProfileDAO;
+
+    @Autowired
+    private DateUtils dateUtils;
 
     public void sendEmail(String body, String subject, String recipient) throws MessagingException,
 	    UnsupportedEncodingException {
@@ -126,22 +128,23 @@ public class MailingUtils {
 	transport.close();
     }
 
-    public static String format(String s, Object... arguments) {
-	// A very simple implementation of format
-	int i = 0;
-	while (i < arguments.length) {
-	    String delimiter = "{" + i + "}";
-	    while (s.contains(delimiter)) {
-		s = s.replace(delimiter, String.valueOf(arguments[i]));
-	    }
-	    i++;
-	}
-	return s;
-    }
+    //
+    // public static String format(String s, Object... arguments) {
+    // // A very simple implementation of format
+    // int i = 0;
+    // while (i < arguments.length) {
+    // String delimiter = "{" + i + "}";
+    // while (s.contains(delimiter)) {
+    // s = s.replace(delimiter, String.valueOf(arguments[i]));
+    // }
+    // i++;
+    // }
+    // return s;
+    // }
 
-    @Scheduled(fixedRate = Constants.NEWSLETTER_SENDER_INTERVAL)
+    // @Scheduled(fixedRate = Constants.NEWSLETTER_SENDER_INTERVAL)
     public void newsletterSender() {
-	Calendar now = Calendar.getInstance();
+	Calendar now = dateUtils.newCalendar();
 	logger.log(Level.WARNING, "newsletterSender " + now);
 
 	// update undeliverables if it's a next day

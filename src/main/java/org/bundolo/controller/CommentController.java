@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 
 import org.apache.commons.lang3.StringUtils;
 import org.bundolo.Constants;
+import org.bundolo.DateUtils;
 import org.bundolo.model.Comment;
 import org.bundolo.model.Content;
 import org.bundolo.model.enumeration.ContentKindType;
@@ -47,6 +48,9 @@ public class CommentController {
     @Autowired
     private ConnectionService connectionService;
 
+    @Autowired
+    private DateUtils dateUtils;
+
     @RequestMapping(value = Constants.REST_PATH_PARENT_COMMENTS + "/{parentId}", method = RequestMethod.GET)
     public @ResponseBody
     List<Comment> comments(@PathVariable Long parentId) {
@@ -66,7 +70,7 @@ public class CommentController {
 	logger.log(Level.INFO, "saving comment: " + comment);
 	// TODO this could be nicer, move this logic to service. the problem with that is calling content update from
 	// comment save method. transactions collide.
-	Date creationDate = new Date();
+	Date creationDate = dateUtils.newDate();
 	comment.setCreationDate(creationDate);
 	comment.setLastActivity(creationDate);
 	Content rootCommentAncestor = contentService.findContent(comment.getParentContent().getContentId());

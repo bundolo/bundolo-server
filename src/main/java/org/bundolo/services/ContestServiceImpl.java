@@ -12,6 +12,7 @@ import javax.annotation.PreDestroy;
 
 import org.apache.commons.lang3.StringUtils;
 import org.bundolo.Constants;
+import org.bundolo.DateUtils;
 import org.bundolo.SecurityUtils;
 import org.bundolo.dao.ContestDAO;
 import org.bundolo.model.Content;
@@ -37,6 +38,9 @@ public class ContestServiceImpl implements ContestService {
     @Autowired
     private ContestDAO contestDAO;
 
+    @Autowired
+    private DateUtils dateUtils;
+
     @PostConstruct
     public void init() throws Exception {
     }
@@ -59,7 +63,7 @@ public class ContestServiceImpl implements ContestService {
 		return ReturnMessageType.title_taken;
 	    }
 	    contest.setContestStatus(ContestStatusType.active);
-	    contest.setCreationDate(new Date());
+	    contest.setCreationDate(dateUtils.newDate());
 	    contest.setKind(ContestKindType.general);
 	    Content descriptionContent = contest.getDescriptionContent();
 	    descriptionContent.setAuthorUsername(contest.getAuthorUsername());
@@ -67,7 +71,7 @@ public class ContestServiceImpl implements ContestService {
 	    descriptionContent.setCreationDate(contest.getCreationDate());
 	    descriptionContent.setKind(ContentKindType.contest_description);
 	    descriptionContent.setLocale(Constants.DEFAULT_LOCALE);
-	    descriptionContent.setLastActivity(new Date());
+	    descriptionContent.setLastActivity(dateUtils.newDate());
 	    contestDAO.persist(contest);
 	    return ReturnMessageType.success;
 	} catch (Exception ex) {
@@ -97,8 +101,8 @@ public class ContestServiceImpl implements ContestService {
 	    // if user that requested this is the author, do not increase rating
 	    long ratingIncrement = contest.getAuthorUsername().equals(SecurityUtils.getUsername()) ? 0
 		    : Constants.DEFAULT_RATING_INCREMENT;
-	    Date lastActivity = !contest.getAuthorUsername().equals(SecurityUtils.getUsername()) || rating == null ? new Date()
-		    : rating.getLastActivity();
+	    Date lastActivity = !contest.getAuthorUsername().equals(SecurityUtils.getUsername()) || rating == null ? dateUtils
+		    .newDate() : rating.getLastActivity();
 	    if (rating == null) {
 		rating = new Rating(null, null, RatingKindType.general, lastActivity, RatingStatusType.active,
 			ratingIncrement, contest.getDescriptionContent());
@@ -144,7 +148,7 @@ public class ContestServiceImpl implements ContestService {
 			}
 			descriptionContentDB.setName(descriptionContent.getName());
 			descriptionContentDB.setText(descriptionContent.getText());
-			descriptionContentDB.setLastActivity(new Date());
+			descriptionContentDB.setLastActivity(dateUtils.newDate());
 			contestDB.setExpirationDate(contest.getExpirationDate());
 			contestDAO.merge(contestDB);
 			return ReturnMessageType.success;

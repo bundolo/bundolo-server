@@ -12,6 +12,7 @@ import javax.annotation.PreDestroy;
 
 import org.apache.commons.lang3.StringUtils;
 import org.bundolo.Constants;
+import org.bundolo.DateUtils;
 import org.bundolo.SecurityUtils;
 import org.bundolo.dao.ContentDAO;
 import org.bundolo.dao.ItemListDAO;
@@ -41,6 +42,9 @@ public class ItemListServiceImpl implements ItemListService {
     @Autowired
     private ContentDAO contentDAO;
 
+    @Autowired
+    private DateUtils dateUtils;
+
     @PostConstruct
     public void init() throws Exception {
     }
@@ -63,7 +67,7 @@ public class ItemListServiceImpl implements ItemListService {
 		return ReturnMessageType.title_taken;
 	    }
 	    itemList.setItemListStatus(ItemListStatusType.active);
-	    itemList.setCreationDate(new Date());
+	    itemList.setCreationDate(dateUtils.newDate());
 	    itemList.setKind(ItemListKindType.personal);
 	    Content descriptionContent = itemList.getDescriptionContent();
 	    descriptionContent.setAuthorUsername(itemList.getAuthorUsername());
@@ -103,8 +107,8 @@ public class ItemListServiceImpl implements ItemListService {
 		    && itemList.getAuthorUsername().equals(SecurityUtils.getUsername()) ? 0
 		    : Constants.DEFAULT_RATING_INCREMENT;
 	    Date lastActivity = itemList.getAuthorUsername() == null
-		    || !itemList.getAuthorUsername().equals(SecurityUtils.getUsername()) || rating == null ? new Date()
-		    : rating.getLastActivity();
+		    || !itemList.getAuthorUsername().equals(SecurityUtils.getUsername()) || rating == null ? dateUtils
+		    .newDate() : rating.getLastActivity();
 	    if (rating == null) {
 		rating = new Rating(null, null, RatingKindType.general, lastActivity, RatingStatusType.active,
 			ratingIncrement, itemList.getDescriptionContent());
@@ -152,7 +156,7 @@ public class ItemListServiceImpl implements ItemListService {
 			}
 			descriptionContentDB.setName(descriptionContent.getName());
 			descriptionContentDB.setText(descriptionContent.getText());
-			descriptionContentDB.setLastActivity(new Date());
+			descriptionContentDB.setLastActivity(dateUtils.newDate());
 			itemListDB.setQuery(itemList.getQuery());
 			itemListDAO.merge(itemListDB);
 			return ReturnMessageType.success;

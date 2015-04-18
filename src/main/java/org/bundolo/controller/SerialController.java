@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 
 import org.bundolo.Constants;
+import org.bundolo.DateUtils;
 import org.bundolo.model.Content;
 import org.bundolo.model.enumeration.ContentKindType;
 import org.bundolo.model.enumeration.ReturnMessageType;
@@ -33,6 +34,9 @@ public class SerialController {
 
     @Autowired
     private CommentService commentService;
+
+    @Autowired
+    private DateUtils dateUtils;
 
     @RequestMapping(value = Constants.REST_PATH_SERIAL + "/**", method = RequestMethod.GET)
     public @ResponseBody
@@ -106,7 +110,7 @@ public class SerialController {
 	Content serial = contentService.findSerial(serialTitle);
 	episode.getParentContent().setContentId(serial.getContentId());
 	episode.getParentContent().setName(serial.getName());
-	Date creationDate = new Date();
+	Date creationDate = dateUtils.newDate();
 	episode.setLastActivity(creationDate);
 	episode.setKind(ContentKindType.episode);
 	episode.setName(title.trim());

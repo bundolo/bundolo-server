@@ -50,8 +50,8 @@
 	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
 		<property name="entityManagerFactory" ref="entityManagerFactory" />
 	</bean>
-	<!-- <bean id="globalStorage" class="org.bundolo.GlobalStorage"/> -->
 	<bean id="mailingUtils" class="org.bundolo.MailingUtils"/>
+	<bean id="dateUtils" class="org.bundolo.DateUtils"/>
 	
 	<!-- security -->
 	<!-- Creates the springSecurityFilterChain with the customer filter customRestFilter injected.  -->

@@ -12,6 +12,7 @@ import javax.annotation.PreDestroy;
 
 import org.apache.commons.lang3.StringUtils;
 import org.bundolo.Constants;
+import org.bundolo.DateUtils;
 import org.bundolo.SecurityUtils;
 import org.bundolo.dao.ConnectionDAO;
 import org.bundolo.model.Connection;
@@ -37,6 +38,9 @@ public class ConnectionServiceImpl implements ConnectionService {
     @Autowired
     private ConnectionDAO connectionDAO;
 
+    @Autowired
+    private DateUtils dateUtils;
+
     @PostConstruct
     public void init() throws Exception {
     }
@@ -60,7 +64,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 		return ReturnMessageType.title_taken;
 	    }
 	    connection.setConnectionStatus(ConnectionStatusType.active);
-	    connection.setCreationDate(new Date());
+	    connection.setCreationDate(dateUtils.newDate());
 	    connection.setKind(ConnectionKindType.general);
 
 	    Content descriptionContent = connection.getDescriptionContent();
@@ -69,7 +73,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 	    descriptionContent.setCreationDate(connection.getCreationDate());
 	    descriptionContent.setKind(ContentKindType.connection_description);
 	    descriptionContent.setLocale(Constants.DEFAULT_LOCALE);
-	    descriptionContent.setLastActivity(new Date());
+	    descriptionContent.setLastActivity(dateUtils.newDate());
 	    connectionDAO.persist(connection);
 	    return ReturnMessageType.success;
 	} catch (Exception ex) {
@@ -108,8 +112,8 @@ public class ConnectionServiceImpl implements ConnectionService {
 	    // if user that requested this is the author, do not increase rating
 	    long ratingIncrement = connection.getAuthorUsername().equals(SecurityUtils.getUsername()) ? 0
 		    : Constants.DEFAULT_RATING_INCREMENT;
-	    Date lastActivity = !connection.getAuthorUsername().equals(SecurityUtils.getUsername()) || rating == null ? new Date()
-		    : rating.getLastActivity();
+	    Date lastActivity = !connection.getAuthorUsername().equals(SecurityUtils.getUsername()) || rating == null ? dateUtils
+		    .newDate() : rating.getLastActivity();
 	    if (rating == null) {
 		rating = new Rating(null, null, RatingKindType.general, lastActivity, RatingStatusType.active,
 			ratingIncrement, connection.getDescriptionContent());
@@ -156,7 +160,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 			}
 			descriptionContentDB.setName(descriptionContent.getName());
 			descriptionContentDB.setText(descriptionContent.getText());
-			descriptionContentDB.setLastActivity(new Date());
+			descriptionContentDB.setLastActivity(dateUtils.newDate());
 			connectionDB.setEmail(connection.getEmail());
 			connectionDB.setUrl(connection.getUrl());
 			connectionDAO.merge(connectionDB);
