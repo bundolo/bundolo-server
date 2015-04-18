@@ -94,7 +94,7 @@ public class UserProfile implements java.io.Serializable {
     @Column(name = "subscribed")
     private Boolean subscribed;
 
-    @Column(name = "newsletter_sent")
+    @Column(name = "newsletter_sending_date")
     private Date newsletterSendingDate;
 
     public UserProfile() {
