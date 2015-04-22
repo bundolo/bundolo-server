@@ -1,5 +1,6 @@
 package org.bundolo.dao;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
@@ -9,6 +10,8 @@ import javax.persistence.Query;
 
 import org.bundolo.model.UserProfile;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository("userProfileDAO")
 public class UserProfileDAO extends JpaDAO<Long, UserProfile> {
@@ -36,35 +39,55 @@ public class UserProfileDAO extends JpaDAO<Long, UserProfile> {
     public List<UserProfile> findNewsletterUsers(Date sendingStart, Integer maxResults) {
 	StringBuilder queryString = new StringBuilder();
 	queryString.append("SELECT u FROM " + entityClass.getName() + " u");
-	queryString.append(" WHERE subscribed");
+	queryString.append(" WHERE subscribed = true");
 	queryString.append(" AND email LIKE '%_@__%.__%'");
 	queryString.append(" AND newsletter_sending_date IS NOT NULL");
-	queryString.append(" AND newsletter_sending_date < ?");
+	queryString.append(" AND newsletter_sending_date < ?1");
 	logger.log(Level.WARNING, "queryString: " + queryString.toString());
 	Query q = entityManager.createQuery(queryString.toString());
 	q.setParameter(1, sendingStart);
 	q.setMaxResults(maxResults);
 	List<UserProfile> resultList = q.getResultList();
+
+	logger.log(Level.WARNING, "resultList: " + resultList.size());
 	return resultList;
     }
 
     public long dailyRecipientsCount(Date day) {
+	// todo get midnight day
+	// add one day
+	Calendar dayMidnight = Calendar.getInstance();
+	dayMidnight.setTime(day);
+	dayMidnight.set(Calendar.HOUR_OF_DAY, 0);
+	dayMidnight.set(Calendar.MINUTE, 0);
+	dayMidnight.set(Calendar.SECOND, 0);
+	dayMidnight.set(Calendar.MILLISECOND, 0);
+
+	Calendar nextDayMidnight = (Calendar) dayMidnight.clone();
+	nextDayMidnight.add(Calendar.DATE, 1);
+
 	String queryString = "SELECT count(u) FROM " + entityClass.getName() + " u";
-	queryString += " WHERE subscribed";
-	queryString += " AND ((newsletter_sending_date >= ?::timestamp::date and newsletter_sending_date < ?::timestamp::date + interval '1 day')";
+	queryString += " WHERE subscribed = true";
+	queryString += " AND ((newsletter_sending_date BETWEEN ?1 and ?2)";
 	queryString += " OR (newsletter_sending_date IS NULL))";
 	logger.log(Level.WARNING, "queryString: " + queryString);
 	Query q = entityManager.createQuery(queryString);
+	q.setParameter(1, dayMidnight);
+	q.setParameter(2, nextDayMidnight);
 	long count = (long) q.getSingleResult();
+
+	logger.log(Level.WARNING, "dailyRecipientsCount: " + count);
 	return count;
     }
 
     public long dailyUndeliverablesCount() {
 	String queryString = "SELECT count(u) FROM " + entityClass.getName() + " u";
-	queryString += " WHERE subscribed AND newsletter_sending_date IS NULL";
+	queryString += " WHERE subscribed = true AND newsletter_sending_date IS NULL";
 	logger.log(Level.WARNING, "queryString: " + queryString);
 	Query q = entityManager.createQuery(queryString);
 	long count = (long) q.getSingleResult();
+
+	logger.log(Level.WARNING, "dailyUndeliverablesCount: " + count);
 	return count;
     }
 
@@ -72,7 +95,30 @@ public class UserProfileDAO extends JpaDAO<Long, UserProfile> {
 	String queryString = "UPDATE " + entityClass.getName();
 	queryString += " SET subscribed = false";
 	queryString += ", newsletter_sending_date = to_timestamp(0)";
-	queryString += " WHERE subscribed AND newsletter_sending_date IS NULL";
+	queryString += " WHERE subscribed = true AND newsletter_sending_date IS NULL";
+	logger.log(Level.WARNING, "queryString: " + queryString);
+	Query q = entityManager.createQuery(queryString);
+	q.executeUpdate();
+    }
+
+    // used only during testing
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    public void resetSubscribers() {
+	String queryString = "update " + entityClass.getName() + " set subscribed=true where email LIKE '%_@__%.__%'";
+	logger.log(Level.WARNING, "queryString: " + queryString);
+	Query q = entityManager.createQuery(queryString);
+	q.executeUpdate();
+	String queryString1 = "update " + entityClass.getName()
+		+ " set newsletter_sending_date=signup_date where subscribed = true";
+	logger.log(Level.WARNING, "queryString: " + queryString1);
+	Query q1 = entityManager.createQuery(queryString1);
+	q1.executeUpdate();
+    }
+
+    // used only during testing
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    public void unsubscribeAll() {
+	String queryString = "update " + entityClass.getName() + " set subscribed=false";
 	logger.log(Level.WARNING, "queryString: " + queryString);
 	Query q = entityManager.createQuery(queryString);
 	q.executeUpdate();

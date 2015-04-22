@@ -66,6 +66,9 @@ public class User implements java.io.Serializable {
     // @Transient
     // private UserProfileStatusType userStatus;
 
+    @Column(name = "subscribed")
+    private Boolean subscribed;
+
     public User() {
 	super();
     }
@@ -164,6 +167,14 @@ public class User implements java.io.Serializable {
 
     public void setDescriptionContent(Content descriptionContent) {
 	this.descriptionContent = descriptionContent;
+    }
+
+    public Boolean getSubscribed() {
+	return subscribed;
+    }
+
+    public void setSubscribed(Boolean subscribed) {
+	this.subscribed = subscribed;
     }
 
     // public UserProfileStatusType getUserStatus() {

@@ -1,1 +1,1 @@
-Bundolo novosti za april 2015.
+bundolo grupna poruka: Novosti za april 2015.

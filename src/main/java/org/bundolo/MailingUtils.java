@@ -30,6 +30,11 @@ import org.bundolo.dao.UserProfileDAO;
 import org.bundolo.model.UserProfile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.scheduling.TriggerContext;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.scheduling.support.SimpleTriggerContext;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 
 import freemarker.template.Configuration;
@@ -88,7 +93,8 @@ public class MailingUtils {
 	});
 
 	MimeMessage message = new MimeMessage(mailSession);
-	message.setFrom(new InternetAddress(properties.getProperty("mail.from")));
+	message.setFrom(new InternetAddress(properties.getProperty("mail.from"), properties
+		.getProperty("mail.from.friendly")));
 	String[] emails = { recipient };
 	InternetAddress dests[] = new InternetAddress[emails.length];
 	for (int i = 0; i < emails.length; i++) {
@@ -128,29 +134,14 @@ public class MailingUtils {
 	transport.close();
     }
 
-    //
-    // public static String format(String s, Object... arguments) {
-    // // A very simple implementation of format
-    // int i = 0;
-    // while (i < arguments.length) {
-    // String delimiter = "{" + i + "}";
-    // while (s.contains(delimiter)) {
-    // s = s.replace(delimiter, String.valueOf(arguments[i]));
-    // }
-    // i++;
-    // }
-    // return s;
-    // }
-
-    // @Scheduled(fixedRate = Constants.NEWSLETTER_SENDER_INTERVAL)
+    @Scheduled(cron = "${systemProperties['newsletter.sender.schedule'] ?: 0 0 * * * *}")
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public void newsletterSender() {
 	Calendar now = dateUtils.newCalendar();
-	logger.log(Level.WARNING, "newsletterSender " + now);
+	logger.log(Level.WARNING, "newsletterSender " + now.getTime());
 
 	// update undeliverables if it's a next day
-	Calendar previousRun = (Calendar) now.clone();
-	previousRun.add(Calendar.MILLISECOND, -Constants.NEWSLETTER_SENDER_INTERVAL);
-	if (now.get(Calendar.DAY_OF_MONTH) != previousRun.get(Calendar.DAY_OF_MONTH)) {
+	if (now.get(Calendar.HOUR_OF_DAY) == 0) {
 	    userProfileDAO.unsubscribeUndeliverables();
 	}
 
@@ -160,7 +151,7 @@ public class MailingUtils {
 	String newsletterUndeliverablesMax = properties.getProperty("newsletter.daily.undeliverables");
 	if (StringUtils.isNotBlank(newsletterDate) && StringUtils.isNotBlank(newsletterBatchSize)
 		&& StringUtils.isNotBlank(newsletterDailyMax) && StringUtils.isNotBlank(newsletterUndeliverablesMax)) {
-	    SimpleDateFormat formatter = new SimpleDateFormat("yyyyddMM");
+	    SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
 	    Date sendingStart;
 	    try {
 		sendingStart = formatter.parse(newsletterDate);
@@ -173,7 +164,7 @@ public class MailingUtils {
 		// check have we reached max daily undeliverables
 		long dailyRecipientsCount = userProfileDAO.dailyRecipientsCount(now.getTime());
 		long dailyUndeliverablesCount = userProfileDAO.dailyUndeliverablesCount();
-		if ((now.after(sendingStart)) && (dailyRecipientsCount < dailyMax)
+		if ((now.getTime().after(sendingStart)) && (dailyRecipientsCount < dailyMax)
 			&& (dailyUndeliverablesCount < undeliverablesMax)) {
 		    List<UserProfile> recipients = userProfileDAO.findNewsletterUsers(sendingStart, batchSize);
 		    if (recipients != null && recipients.size() > 0) {
@@ -217,5 +208,11 @@ public class MailingUtils {
 		return;
 	    }
 	}
+    }
+
+    private static TriggerContext getTriggerContext(Date lastCompletionTime) {
+	SimpleTriggerContext context = new SimpleTriggerContext();
+	context.update(null, null, lastCompletionTime);
+	return context;
     }
 }

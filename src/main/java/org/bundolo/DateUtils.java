@@ -5,8 +5,6 @@ import java.util.Date;
 import java.util.Properties;
 import java.util.logging.Logger;
 
-import javax.annotation.PostConstruct;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
@@ -18,20 +16,14 @@ public class DateUtils {
     @Qualifier("properties")
     private Properties properties;
 
-    long dateOffset;
-    double dateFactor;
-
-    @PostConstruct
-    public void init() {
-	dateOffset = Long.parseLong(properties.getProperty("date.offset"));
-	dateFactor = Double.parseDouble(properties.getProperty("date.factor"));
-    }
-
     public Date newDate() {
 	return newCalendar().getTime();
     }
 
     public Calendar newCalendar() {
+	long dateOffset = Long.parseLong(properties.getProperty("date.offset"));
+	double dateFactor = Double.parseDouble(properties.getProperty("date.factor"));
+
 	Calendar now = Calendar.getInstance();
 	long systemTimeInMillis = now.getTimeInMillis();
 	long applicationTimeInMillis = Math.round((systemTimeInMillis + dateOffset) * dateFactor);

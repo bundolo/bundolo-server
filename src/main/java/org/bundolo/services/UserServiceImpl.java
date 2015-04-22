@@ -167,6 +167,7 @@ public class UserServiceImpl implements UserService {
 	    }
 	    ReturnMessageType result = ReturnMessageType.validation_failed;
 	    if (StringUtils.isNotBlank(userProfile.getNewEmail())) {
+		// email address change
 		if (userProfile.getNewEmail().equals(email)) {
 		    String serverNonce = SecurityUtils.getHashWithoutSalt(userProfile.getNewEmail() + ":"
 			    + userProfile.getSalt());
@@ -179,6 +180,7 @@ public class UserServiceImpl implements UserService {
 		    }
 		}
 	    } else {
+		// new user
 		if (userProfile.getEmail().equals(email)) {
 		    String serverNonce = SecurityUtils.getHashWithoutSalt(userProfile.getEmail() + ":"
 			    + userProfile.getSalt());
@@ -187,6 +189,7 @@ public class UserServiceImpl implements UserService {
 			userProfile.setNonce(null);
 			userProfile.getDescriptionContent().setAuthorUsername(userProfile.getUsername());
 			userProfile.getDescriptionContent().setContentStatus(ContentStatusType.active);
+			userProfile.setSubscribed(true);
 			userProfileDAO.merge(userProfile);
 			result = ReturnMessageType.success;
 		    }
@@ -302,7 +305,8 @@ public class UserServiceImpl implements UserService {
 	    userProfile.setUserProfileStatus(UserProfileStatusType.pending);
 	    userProfile.setSignupDate(dateUtils.newDate());
 	    userProfile.setLastIp(getRemoteHost());
-	    // TODO set subscribed and newsletter_sent
+	    userProfile.setSubscribed(false);
+	    userProfile.setNewsletterSendingDate(userProfile.getSignupDate());
 
 	    Date creationDate = dateUtils.newDate();
 	    Content descriptionContent = new Content(null, null, ContentKindType.user_description, null, "",
@@ -409,6 +413,7 @@ public class UserServiceImpl implements UserService {
 	    }
 	    userProfileDB.setShowPersonal(userProfile.getShowPersonal());
 	    userProfileDB.setAvatarUrl(userProfile.getAvatarUrl());
+	    userProfileDB.setSubscribed(userProfile.getSubscribed());
 	    userProfileDAO.merge(userProfileDB);
 	    if (StringUtils.isNotBlank(userProfileDB.getNewEmail())) {
 		String activationUrl = properties.getProperty("application.root") + "/validate?nonce="
