@@ -60,15 +60,18 @@ public class MailingUtils {
     public void sendEmail(String body, String subject, String recipient) throws MessagingException,
 	    UnsupportedEncodingException {
 	if (Boolean.valueOf(properties.getProperty("mailing.active"))) {
-	    logger.log(Level.INFO, "sendEmail\nrecipient: " + recipient + "\nsubject: " + subject + "\nbody: " + body);
+	    // logger.log(Level.INFO, "sendEmail\nrecipient: " + recipient + "\nsubject: " + subject + "\nbody: " +
+	    // body);
+	    logger.log(Level.INFO, "sendEmail\nrecipient: " + recipient + "\nsubject: " + subject);
 	    if ("gmail".equals(properties.getProperty("mail.service"))) {
 		sendEmailGmail(body, subject, recipient);
 	    } else if ("godaddy".equals(properties.getProperty("mail.service"))) {
 		sendEmailGoDaddy(body, subject, recipient);
 	    }
 	} else {
-	    logger.log(Level.WARNING, "sendEmail\nrecipient: " + recipient + "\nsubject: " + subject + "\nbody: "
-		    + body);
+	    // logger.log(Level.WARNING, "sendEmail\nrecipient: " + recipient + "\nsubject: " + subject + "\nbody: "
+	    // + body);
+	    logger.log(Level.WARNING, "sendEmail\nrecipient: " + recipient + "\nsubject: " + subject);
 	}
     }
 

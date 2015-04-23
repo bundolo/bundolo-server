@@ -29,11 +29,14 @@ public class MailingUtilsTest {
     private MailingUtils mailingUtils;
 
     @Autowired
-    @Qualifier("properties")
-    private Properties properties;
+    private UserProfileDAO userProfileDAO;
 
     @Autowired
-    private UserProfileDAO userProfileDAO;
+    private DateUtils dateUtils;
+
+    @Autowired
+    @Qualifier("properties")
+    private Properties properties;
 
     @Before
     public void setUp() {
@@ -48,7 +51,7 @@ public class MailingUtilsTest {
 	Calendar startTime = Calendar.getInstance();
 	startTime.set(2015, Calendar.APRIL, 12, 1, 0, 0);
 	Long offset = startTime.getTimeInMillis() - nowTime.getTimeInMillis();
-	properties.setProperty("date.offset", offset.toString());
+	dateUtils.setDateOffset(offset);
 
 	long dailyRecipientsBefore = userProfileDAO.dailyRecipientsCount(startTime.getTime());
 
@@ -65,7 +68,7 @@ public class MailingUtilsTest {
 	Calendar startTime = Calendar.getInstance();
 	startTime.set(2015, Calendar.APRIL, 13, 1, 0, 0);
 	Long offset = startTime.getTimeInMillis() - nowTime.getTimeInMillis();
-	properties.setProperty("date.offset", offset.toString());
+	dateUtils.setDateOffset(offset);
 
 	long dailyRecipientsBefore = userProfileDAO.dailyRecipientsCount(startTime.getTime());
 
@@ -84,7 +87,7 @@ public class MailingUtilsTest {
 	Calendar startTime = Calendar.getInstance();
 	startTime.set(2015, Calendar.APRIL, 12, 0, 0, 0);
 	Long offset = startTime.getTimeInMillis() - nowTime.getTimeInMillis();
-	properties.setProperty("date.offset", offset.toString());
+	dateUtils.setDateOffset(offset);
 
 	// simulate one undeliverable
 	UserProfile user = userProfileDAO.findByField("email", "daniel.farkas0@gmail.com");
@@ -106,7 +109,7 @@ public class MailingUtilsTest {
 	Calendar startTime = Calendar.getInstance();
 	startTime.set(2015, Calendar.APRIL, 13, 1, 0, 0);
 	Long offset = startTime.getTimeInMillis() - nowTime.getTimeInMillis();
-	properties.setProperty("date.offset", offset.toString());
+	dateUtils.setDateOffset(offset);
 
 	// simulate one subscriber
 	userProfileDAO.unsubscribeAll();
@@ -120,6 +123,25 @@ public class MailingUtilsTest {
 	long dailyRecipientsAfter = userProfileDAO.dailyRecipientsCount(startTime.getTime());
 
 	assertEquals("unexpected number of sent emails", 1, dailyRecipientsAfter - dailyRecipientsBefore);
+    }
+
+    @Test
+    public void newsletterSenderCompleteTest() {
+	Calendar nowTime = Calendar.getInstance();
+	Calendar startTime = Calendar.getInstance();
+	startTime.set(2015, Calendar.APRIL, 12, 0, 0, 0);
+	long dailyRecipientsBefore = userProfileDAO.dailyRecipientsCount(startTime.getTime());
+	assertEquals("unexpected number of initial recipients", 0, dailyRecipientsBefore);
+	Long offset;
+	for (int i = 0; i < 168; i++) {
+	    startTime.add(Calendar.HOUR_OF_DAY, 1);
+	    nowTime = Calendar.getInstance();
+	    offset = startTime.getTimeInMillis() - nowTime.getTimeInMillis();
+	    dateUtils.setDateOffset(offset);
+	    mailingUtils.newsletterSender();
+	}
+	long dailyRecipientsAfter = userProfileDAO.dailyRecipientsCount(startTime.getTime());
+	assertEquals("unexpected number of end recipients", 0, dailyRecipientsAfter);
     }
 
 }

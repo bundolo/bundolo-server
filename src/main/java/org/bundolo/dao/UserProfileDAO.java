@@ -43,13 +43,16 @@ public class UserProfileDAO extends JpaDAO<Long, UserProfile> {
 	queryString.append(" AND email LIKE '%_@__%.__%'");
 	queryString.append(" AND newsletter_sending_date IS NOT NULL");
 	queryString.append(" AND newsletter_sending_date < ?1");
-	logger.log(Level.WARNING, "queryString: " + queryString.toString());
+	logger.log(Level.FINE, "queryString: " + queryString.toString() + "; sendingStart: " + sendingStart
+		+ "; maxResults: " + maxResults);
 	Query q = entityManager.createQuery(queryString.toString());
 	q.setParameter(1, sendingStart);
-	q.setMaxResults(maxResults);
+	if (maxResults > 0) {
+	    q.setMaxResults(maxResults);
+	}
 	List<UserProfile> resultList = q.getResultList();
 
-	logger.log(Level.WARNING, "resultList: " + resultList.size());
+	logger.log(Level.FINE, "resultList: " + resultList.size());
 	return resultList;
     }
 
@@ -70,24 +73,24 @@ public class UserProfileDAO extends JpaDAO<Long, UserProfile> {
 	queryString += " WHERE subscribed = true";
 	queryString += " AND ((newsletter_sending_date BETWEEN ?1 and ?2)";
 	queryString += " OR (newsletter_sending_date IS NULL))";
-	logger.log(Level.WARNING, "queryString: " + queryString);
+	logger.log(Level.FINE, "queryString: " + queryString);
 	Query q = entityManager.createQuery(queryString);
 	q.setParameter(1, dayMidnight);
 	q.setParameter(2, nextDayMidnight);
 	long count = (long) q.getSingleResult();
 
-	logger.log(Level.WARNING, "dailyRecipientsCount: " + count);
+	logger.log(Level.FINE, "dailyRecipientsCount: " + count);
 	return count;
     }
 
     public long dailyUndeliverablesCount() {
 	String queryString = "SELECT count(u) FROM " + entityClass.getName() + " u";
 	queryString += " WHERE subscribed = true AND newsletter_sending_date IS NULL";
-	logger.log(Level.WARNING, "queryString: " + queryString);
+	logger.log(Level.FINE, "queryString: " + queryString);
 	Query q = entityManager.createQuery(queryString);
 	long count = (long) q.getSingleResult();
 
-	logger.log(Level.WARNING, "dailyUndeliverablesCount: " + count);
+	logger.log(Level.FINE, "dailyUndeliverablesCount: " + count);
 	return count;
     }
 
@@ -96,7 +99,7 @@ public class UserProfileDAO extends JpaDAO<Long, UserProfile> {
 	queryString += " SET subscribed = false";
 	queryString += ", newsletter_sending_date = to_timestamp(0)";
 	queryString += " WHERE subscribed = true AND newsletter_sending_date IS NULL";
-	logger.log(Level.WARNING, "queryString: " + queryString);
+	logger.log(Level.FINE, "queryString: " + queryString);
 	Query q = entityManager.createQuery(queryString);
 	q.executeUpdate();
     }
@@ -105,12 +108,12 @@ public class UserProfileDAO extends JpaDAO<Long, UserProfile> {
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public void resetSubscribers() {
 	String queryString = "update " + entityClass.getName() + " set subscribed=true where email LIKE '%_@__%.__%'";
-	logger.log(Level.WARNING, "queryString: " + queryString);
+	logger.log(Level.FINE, "queryString: " + queryString);
 	Query q = entityManager.createQuery(queryString);
 	q.executeUpdate();
 	String queryString1 = "update " + entityClass.getName()
 		+ " set newsletter_sending_date=signup_date where subscribed = true";
-	logger.log(Level.WARNING, "queryString: " + queryString1);
+	logger.log(Level.FINE, "queryString: " + queryString1);
 	Query q1 = entityManager.createQuery(queryString1);
 	q1.executeUpdate();
     }
@@ -119,7 +122,6 @@ public class UserProfileDAO extends JpaDAO<Long, UserProfile> {
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public void unsubscribeAll() {
 	String queryString = "update " + entityClass.getName() + " set subscribed=false";
-	logger.log(Level.WARNING, "queryString: " + queryString);
 	Query q = entityManager.createQuery(queryString);
 	q.executeUpdate();
     }
