@@ -1,6 +1,7 @@
 package org.bundolo.controller;
 
 import java.util.HashMap;
+import java.util.logging.Logger;
 
 import org.bundolo.Constants;
 import org.bundolo.model.Content;
@@ -16,6 +17,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 public class PageController {
 
+    private static final Logger logger = Logger.getLogger(PageController.class.getName());
+
     @Autowired
     private ContentService contentService;
 
@@ -23,6 +26,7 @@ public class PageController {
     @RequestMapping(value = Constants.REST_PATH_PAGE + "/{pageKind}", method = RequestMethod.GET)
     public @ResponseBody
     Content page(@PathVariable PageKindType pageKind) {
+	// logger.log(Level.WARNING, "page, pageKind: " + pageKind);
 	return contentService.getPageDescriptionContent(pageKind);
     }
 

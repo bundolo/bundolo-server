@@ -54,6 +54,7 @@ public class AuthorController {
     @RequestMapping(value = Constants.REST_PATH_PASSWORD + "/{username:.+}", method = RequestMethod.POST)
     public @ResponseBody
     ReturnMessageType password(@PathVariable String username, @RequestParam(required = true) String email) {
+	logger.log(Level.INFO, "password, username: " + username + ", email: " + email);
 	return userService.sendNewPassword(username, email);
     }
 
