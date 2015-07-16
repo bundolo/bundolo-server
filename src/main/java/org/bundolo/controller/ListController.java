@@ -8,12 +8,15 @@ import java.util.logging.Logger;
 
 import org.apache.commons.lang3.StringUtils;
 import org.bundolo.Constants;
+import org.bundolo.SecurityUtils;
+import org.bundolo.dao.UserProfileDAO;
 import org.bundolo.model.Comment;
 import org.bundolo.model.Connection;
 import org.bundolo.model.Content;
 import org.bundolo.model.Contest;
 import org.bundolo.model.ItemList;
 import org.bundolo.model.User;
+import org.bundolo.model.UserProfile;
 import org.bundolo.model.enumeration.AnnouncementColumnType;
 import org.bundolo.model.enumeration.AuthorColumnType;
 import org.bundolo.model.enumeration.ColumnDataType;
@@ -60,6 +63,9 @@ public class ListController {
 
     @Autowired
     private ItemListService itemListService;
+
+    @Autowired
+    private UserProfileDAO userProfileDAO;
 
     @RequestMapping(value = Constants.REST_PATH_CONNECTIONS, method = RequestMethod.GET)
     public @ResponseBody
@@ -392,8 +398,18 @@ public class ListController {
 
     @RequestMapping(value = Constants.REST_PATH_RECENT, method = RequestMethod.GET)
     public @ResponseBody
-    List<Content> recent(@RequestParam(required = false) Date fromDate) {
-	return contentService.findRecent(fromDate);
+    List<Content> recent(@RequestParam(required = false) Date fromDate,
+	    @RequestParam(required = false, defaultValue = "0") Integer limit) {
+	// there is no paging of recent currently, if the performance becomes an issue, reconsider
+	String senderUsername = SecurityUtils.getUsername();
+	if (senderUsername != null && limit == 0) {
+	    // if limit is not set, and user is known, set date to user previous activity
+	    UserProfile userProfile = userProfileDAO.findByField("username", senderUsername);
+	    if (userProfile != null) {
+		fromDate = userProfile.getPreviousActivity();
+	    }
+	}
+	return contentService.findRecent(fromDate, limit);
     }
 
     private String getFilterByColumn(String columnName, ColumnDataType columnDataType) {

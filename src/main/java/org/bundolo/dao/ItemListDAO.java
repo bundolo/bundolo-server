@@ -101,7 +101,7 @@ public class ItemListDAO extends JpaDAO<Long, ItemList> {
     }
 
     public ItemList findNext(Long itemListId, String orderBy, String fixBy, boolean ascending) {
-	// TODO Auto-generated method stub
+	// TODO backlog: implement findNext ItemList
 	return null;
     }
 }

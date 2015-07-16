@@ -450,7 +450,7 @@ public class ContentDAO extends JpaDAO<Long, Content> {
     }
 
     @SuppressWarnings("unchecked")
-    public List<Content> findRecent(Date fromDate) {
+    public List<Content> findRecent(Date fromDate, Integer limit) {
 	StringBuilder queryString = new StringBuilder();
 	queryString.append("SELECT c FROM Content c WHERE content_status='active'");
 	if (fromDate != null) {
@@ -459,11 +459,14 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	queryString.append(" AND (kind='text' OR kind='forum_topic' OR kind='connection_description' OR kind='news' "
 		+ "OR kind='contest_description' OR kind='episode' OR kind='user_description')");
 	queryString.append(" ORDER BY last_activity desc");
+	logger.log(Level.INFO, "queryString: " + queryString + ", fromDate: " + fromDate + ", limit: " + limit);
 	Query q = entityManager.createQuery(queryString.toString());
 	if (fromDate != null) {
 	    q.setParameter(1, fromDate);
 	}
-	q.setMaxResults(20);
+	if (limit > 0) {
+	    q.setMaxResults(limit);
+	}
 	// strip text to make the request run faster
 	List<Content> recentContent = q.getResultList();
 	for (Content content : recentContent) {

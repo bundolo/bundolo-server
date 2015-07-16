@@ -30,7 +30,7 @@ public class PageController {
 	return contentService.getPageDescriptionContent(pageKind);
     }
 
-    // TODO
+    // TODO backlog: define and retrieve metrics
     // take date range
     @RequestMapping(value = Constants.REST_PATH_METRICS + "/{pageKind}", method = RequestMethod.GET)
     public @ResponseBody

@@ -51,20 +51,9 @@ public class User implements java.io.Serializable {
     @Column(name = "avatar_url")
     private String avatarUrl;
 
-    // @Column(name = "session_id")
-    // private String sessionId;
-
-    // @Transient
-    // private String rememberMeCookie;
-
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "description_content_id")
     private Content descriptionContent;
-
-    // @Column(name = "user_profile_status")
-    // @Enumerated(EnumType.STRING)
-    // @Transient
-    // private UserProfileStatusType userStatus;
 
     @Column(name = "subscribed")
     private Boolean subscribed;
@@ -145,22 +134,6 @@ public class User implements java.io.Serializable {
 	this.avatarUrl = avatarUrl;
     }
 
-    // public String getSessionId() {
-    // return sessionId;
-    // }
-    //
-    // public void setSessionId(String sessionId) {
-    // this.sessionId = sessionId;
-    // }
-
-    // public String getRememberMeCookie() {
-    // return rememberMeCookie;
-    // }
-    //
-    // public void setRememberMeCookie(String rememberMeCookie) {
-    // this.rememberMeCookie = rememberMeCookie;
-    // }
-
     public Content getDescriptionContent() {
 	return descriptionContent;
     }
@@ -176,12 +149,4 @@ public class User implements java.io.Serializable {
     public void setSubscribed(Boolean subscribed) {
 	this.subscribed = subscribed;
     }
-
-    // public UserProfileStatusType getUserStatus() {
-    // return userStatus;
-    // }
-    //
-    // public void setUserStatus(UserProfileStatusType userStatus) {
-    // this.userStatus = userStatus;
-    // }
 }

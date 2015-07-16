@@ -97,34 +97,12 @@ public class UserProfile implements java.io.Serializable {
     @Column(name = "newsletter_sending_date")
     private Date newsletterSendingDate;
 
+    @Column(name = "previous_activity")
+    private Date previousActivity;
+
     public UserProfile() {
 	super();
     }
-
-    // public UserProfile(Long userId, String username, String password, String salt, String firstName, String lastName,
-    // Date birthDate, UserProfileGenderType gender, String email, Boolean showPersonal, Date signupDate,
-    // Date lastLoginDate, String lastIp, UserProfileStatusType userProfileStatus, String avatarUrl, String nonce,
-    // String newEmail, Content descriptionContent) {
-    // super();
-    // this.userId = userId;
-    // this.username = username;
-    // this.password = password;
-    // this.salt = salt;
-    // this.firstName = firstName;
-    // this.lastName = lastName;
-    // this.birthDate = birthDate;
-    // this.gender = gender;
-    // this.email = email;
-    // this.showPersonal = showPersonal;
-    // this.signupDate = signupDate;
-    // this.lastLoginDate = lastLoginDate;
-    // this.lastIp = lastIp;
-    // this.userProfileStatus = userProfileStatus;
-    // this.avatarUrl = avatarUrl;
-    // this.nonce = nonce;
-    // this.newEmail = newEmail;
-    // this.descriptionContent = descriptionContent;
-    // }
 
     public Long getUserId() {
 	return userId;
@@ -286,6 +264,14 @@ public class UserProfile implements java.io.Serializable {
 	this.newsletterSendingDate = newsletterSendingDate;
     }
 
+    public Date getPreviousActivity() {
+	return previousActivity;
+    }
+
+    public void setPreviousActivity(Date previousActivity) {
+	this.previousActivity = previousActivity;
+    }
+
     @Override
     public String toString() {
 	return "UserProfile [userId=" + userId + ", username=" + username + ", password=" + password + ", salt=" + salt
@@ -294,6 +280,6 @@ public class UserProfile implements java.io.Serializable {
 		+ ", lastLoginDate=" + lastLoginDate + ", lastIp=" + lastIp + ", userProfileStatus="
 		+ userProfileStatus + ", avatarUrl=" + avatarUrl + ", nonce=" + nonce + ", newEmail=" + newEmail
 		+ ", descriptionContent=" + descriptionContent + ", subscribed=" + subscribed
-		+ ", newsletterSendingDate=" + newsletterSendingDate + "]";
+		+ ", newsletterSendingDate=" + newsletterSendingDate + ", previousActivity=" + previousActivity + "]";
     }
 }

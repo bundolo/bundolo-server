@@ -135,6 +135,7 @@ public class UserServiceImpl implements UserService {
 		// if user is not found it is ok to skip the rest since usernames are not secret
 		return ReturnMessageType.login_failed;
 	    }
+	    userProfile.setPreviousActivity(userProfile.getDescriptionContent().getLastActivity());
 	    // update guest account in case of failed login to make this run the same amount of time regardless of being
 	    // successful or not
 	    userProfile.setLastLoginDate(dateUtils.newDate());
@@ -378,42 +379,47 @@ public class UserServiceImpl implements UserService {
 
 	    Content descriptionContent = userProfileDB.getDescriptionContent();
 	    Date creationDate = dateUtils.newDate();
-	    if (descriptionContent == null) {
-		descriptionContent = new Content(null, null, ContentKindType.user_description, null, "",
-			Constants.DEFAULT_LOCALE, creationDate, creationDate, ContentStatusType.active, null);
-	    } else {
-		descriptionContent.setLastActivity(creationDate);
-	    }
-	    if (StringUtils.isNotBlank(userProfile.getDescriptionContent().getText())) {
-		descriptionContent.setText(userProfile.getDescriptionContent().getText());
-	    }
-	    userProfileDB.setDescriptionContent(descriptionContent);
-
-	    if (StringUtils.isNotBlank(userProfile.getPassword())
-		    && !SecurityUtils.getHashWithPredefinedSalt(userProfile.getPassword(), userProfileDB.getSalt())
-			    .equals(userProfileDB.getPassword())) {
-		List<String> hashResult = SecurityUtils.getHashWithSalt(userProfile.getPassword());
-		if ((hashResult != null) && (hashResult.size() == 2)) {
-		    userProfileDB.setPassword(hashResult.get(0));
-		    userProfileDB.setSalt(hashResult.get(1));
+	    // comment out this check to decrease complexity. if it proves to be safe from npe, remove it completely
+	    // if (descriptionContent == null) {
+	    // descriptionContent = new Content(null, null, ContentKindType.user_description, null, "",
+	    // Constants.DEFAULT_LOCALE, creationDate, creationDate, ContentStatusType.active, null);
+	    // } else {
+	    // logger.log(Level.WARNING, "setLastActivity: " + creationDate);
+	    descriptionContent.setLastActivity(creationDate);
+	    // }
+	    if (userProfile.getDescriptionContent() != null) {
+		if (StringUtils.isNotBlank(userProfile.getDescriptionContent().getText())) {
+		    descriptionContent.setText(userProfile.getDescriptionContent().getText());
 		}
+		userProfileDB.setDescriptionContent(descriptionContent);
+
+		if (StringUtils.isNotBlank(userProfile.getPassword())
+			&& !SecurityUtils.getHashWithPredefinedSalt(userProfile.getPassword(), userProfileDB.getSalt())
+				.equals(userProfileDB.getPassword())) {
+		    List<String> hashResult = SecurityUtils.getHashWithSalt(userProfile.getPassword());
+		    if ((hashResult != null) && (hashResult.size() == 2)) {
+			userProfileDB.setPassword(hashResult.get(0));
+			userProfileDB.setSalt(hashResult.get(1));
+		    }
+		}
+		userProfileDB.setFirstName(userProfile.getFirstName());
+		userProfileDB.setLastName(userProfile.getLastName());
+		userProfileDB.setBirthDate(userProfile.getBirthDate());
+		userProfileDB.setGender(userProfile.getGender());
+		if ((StringUtils.isNotBlank(userProfile.getNewEmail()))
+			&& (!userProfileDB.getEmail().equals(userProfile.getNewEmail()))) {
+		    userProfileDB.setNewEmail(userProfile.getNewEmail());
+		    String nonce = SecurityUtils.getHashWithoutSalt(userProfileDB.getNewEmail() + ":"
+			    + userProfileDB.getSalt());
+		    userProfileDB.setNonce(nonce);
+		} else {
+		    userProfileDB.setNewEmail(null);
+		}
+		userProfileDB.setShowPersonal(userProfile.getShowPersonal());
+		userProfileDB.setAvatarUrl(userProfile.getAvatarUrl());
+		userProfileDB.setSubscribed(userProfile.getSubscribed());
 	    }
-	    userProfileDB.setFirstName(userProfile.getFirstName());
-	    userProfileDB.setLastName(userProfile.getLastName());
-	    userProfileDB.setBirthDate(userProfile.getBirthDate());
-	    userProfileDB.setGender(userProfile.getGender());
-	    if ((StringUtils.isNotBlank(userProfile.getNewEmail()))
-		    && (!userProfileDB.getEmail().equals(userProfile.getNewEmail()))) {
-		userProfileDB.setNewEmail(userProfile.getNewEmail());
-		String nonce = SecurityUtils.getHashWithoutSalt(userProfileDB.getNewEmail() + ":"
-			+ userProfileDB.getSalt());
-		userProfileDB.setNonce(nonce);
-	    } else {
-		userProfileDB.setNewEmail(null);
-	    }
-	    userProfileDB.setShowPersonal(userProfile.getShowPersonal());
-	    userProfileDB.setAvatarUrl(userProfile.getAvatarUrl());
-	    userProfileDB.setSubscribed(userProfile.getSubscribed());
+
 	    userProfileDAO.merge(userProfileDB);
 	    if (StringUtils.isNotBlank(userProfileDB.getNewEmail())) {
 		String activationUrl = properties.getProperty("application.root") + "/validate?nonce="
