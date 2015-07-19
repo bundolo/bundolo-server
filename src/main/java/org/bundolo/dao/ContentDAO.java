@@ -454,7 +454,7 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	StringBuilder queryString = new StringBuilder();
 	queryString.append("SELECT c FROM Content c WHERE content_status='active'");
 	if (fromDate != null) {
-	    queryString.append(" AND last_activity >=?");
+	    queryString.append(" AND last_activity >=?1");
 	}
 	queryString.append(" AND (kind='text' OR kind='forum_topic' OR kind='connection_description' OR kind='news' "
 		+ "OR kind='contest_description' OR kind='episode' OR kind='user_description')");
@@ -470,7 +470,9 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	// strip text to make the request run faster
 	List<Content> recentContent = q.getResultList();
 	for (Content content : recentContent) {
-	    content.setText("");
+	    if (!ContentKindType.user_description.equals(content.getKind())) {
+		content.setText("");
+	    }
 	    content.setRating(null);
 	    content.setDescription(null);
 	    if (ContentKindType.episode.equals(content.getKind())) {
