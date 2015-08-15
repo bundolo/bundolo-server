@@ -46,25 +46,31 @@ public class CommentDAO extends JpaDAO<Long, Comment> {
 
 	// do not retrieve comments on personal item lists
 	queryString
-		.append("AND ((c.kind = 'item_list_comment' AND (select i.kind from ItemList i where c.ancestorContent.contentId = i.descriptionContent.contentId and (i.kind='elected' OR i.kind='general')) is not null )OR (c.kind <> 'item_list_comment')) ");
+		.append(" AND ((c.kind = 'item_list_comment' AND (select i.kind from ItemList i where c.ancestorContent.contentId = i.descriptionContent.contentId and (i.kind='elected' OR i.kind='general')) is not null )OR (c.kind <> 'item_list_comment')) ");
 
 	if (ArrayUtils.isNotEmpty(filterBy)) {
 	    String prefix = " AND LOWER(";
 	    String suffix = ") LIKE '%";
 	    String postfix = "%'";
 	    for (int i = 0; i < filterBy.length; i++) {
-		queryString.append(prefix);
-		queryString.append(filterBy[i]);
-		queryString.append(suffix);
-		filterParamCounter++;
-		queryString.append("'||?" + filterParamCounter + "||'");
-		queryString.append(postfix);
+		if ("to_char(ancestorContent.lastActivity, 'DD.MM.YYYY.')".equals(filterBy[i])) {
+		    // special case, if we are filtering by ancestor last activity, it means we want comments from
+		    // distinct ancestors
+		    queryString.append(" AND c.creationDate = c.ancestorContent.lastActivity");
+		} else {
+		    queryString.append(prefix);
+		    queryString.append(filterBy[i]);
+		    queryString.append(suffix);
+		    filterParamCounter++;
+		    queryString.append("'||?" + filterParamCounter + "||'");
+		    queryString.append(postfix);
+		}
 	    }
 	    // avoid old links
 	    // TODO consider making these links functional by keeping old ids in database
-	    queryString.append("AND c.text NOT LIKE '%http://www.bundolo.org/%'");
-	    queryString.append("AND  c.text NOT LIKE '%http://bundolo.org/%'");
-	    queryString.append("AND  c.text NOT LIKE '%http://bundolo.f2o.org/%'");
+	    queryString.append(" AND c.text NOT LIKE '%http://www.bundolo.org/%'");
+	    queryString.append(" AND c.text NOT LIKE '%http://bundolo.org/%'");
+	    queryString.append(" AND c.text NOT LIKE '%http://bundolo.f2o.org/%'");
 	}
 	if (ArrayUtils.isNotEmpty(orderBy) && ArrayUtils.isSameLength(orderBy, order)) {
 	    String firstPrefix = " ORDER BY ";

@@ -2,7 +2,8 @@ package org.bundolo.model.enumeration;
 
 public enum CommentColumnType {
     author("authorUsername", ColumnDataType.text), text("text", ColumnDataType.text), date("creationDate",
-	    ColumnDataType.date), activity("lastActivity", ColumnDataType.date), random("RANDOM()", ColumnDataType.text);
+	    ColumnDataType.date), activity("lastActivity", ColumnDataType.date), random("RANDOM()", ColumnDataType.text), ancestorActivity(
+	    "ancestorContent.lastActivity", ColumnDataType.date);
 
     private final String columnName;
     private final ColumnDataType columnDataType;

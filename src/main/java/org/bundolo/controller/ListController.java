@@ -412,7 +412,7 @@ public class ListController {
 	return contentService.findRecent(fromDate, limit);
     }
 
-    private String getFilterByColumn(String columnName, ColumnDataType columnDataType) {
+    public static String getFilterByColumn(String columnName, ColumnDataType columnDataType) {
 	switch (columnDataType) {
 	case date:
 	    return "to_char(" + columnName + ", 'DD.MM.YYYY.')";
