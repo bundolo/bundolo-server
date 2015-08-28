@@ -224,15 +224,15 @@ public class UserServiceImpl implements UserService {
 	    }
 	    // TODO i18n
 	    String emailSubject = "nova lozinka za bundolo";
-	    String emailBody = "pozdrav, \n"
-		    + "tražili ste novu lozinku za vaš bundolo korisnički nalog.\n"
-		    + "prilikom sledećeg prijavljivanja, koristite sledeće podatke:\n"
+	    String emailBody = "pozdrav, <br/>"
+		    + "tražili ste novu lozinku za vaš bundolo korisnički nalog.<br/>"
+		    + "prilikom sledećeg prijavljivanja, koristite sledeće podatke:<br/>"
 		    + "korisničko ime: "
 		    + recipientUserProfile.getUsername()
-		    + "\nlozinka: "
+		    + "<br/>lozinka: "
 		    + newPassword
-		    + "\nda biste povećali sigurnost vašeg korisničkoh naloga, promenite ovu lozinku što je pre moguće.\n\n"
-		    + "poštovanje,\nbundolo administracija";
+		    + "<br/>da biste povećali sigurnost vašeg korisničkoh naloga, promenite ovu lozinku što je pre moguće.<br/><br/>"
+		    + "poštovanje,<br/>bundolo administracija";
 	    mailingUtils.sendEmail(emailBody, emailSubject, recipientUserProfile.getEmail());
 	    return ReturnMessageType.success;
 	} catch (Exception ex) {
@@ -267,12 +267,12 @@ public class UserServiceImpl implements UserService {
 	    }
 	    String emailSubject = "bundolo (NO REPLAY) privatna poruka od korisnika " + senderUsername + ": " + title;
 	    String emailBody = text
-		    + "\n\n---\n"
+		    + "<br/><br/>---<br/>"
 		    + "ovo je privatna poruka poslata sa stranice bundolo.org od korisnika "
 		    + senderUsername
-		    + ".\n"
-		    + "adrese korisnika su sakrivene, na poruku možete odgovoriti slanjem privatne poruke sa bundola, a NE povratnom porukom (replay).\n\n"
-		    + "poštovanje,\nbundolo administracija";
+		    + ".<br/>"
+		    + "adrese korisnika su sakrivene, na poruku možete odgovoriti slanjem privatne poruke sa bundola, a NE povratnom porukom (replay).<br/><br/>"
+		    + "poštovanje,<br/>bundolo administracija";
 	    mailingUtils.sendEmail(emailBody, emailSubject, recipientEmailAddress);
 	    return ReturnMessageType.success;
 	} catch (Exception ex) {
@@ -329,14 +329,14 @@ public class UserServiceImpl implements UserService {
 	    String emailBody = "pozdrav, "
 		    + username
 		    + ","
-		    + "\n\n"
-		    + "neko, verovatno vi, se registrovao na sajtu bundolo.org\n"
-		    + "da biste potvrdili ispravnost ove adrese elektronske pošte i aktivirali svoj nalog, dovoljno je da kliknete na donji link.\n\n"
+		    + "<br/><br/>"
+		    + "neko, verovatno vi, se registrovao na sajtu bundolo.org<br/>"
+		    + "da biste potvrdili ispravnost ove adrese elektronske pošte i aktivirali svoj nalog, dovoljno je da kliknete na donji link.<br/><br/>"
 		    + activationUrl
-		    + "\n\nukoliko vam link nije aktivan i ne može se kliknuti, možete ga kopirati i otvoriti u browseru.\n\n"
-		    + "poštovanje,\nbundolo administracija";
-	    // + "\n\nIf you prefer to enter this information manually, go to http://www.bundolo.org and\n"
-	    // + "enter the following Auth code:\n\n" + nonce;
+		    + "<br/><br/>ukoliko vam link nije aktivan i ne može se kliknuti, možete ga kopirati i otvoriti u browseru.<br/><br/>"
+		    + "poštovanje,<br/>bundolo administracija";
+	    // + "<br/><br/>If you prefer to enter this information manually, go to http://www.bundolo.org and<br/>"
+	    // + "enter the following Auth code:<br/><br/>" + nonce;
 	    String emailSubject = "aktivacija bundolo korisničkog naloga";
 	    mailingUtils.sendEmail(emailBody, emailSubject, email);
 	    // TODO rollback db if email sending failed, or notify admin somehow
@@ -428,14 +428,14 @@ public class UserServiceImpl implements UserService {
 		// TODO backlog: implement manual activation
 		String emailBody = "pozdrav, "
 			+ userProfileDB.getUsername()
-			+ ",\n\n"
-			+ "neko, verovatno vi, je zatražio izmenu adrese elektronske pošte na vašem bundolo korisničkom nalogu.\n"
-			+ "da biste potvrdili ispravnost ove adrese, dovoljno je da kliknete na donji link.\n\n"
+			+ ",<br/><br/>"
+			+ "neko, verovatno vi, je zatražio izmenu adrese elektronske pošte na vašem bundolo korisničkom nalogu.<br/>"
+			+ "da biste potvrdili ispravnost ove adrese, dovoljno je da kliknete na donji link.<br/><br/>"
 			+ activationUrl
-			+ "\n\nukoliko vam link nije aktivan i ne može se kliknuti, možete ga kopirati i otvoriti u browseru.\n\n"
-			+ "poštovanje,\nbundolo administracija";
-		// + "\n\nIf you prefer to enter this information manually, go to http://www.bundolo.org and\n"
-		// + "enter the following Auth code:\n\n" + userProfileDB.getNonce();
+			+ "<br/><br/>ukoliko vam link nije aktivan i ne može se kliknuti, možete ga kopirati i otvoriti u browseru.<br/><br/>"
+			+ "poštovanje,<br/>bundolo administracija";
+		// + "<br/><br/>If you prefer to enter this information manually, go to http://www.bundolo.org and<br/>"
+		// + "enter the following Auth code:<br/><br/>" + userProfileDB.getNonce();
 		String emailSubject = "aktivacija nove adrese elektronske pošte za bundolo korisnički nalog";
 		mailingUtils.sendEmail(emailBody, emailSubject, userProfile.getNewEmail());
 	    }
