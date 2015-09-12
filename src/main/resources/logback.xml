@@ -5,17 +5,17 @@
                  ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
         <encoder>
             <charset>UTF-8</charset>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %highlight(%-5level) %cyan(%logger{35}) - %msg %n</pattern>
+            <pattern>%d{HH:mm:ss.SSS} %level %logger{35} - %msg %n</pattern>
         </encoder>
     </appender>
 
 	<property resource="${env}.properties"/>
 
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${application.log.path}/bundolo_log.html</file>
+        <file>${application.log.path}/bundolo.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- daily rollover -->
-            <fileNamePattern>${application.log.path}/bundolo_log.%d{yyyy-MM-dd}.%i.html</fileNamePattern>
+            <fileNamePattern>${application.log.path}/bundolo_%d{yyyy-MM-dd}_%i.log</fileNamePattern>
             <timeBasedFileNamingAndTriggeringPolicy
                 class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <!-- or whenever the file size reaches 100MB -->
@@ -25,16 +25,14 @@
             <maxHistory>30</maxHistory>
         </rollingPolicy>
 
-        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+        <encoder>
             <charset>UTF-8</charset>
-            <layout class="ch.qos.logback.classic.html.HTMLLayout">
-                <pattern>%d{HH:mm:ss.SSS}%thread%level%logger%line%msg</pattern>
-            </layout>           
+            <pattern>%d{HH:mm:ss.SSS} %level %logger{35} - %msg %n</pattern>
         </encoder>
-    </appender> 
+    </appender>
 <!-- TRACE DEBUG INFO WARN ERROR OFF -->
     <root level="WARN">
         <appender-ref ref="STDOUT" />
-        <appender-ref ref="FILE" />     
+        <appender-ref ref="FILE" />
     </root>
 </configuration>
