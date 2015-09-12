@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -108,6 +109,12 @@ public class SecurityUtils {
 	} else {
 	    return null;
 	}
+    }
+
+    public static String removeBotSuffix(String path) {
+	path = StringUtils.removeEnd(path, Constants.BOT_REQUEST_SUFFIX);
+	path = StringUtils.removeEnd(path, Constants.BOT_REQUEST_SUFFIX_ESCAPED);
+	return path;
     }
 
 }

@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 
 import org.bundolo.Constants;
+import org.bundolo.SecurityUtils;
 import org.bundolo.model.Content;
 import org.bundolo.model.enumeration.ContentKindType;
 import org.bundolo.model.enumeration.ReturnMessageType;
@@ -35,6 +36,7 @@ public class TextController {
     public @ResponseBody
     Content text(@PathVariable String username, HttpServletRequest request) {
 	String restOfTheUrl = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
+	restOfTheUrl = SecurityUtils.removeBotSuffix(restOfTheUrl);
 	String urlAndTitle = restOfTheUrl.substring(Constants.REST_PATH_TEXT.length() + 1);
 	return contentService.findText(username, urlAndTitle.substring(urlAndTitle.indexOf("/") + 1));
     }

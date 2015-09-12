@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.bundolo.Constants;
 import org.bundolo.DateUtils;
+import org.bundolo.SecurityUtils;
 import org.bundolo.model.Content;
 import org.bundolo.model.enumeration.ContentKindType;
 import org.bundolo.model.enumeration.ReturnMessageType;
@@ -42,6 +43,7 @@ public class SerialController {
     public @ResponseBody
     Content serial(HttpServletRequest request) {
 	String restOfTheUrl = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
+	restOfTheUrl = SecurityUtils.removeBotSuffix(restOfTheUrl);
 	return contentService.findSerial(restOfTheUrl.substring(Constants.REST_PATH_SERIAL.length() + 1));
     }
 
@@ -81,6 +83,7 @@ public class SerialController {
     Content episode(@PathVariable String serialTitle, HttpServletRequest request) {
 	String restOfTheUrl = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
 	restOfTheUrl = restOfTheUrl.substring(restOfTheUrl.indexOf(serialTitle));
+	restOfTheUrl = SecurityUtils.removeBotSuffix(restOfTheUrl);
 	return contentService.findEpisode(serialTitle, restOfTheUrl.substring(serialTitle.length() + 1));
     }
 

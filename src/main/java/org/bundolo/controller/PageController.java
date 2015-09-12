@@ -23,7 +23,9 @@ public class PageController {
     private ContentService contentService;
 
     // TODO this should return complete page in the future, not just description
-    @RequestMapping(value = Constants.REST_PATH_PAGE + "/{pageKind}", method = RequestMethod.GET)
+    @RequestMapping(value = { Constants.REST_PATH_PAGE + "/{pageKind}",
+	    Constants.REST_PATH_PAGE + "/{pageKind}" + Constants.BOT_REQUEST_SUFFIX,
+	    Constants.REST_PATH_PAGE + "/{pageKind}" + Constants.BOT_REQUEST_SUFFIX_ESCAPED }, method = RequestMethod.GET)
     public @ResponseBody
     Content page(@PathVariable PageKindType pageKind) {
 	// logger.log(Level.WARNING, "page, pageKind: " + pageKind);

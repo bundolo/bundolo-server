@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 
 import org.bundolo.Constants;
+import org.bundolo.SecurityUtils;
 import org.bundolo.model.Connection;
 import org.bundolo.model.Content;
 import org.bundolo.model.enumeration.ReturnMessageType;
@@ -36,6 +37,7 @@ public class ConnectionController {
     public @ResponseBody
     Connection connection(HttpServletRequest request) {
 	String restOfTheUrl = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
+	restOfTheUrl = SecurityUtils.removeBotSuffix(restOfTheUrl);
 	logger.log(Level.INFO, "connection, restOfTheUrl: " + restOfTheUrl);
 	return connectionService.findConnection(restOfTheUrl.substring(Constants.REST_PATH_CONNECTION.length() + 1));
     }

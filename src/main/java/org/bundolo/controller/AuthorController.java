@@ -6,6 +6,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.bundolo.Constants;
+import org.bundolo.SecurityUtils;
 import org.bundolo.model.Content;
 import org.bundolo.model.User;
 import org.bundolo.model.UserProfile;
@@ -35,6 +36,7 @@ public class AuthorController {
     @RequestMapping(value = Constants.REST_PATH_AUTHOR + "/{username:.+}", method = RequestMethod.GET)
     public @ResponseBody
     User author(@PathVariable String username) {
+	username = SecurityUtils.removeBotSuffix(username);
 	logger.log(Level.INFO, "author, username: " + username);
 	return userService.findUser(username);
     }

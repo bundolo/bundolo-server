@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.bundolo.Constants;
 import org.bundolo.DateUtils;
+import org.bundolo.SecurityUtils;
 import org.bundolo.model.Content;
 import org.bundolo.model.enumeration.ContentKindType;
 import org.bundolo.model.enumeration.ReturnMessageType;
@@ -40,6 +41,7 @@ public class TopicController {
     public @ResponseBody
     Content topic(HttpServletRequest request) {
 	String restOfTheUrl = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
+	restOfTheUrl = SecurityUtils.removeBotSuffix(restOfTheUrl);
 	return contentService.findTopic(restOfTheUrl.substring(Constants.REST_PATH_TOPIC.length() + 1));
     }
 

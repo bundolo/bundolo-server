@@ -67,7 +67,9 @@ public class ListController {
     @Autowired
     private UserProfileDAO userProfileDAO;
 
-    @RequestMapping(value = Constants.REST_PATH_CONNECTIONS, method = RequestMethod.GET)
+    @RequestMapping(value = { Constants.REST_PATH_CONNECTIONS,
+	    Constants.REST_PATH_CONNECTIONS + Constants.BOT_REQUEST_SUFFIX,
+	    Constants.REST_PATH_CONNECTIONS + Constants.BOT_REQUEST_SUFFIX_ESCAPED }, method = RequestMethod.GET)
     public @ResponseBody
     List<Connection> connections(@RequestParam(required = false, defaultValue = "0") Integer start,
 	    @RequestParam(required = false, defaultValue = "0") Integer end,
@@ -98,7 +100,9 @@ public class ListController {
 		filterByTexts.toArray(new String[filterByTexts.size()]));
     }
 
-    @RequestMapping(value = Constants.REST_PATH_CONTESTS, method = RequestMethod.GET)
+    @RequestMapping(value = { Constants.REST_PATH_CONTESTS,
+	    Constants.REST_PATH_CONTESTS + Constants.BOT_REQUEST_SUFFIX,
+	    Constants.REST_PATH_CONTESTS + Constants.BOT_REQUEST_SUFFIX_ESCAPED }, method = RequestMethod.GET)
     public @ResponseBody
     List<Contest> contests(@RequestParam(required = false, defaultValue = "0") Integer start,
 	    @RequestParam(required = false, defaultValue = "0") Integer end,
@@ -129,7 +133,8 @@ public class ListController {
 		filterByTexts.toArray(new String[filterByTexts.size()]));
     }
 
-    @RequestMapping(value = Constants.REST_PATH_AUTHORS, method = RequestMethod.GET)
+    @RequestMapping(value = { Constants.REST_PATH_AUTHORS, Constants.REST_PATH_AUTHORS + Constants.BOT_REQUEST_SUFFIX,
+	    Constants.REST_PATH_AUTHORS + Constants.BOT_REQUEST_SUFFIX_ESCAPED }, method = RequestMethod.GET)
     public @ResponseBody
     List<User> authors(@RequestParam(required = false, defaultValue = "0") Integer start,
 	    @RequestParam(required = false, defaultValue = "0") Integer end,
@@ -160,7 +165,8 @@ public class ListController {
 		filterByTexts.toArray(new String[filterByTexts.size()]));
     }
 
-    @RequestMapping(value = Constants.REST_PATH_TEXTS, method = RequestMethod.GET)
+    @RequestMapping(value = { Constants.REST_PATH_TEXTS, Constants.REST_PATH_TEXTS + Constants.BOT_REQUEST_SUFFIX,
+	    Constants.REST_PATH_TEXTS + Constants.BOT_REQUEST_SUFFIX_ESCAPED }, method = RequestMethod.GET)
     public @ResponseBody
     List<Content> texts(@RequestParam(required = false, defaultValue = "0") Integer start,
 	    @RequestParam(required = false, defaultValue = "0") Integer end,
@@ -191,7 +197,9 @@ public class ListController {
 		filterByTexts.toArray(new String[filterByTexts.size()]));
     }
 
-    @RequestMapping(value = Constants.REST_PATH_ANNOUNCEMENTS, method = RequestMethod.GET)
+    @RequestMapping(value = { Constants.REST_PATH_ANNOUNCEMENTS,
+	    Constants.REST_PATH_ANNOUNCEMENTS + Constants.BOT_REQUEST_SUFFIX,
+	    Constants.REST_PATH_ANNOUNCEMENTS + Constants.BOT_REQUEST_SUFFIX_ESCAPED }, method = RequestMethod.GET)
     public @ResponseBody
     List<Content> announcements(@RequestParam(required = false, defaultValue = "0") Integer start,
 	    @RequestParam(required = false, defaultValue = "0") Integer end,
@@ -222,7 +230,8 @@ public class ListController {
 		filterByTexts.toArray(new String[filterByTexts.size()]));
     }
 
-    @RequestMapping(value = Constants.REST_PATH_SERIALS, method = RequestMethod.GET)
+    @RequestMapping(value = { Constants.REST_PATH_SERIALS, Constants.REST_PATH_SERIALS + Constants.BOT_REQUEST_SUFFIX,
+	    Constants.REST_PATH_SERIALS + Constants.BOT_REQUEST_SUFFIX_ESCAPED }, method = RequestMethod.GET)
     public @ResponseBody
     List<Content> serials(@RequestParam(required = false, defaultValue = "0") Integer start,
 	    @RequestParam(required = false, defaultValue = "0") Integer end,
@@ -253,7 +262,8 @@ public class ListController {
 		filterByTexts.toArray(new String[filterByTexts.size()]));
     }
 
-    @RequestMapping(value = Constants.REST_PATH_TOPICS, method = RequestMethod.GET)
+    @RequestMapping(value = { Constants.REST_PATH_TOPICS, Constants.REST_PATH_TOPICS + Constants.BOT_REQUEST_SUFFIX,
+	    Constants.REST_PATH_TOPICS + Constants.BOT_REQUEST_SUFFIX_ESCAPED }, method = RequestMethod.GET)
     public @ResponseBody
     List<Content> topics(@RequestParam(required = false, defaultValue = "0") Integer start,
 	    @RequestParam(required = false, defaultValue = "0") Integer end,
@@ -284,7 +294,9 @@ public class ListController {
 		filterByTexts.toArray(new String[filterByTexts.size()]));
     }
 
-    @RequestMapping(value = Constants.REST_PATH_COMMENTS, method = RequestMethod.GET)
+    @RequestMapping(value = { Constants.REST_PATH_COMMENTS,
+	    Constants.REST_PATH_COMMENTS + Constants.BOT_REQUEST_SUFFIX,
+	    Constants.REST_PATH_COMMENTS + Constants.BOT_REQUEST_SUFFIX_ESCAPED }, method = RequestMethod.GET)
     public @ResponseBody
     List<Comment> comments(@RequestParam(required = false, defaultValue = "0") Integer start,
 	    @RequestParam(required = false, defaultValue = "0") Integer end,
@@ -315,7 +327,9 @@ public class ListController {
 		filterByTexts.toArray(new String[filterByTexts.size()]));
     }
 
-    @RequestMapping(value = Constants.REST_PATH_ITEM_LISTS, method = RequestMethod.GET)
+    @RequestMapping(value = { Constants.REST_PATH_ITEM_LISTS,
+	    Constants.REST_PATH_ITEM_LISTS + Constants.BOT_REQUEST_SUFFIX,
+	    Constants.REST_PATH_ITEM_LISTS + Constants.BOT_REQUEST_SUFFIX_ESCAPED }, method = RequestMethod.GET)
     public @ResponseBody
     List<ItemList> itemLists(@RequestParam(required = false, defaultValue = "0") Integer start,
 	    @RequestParam(required = false, defaultValue = "0") Integer end,
@@ -346,7 +360,8 @@ public class ListController {
 		filterByTexts.toArray(new String[filterByTexts.size()]));
     }
 
-    @RequestMapping(value = Constants.REST_PATH_NEXT, method = RequestMethod.GET)
+    @RequestMapping(value = { Constants.REST_PATH_NEXT, Constants.REST_PATH_NEXT + Constants.BOT_REQUEST_SUFFIX,
+	    Constants.REST_PATH_NEXT + Constants.BOT_REQUEST_SUFFIX_ESCAPED }, method = RequestMethod.GET)
     public @ResponseBody
     Object next(@RequestParam(required = true) String type, @RequestParam(required = true) String id,
 	    @RequestParam(required = false, defaultValue = "creationDate") String orderBy,
@@ -396,7 +411,8 @@ public class ListController {
 	return result;
     }
 
-    @RequestMapping(value = Constants.REST_PATH_RECENT, method = RequestMethod.GET)
+    @RequestMapping(value = { Constants.REST_PATH_RECENT, Constants.REST_PATH_RECENT + Constants.BOT_REQUEST_SUFFIX,
+	    Constants.REST_PATH_RECENT + Constants.BOT_REQUEST_SUFFIX_ESCAPED }, method = RequestMethod.GET)
     public @ResponseBody
     List<Content> recent(@RequestParam(required = false) Date fromDate,
 	    @RequestParam(required = false, defaultValue = "0") Integer limit) {

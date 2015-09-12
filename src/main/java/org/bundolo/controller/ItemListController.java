@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 
 import org.bundolo.Constants;
+import org.bundolo.SecurityUtils;
 import org.bundolo.model.ItemList;
 import org.bundolo.model.enumeration.ReturnMessageType;
 import org.bundolo.services.ContentService;
@@ -34,6 +35,7 @@ public class ItemListController {
     public @ResponseBody
     ItemList itemList(HttpServletRequest request) {
 	String restOfTheUrl = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
+	restOfTheUrl = SecurityUtils.removeBotSuffix(restOfTheUrl);
 	String title = restOfTheUrl.substring(Constants.REST_PATH_ITEM_LIST.length() + 1);
 	logger.log(Level.INFO, "itemList, title: " + title);
 	ItemList result = itemListService.findItemList(title);

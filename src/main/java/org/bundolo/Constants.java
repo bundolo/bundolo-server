@@ -55,4 +55,7 @@ public class Constants {
     public static final int DEFAULT_PASSWORD_LENGTH = 8;
 
     public static final int NEWSLETTER_SENDER_INTERVAL = 5000;
+
+    public static final String BOT_REQUEST_SUFFIX = "?_escaped_fragment_=";
+    public static final String BOT_REQUEST_SUFFIX_ESCAPED = "?_escaped_fragment_=";
 }

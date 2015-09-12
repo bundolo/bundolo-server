@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 
 import org.bundolo.Constants;
+import org.bundolo.SecurityUtils;
 import org.bundolo.model.Contest;
 import org.bundolo.model.enumeration.ReturnMessageType;
 import org.bundolo.services.ContestService;
@@ -30,6 +31,7 @@ public class ContestController {
     public @ResponseBody
     Contest contest(HttpServletRequest request) {
 	String restOfTheUrl = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
+	restOfTheUrl = SecurityUtils.removeBotSuffix(restOfTheUrl);
 	return contestService.findContest(restOfTheUrl.substring(Constants.REST_PATH_CONTEST.length() + 1));
     }
 
