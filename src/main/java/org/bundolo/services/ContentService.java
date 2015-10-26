@@ -44,7 +44,8 @@ public interface ContentService {
 
     public List<Content> findPosts(Long parentId, Integer start, Integer end);
 
-    public List<Content> findStatistics(String username);
+    public List<Content> findAuthorItems(String username, Integer start, Integer end, String[] orderBy, String[] order,
+	    String[] filterBy, String[] filter);
 
     // public Boolean saveOrUpdateContent(Content content);
 

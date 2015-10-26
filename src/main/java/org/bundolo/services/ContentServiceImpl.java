@@ -395,8 +395,9 @@ public class ContentServiceImpl implements ContentService {
     }
 
     @Override
-    public List<Content> findStatistics(String username) {
-	return contentDAO.findStatistics(username);
+    public List<Content> findAuthorItems(String username, Integer start, Integer end, String[] orderBy, String[] order,
+	    String[] filterBy, String[] filter) {
+	return contentDAO.findAuthorItems(username, start, end, orderBy, order, filterBy, filter);
     }
 
     @Override

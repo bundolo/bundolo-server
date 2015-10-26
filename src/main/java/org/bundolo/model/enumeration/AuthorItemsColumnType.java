@@ -1,14 +1,14 @@
 package org.bundolo.model.enumeration;
 
-public enum ItemListColumnType {
-    author("authorUsername", ColumnDataType.text), date("creationDate", ColumnDataType.date), description(
-	    "descriptionContent.text", ColumnDataType.text), title("descriptionContent.name", ColumnDataType.text), activity(
-	    "descriptionContent.lastActivity", ColumnDataType.date);
+public enum AuthorItemsColumnType {
+    author("c.authorUsername", ColumnDataType.text), title("c.name", ColumnDataType.text), text("c.text",
+	    ColumnDataType.text), date("c.creationDate", ColumnDataType.date), activity("c.lastActivity",
+	    ColumnDataType.date), kind("c.kind", ColumnDataType.text), rating("r.value", ColumnDataType.number);
 
     private final String columnName;
     private final ColumnDataType columnDataType;
 
-    private ItemListColumnType(String columnName, ColumnDataType columnDataType) {
+    private AuthorItemsColumnType(String columnName, ColumnDataType columnDataType) {
 	this.columnName = columnName;
 	this.columnDataType = columnDataType;
     }

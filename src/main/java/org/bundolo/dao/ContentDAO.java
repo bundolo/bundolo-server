@@ -370,31 +370,69 @@ public class ContentDAO extends JpaDAO<Long, Content> {
     }
 
     @SuppressWarnings("unchecked")
-    public List<Content> findStatistics(String username) {
+    public List<Content> findAuthorItems(String username, Integer start, Integer end, String[] orderBy, String[] order,
+	    String[] filterBy, String[] filter) {
 	if (username == null) {
 	    return null;
 	}
-	String queryString = "SELECT c FROM Content c";
-	queryString += " WHERE author_username =?1";
-	queryString += " AND (kind='" + ContentKindType.text + "' OR kind='" + ContentKindType.episode + "'";
+	int filterParamCounter = 0;
+	StringBuilder queryString = new StringBuilder();
+	queryString.append("SELECT c FROM Content c join c.rating r WHERE c.authorUsername =?1");
+	queryString.append(" AND (c.kind='" + ContentKindType.text + "' OR c.kind='" + ContentKindType.episode + "'");
+
 	String senderUsername = SecurityUtils.getUsername();
-	if (senderUsername != null) {
-	    queryString += "  OR (author_username='" + senderUsername + "' AND kind='"
-		    + ContentKindType.item_list_description + "')";
+	if (senderUsername != null && senderUsername.equals(username)) {
+	    queryString.append("  OR (c.authorUsername='" + senderUsername + "' AND c.kind='"
+		    + ContentKindType.item_list_description + "')");
 	}
-	queryString += ")";
-	queryString += " AND (content_status='active' OR content_status='pending')";
-	queryString += " ORDER BY creationDate";
-	logger.log(Level.INFO, "queryString: " + queryString.toString());
+	queryString.append(")");
+	queryString.append(" AND (content_status='active' OR content_status='pending')");
+	if (ArrayUtils.isNotEmpty(filterBy)) {
+	    String prefix = " AND LOWER(";
+	    String suffix = ") LIKE '%";
+	    String postfix = "%'";
+	    for (int i = 0; i < filterBy.length; i++) {
+		queryString.append(prefix);
+		queryString.append(filterBy[i]);
+		queryString.append(suffix);
+		filterParamCounter++;
+		queryString.append("'||?" + (filterParamCounter + 1) + "||'");
+		queryString.append(postfix);
+	    }
+	}
+	if (ArrayUtils.isNotEmpty(orderBy) && ArrayUtils.isSameLength(orderBy, order)) {
+	    String firstPrefix = " ORDER BY ";
+	    String nextPrefix = ", ";
+	    String prefix = firstPrefix;
+	    String suffix = " ";
+	    for (int i = 0; i < orderBy.length; i++) {
+		queryString.append(prefix);
+		queryString.append(orderBy[i]);
+		queryString.append(suffix);
+		queryString.append(order[i]);
+		prefix = nextPrefix;
+	    }
+	}
+	logger.log(Level.INFO, "queryString: " + queryString.toString() + ", start: " + start + ", max results: "
+		+ (end - start + 1));
 	Query q = entityManager.createQuery(queryString.toString());
 	q.setParameter(1, username);
+	if (filterParamCounter > 0) {
+	    for (int i = 0; i < filterBy.length; i++) {
+		q.setParameter(i + 2, filter[i].toLowerCase());
+	    }
+	}
+	q.setFirstResult(start);
+	q.setMaxResults(end - start + 1);
 	List<Content> resultList = q.getResultList();
+	// TODO trim
 	if (resultList != null && resultList.size() > 0) {
 	    for (Content result : resultList) {
 		if (ContentKindType.forum_topic.equals(result.getKind())
 			|| ContentKindType.episode.equals(result.getKind()) && result.getParentContent() != null) {
 		    result.setParentGroup(result.getParentContent().getName());
 		}
+		result.setText("");
 	    }
 	}
 	return resultList;

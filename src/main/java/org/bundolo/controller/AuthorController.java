@@ -1,13 +1,11 @@
 package org.bundolo.controller;
 
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.bundolo.Constants;
 import org.bundolo.SecurityUtils;
-import org.bundolo.model.Content;
 import org.bundolo.model.User;
 import org.bundolo.model.UserProfile;
 import org.bundolo.model.enumeration.ReturnMessageType;
@@ -84,12 +82,6 @@ public class AuthorController {
 	    userService.clearSession();
 	}
 	return result;
-    }
-
-    @RequestMapping(value = Constants.REST_PATH_STATISTICS + "/{username:.+}", method = RequestMethod.GET)
-    public @ResponseBody
-    List<Content> statistics(@PathVariable String username) {
-	return contentService.findStatistics(username);
     }
 
     @RequestMapping(value = Constants.REST_PATH_MESSAGE + "/{username:.+}", method = RequestMethod.POST)

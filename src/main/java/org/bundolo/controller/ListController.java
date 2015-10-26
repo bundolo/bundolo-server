@@ -19,6 +19,7 @@ import org.bundolo.model.User;
 import org.bundolo.model.UserProfile;
 import org.bundolo.model.enumeration.AnnouncementColumnType;
 import org.bundolo.model.enumeration.AuthorColumnType;
+import org.bundolo.model.enumeration.AuthorItemsColumnType;
 import org.bundolo.model.enumeration.ColumnDataType;
 import org.bundolo.model.enumeration.CommentColumnType;
 import org.bundolo.model.enumeration.ConnectionColumnType;
@@ -36,6 +37,7 @@ import org.bundolo.services.ItemListService;
 import org.bundolo.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -426,6 +428,40 @@ public class ListController {
 	    }
 	}
 	return contentService.findRecent(fromDate, limit);
+    }
+
+    @RequestMapping(value = { Constants.REST_PATH_AUTHOR_ITEMS + "/{username:.+}",
+	    Constants.REST_PATH_USER_ITEMS + "/{username:.+}" }, method = RequestMethod.GET)
+    public @ResponseBody
+    List<Content> authorItems(@PathVariable String username,
+	    @RequestParam(required = false, defaultValue = "0") Integer start,
+	    @RequestParam(required = false, defaultValue = "0") Integer end,
+	    @RequestParam(required = false) String orderBy, @RequestParam(required = false) String filterBy) {
+	List<String> orderByColumns = new ArrayList<String>();
+	List<String> orderByDirections = new ArrayList<String>();
+	if (StringUtils.isNotBlank(orderBy)) {
+	    String[] params = orderBy.split(",");
+	    for (int i = 0; i < params.length; i += 2) {
+		orderByColumns.add(AuthorItemsColumnType.valueOf(params[i]).getColumnName());
+		orderByDirections.add(getOrderByDirection(params[i + 1]));
+	    }
+	}
+	List<String> filterByColumns = new ArrayList<String>();
+	List<String> filterByTexts = new ArrayList<String>();
+	if (StringUtils.isNotBlank(filterBy)) {
+	    String[] params = filterBy.split(",");
+	    for (int i = 0; i < params.length; i += 2) {
+		AuthorItemsColumnType authorItemsColumnType = AuthorItemsColumnType.valueOf(params[i]);
+		filterByColumns.add(getFilterByColumn(authorItemsColumnType.getColumnName(),
+			authorItemsColumnType.getColumnDataType()));
+		filterByTexts.add(params[i + 1]);
+	    }
+	}
+	return contentService.findAuthorItems(username, start, end,
+		orderByColumns.toArray(new String[orderByColumns.size()]),
+		orderByDirections.toArray(new String[orderByDirections.size()]),
+		filterByColumns.toArray(new String[filterByColumns.size()]),
+		filterByTexts.toArray(new String[filterByTexts.size()]));
     }
 
     public static String getFilterByColumn(String columnName, ColumnDataType columnDataType) {
