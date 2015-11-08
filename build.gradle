@@ -44,7 +44,7 @@ task integration_test(type: Test) {
     	false
     }
     testLogging {
-        events 'started', 'passed'
+        events 'started', 'passed', "standardOut"
     }
     systemProperty 'env', 'dev'
     systemProperty 'newsletter.sender.schedule', '0 0 0 31 2 *'

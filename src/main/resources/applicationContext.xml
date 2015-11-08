@@ -16,11 +16,22 @@
 	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="properties" ref="properties" />
 	</bean>
-	
+
+	<bean id="slugifyPropertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="properties" ref="slugifyProperties" />
+	</bean>
+
 	<bean id="properties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
   		<property name="locations">
             <list>
                 <value>classpath:#{systemProperties.env}.properties</value>
+            </list>
+        </property>
+	</bean>
+	<bean id="slugifyProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+  		<property name="locations">
+            <list>
+                <value>classpath:slugify/replacements.properties</value>
             </list>
         </property>
 	</bean>
@@ -52,7 +63,8 @@
 	</bean>
 	<bean id="mailingUtils" class="org.bundolo.MailingUtils"/>
 	<bean id="dateUtils" class="org.bundolo.DateUtils"/>
-	
+	<bean id="slugifyUtils" class="org.bundolo.SlugifyUtils"/>
+
 	<!-- security -->
 	<!-- Creates the springSecurityFilterChain with the customer filter customRestFilter injected.  -->
     <security:http create-session="stateless" entry-point-ref="authenticationEntryPoint" authentication-manager-ref="authenticationManager">
@@ -77,7 +89,7 @@
     returning an AuthenticationToken matching the user requesting the resource and the user's access level.
     This is the place where you would normally hook into a more complex authentication system and user data layer. -->
     <bean id="restAuthenticationProvider" class="org.bundolo.security.RestAuthenticationProvider" />
-    
+
     <bean id="freemarkerConfiguration" class="org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean">
 		<property name="templateLoaderPath" value="classpath:/freemarker/"/>
  	</bean>
