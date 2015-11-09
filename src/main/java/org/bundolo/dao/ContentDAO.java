@@ -232,6 +232,7 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	return result;
     }
 
+    // TODO remove this and switch to findBySlug
     @SuppressWarnings("unchecked")
     public Content findByTitle(String title, ContentKindType kind) {
 	logger.log(Level.INFO, "findByTitle: " + title + ", kind: " + kind);
@@ -250,6 +251,37 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 
 	Query q = entityManager.createQuery(queryString);
 	q.setParameter(1, title);
+	q.setMaxResults(1);
+	List<Content> resultList = q.getResultList();
+	if (resultList != null && resultList.size() > 0) {
+	    Content result = resultList.get(0);
+	    if (ContentKindType.forum_topic.equals(kind) || ContentKindType.episode.equals(kind)) {
+		result.setParentGroup(result.getParentContent().getName());
+	    }
+	    return result;
+	} else {
+	    return null;
+	}
+    }
+
+    @SuppressWarnings("unchecked")
+    public Content findBySlug(String slug, ContentKindType kind) {
+	logger.log(Level.INFO, "findBySlug: " + slug + ", kind: " + kind);
+	if (slug == null) {
+	    return null;
+	}
+	String queryString = "SELECT c FROM Content c";
+	queryString += " WHERE kind = '" + kind + "'";
+	queryString += " AND slug =?1";
+	if (ContentKindType.episode_group.equals(kind)) {
+	    queryString += " AND (content_status='active' OR content_status='pending')";
+	} else {
+	    queryString += " AND content_status='active'";
+	}
+	logger.log(Level.INFO, "queryString: " + queryString);
+
+	Query q = entityManager.createQuery(queryString);
+	q.setParameter(1, slug);
 	q.setMaxResults(1);
 	List<Content> resultList = q.getResultList();
 	if (resultList != null && resultList.size() > 0) {

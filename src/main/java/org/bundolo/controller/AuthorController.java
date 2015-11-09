@@ -12,6 +12,8 @@ import org.bundolo.model.enumeration.ReturnMessageType;
 import org.bundolo.services.ContentService;
 import org.bundolo.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -60,14 +62,14 @@ public class AuthorController {
 
     @RequestMapping(value = Constants.REST_PATH_AUTHOR + "/{username:.+}", method = RequestMethod.PUT)
     public @ResponseBody
-    ReturnMessageType saveOrUpdate(@PathVariable String username, @RequestBody final UserProfile userProfile) {
+    ResponseEntity<String> saveOrUpdate(@PathVariable String username, @RequestBody final UserProfile userProfile) {
 	logger.log(Level.INFO, "saveOrUpdate, userProfile: " + userProfile);
 	if (!username.matches(Constants.USERNAME_SAFE_REGEX)) {
-	    return ReturnMessageType.username_not_url_safe;
+	    return new ResponseEntity<String>(ReturnMessageType.username_not_url_safe.name(), HttpStatus.BAD_REQUEST);
 	}
 	userProfile.setUsername(username.trim());
-	ReturnMessageType result = userService.saveOrUpdateUser(userProfile);
-	if (ReturnMessageType.success.equals(result)) {
+	ResponseEntity<String> result = userService.saveOrUpdateUser(userProfile);
+	if (HttpStatus.OK.equals(result)) {
 	    userService.clearSession();
 	}
 	return result;

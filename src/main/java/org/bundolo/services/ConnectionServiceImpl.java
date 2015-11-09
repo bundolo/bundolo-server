@@ -26,6 +26,8 @@ import org.bundolo.model.enumeration.RatingKindType;
 import org.bundolo.model.enumeration.RatingStatusType;
 import org.bundolo.model.enumeration.ReturnMessageType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -57,11 +59,11 @@ public class ConnectionServiceImpl implements ConnectionService {
     }
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    private ReturnMessageType saveConnection(Connection connection) {
+    private ResponseEntity<String> saveConnection(Connection connection) {
 	try {
 	    if (connectionDAO.findByTitle(connection.getDescriptionContent().getName()) != null) {
 		// connection title already taken
-		return ReturnMessageType.title_taken;
+		return new ResponseEntity<String>(ReturnMessageType.title_taken.name(), HttpStatus.BAD_REQUEST);
 	    }
 	    connection.setConnectionStatus(ConnectionStatusType.active);
 	    connection.setCreationDate(dateUtils.newDate());
@@ -74,11 +76,12 @@ public class ConnectionServiceImpl implements ConnectionService {
 	    descriptionContent.setKind(ContentKindType.connection_description);
 	    descriptionContent.setLocale(Constants.DEFAULT_LOCALE);
 	    descriptionContent.setLastActivity(dateUtils.newDate());
+	    // TODO slug
 	    connectionDAO.persist(connection);
-	    return ReturnMessageType.success;
+	    return new ResponseEntity<String>(descriptionContent.getSlug(), HttpStatus.OK);
 	} catch (Exception ex) {
 	    logger.log(Level.SEVERE, "saveConnection exception: " + ex);
-	    return ReturnMessageType.exception;
+	    return new ResponseEntity<String>(ReturnMessageType.exception.name(), HttpStatus.BAD_REQUEST);
 	}
     }
 
@@ -129,11 +132,11 @@ public class ConnectionServiceImpl implements ConnectionService {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public ReturnMessageType saveOrUpdateConnection(Connection connection) {
+    public ResponseEntity<String> saveOrUpdateConnection(Connection connection) {
 	try {
 	    if (connection == null || connection.getDescriptionContent() == null
 		    || StringUtils.isBlank(connection.getDescriptionContent().getName())) {
-		return ReturnMessageType.no_data;
+		return new ResponseEntity<String>(ReturnMessageType.no_data.name(), HttpStatus.BAD_REQUEST);
 	    }
 	    String senderUsername = SecurityUtils.getUsername();
 	    if (senderUsername != null) {
@@ -145,18 +148,23 @@ public class ConnectionServiceImpl implements ConnectionService {
 		    Connection connectionDB = connectionDAO.findById(connection.getConnectionId());
 		    if (connectionDB == null) {
 			// no such connection
-			return ReturnMessageType.not_found;
+			return new ResponseEntity<String>(ReturnMessageType.not_found.name(), HttpStatus.BAD_REQUEST);
 		    } else {
 			if (!senderUsername.equals(connectionDB.getAuthorUsername())) {
 			    // user is not the owner
-			    return ReturnMessageType.not_owner;
+			    return new ResponseEntity<String>(ReturnMessageType.not_owner.name(),
+				    HttpStatus.BAD_REQUEST);
 			}
 			Content descriptionContent = connection.getDescriptionContent();
 			Content descriptionContentDB = connectionDB.getDescriptionContent();
-			if (!descriptionContentDB.getName().equals(descriptionContent.getName())
-				&& connectionDAO.findByTitle(descriptionContent.getName()) != null) {
-			    // new connection title already taken
-			    return ReturnMessageType.title_taken;
+			if (!descriptionContentDB.getName().equals(descriptionContent.getName())) {
+			    if (connectionDAO.findByTitle(descriptionContent.getName()) != null) {
+				return new ResponseEntity<String>(ReturnMessageType.title_taken.name(),
+					HttpStatus.BAD_REQUEST);
+			    } else {
+				// TODO slug
+				// descriptionContentDB.setSlug(slug);
+			    }
 			}
 			descriptionContentDB.setName(descriptionContent.getName());
 			descriptionContentDB.setText(descriptionContent.getText());
@@ -164,15 +172,16 @@ public class ConnectionServiceImpl implements ConnectionService {
 			connectionDB.setEmail(connection.getEmail());
 			connectionDB.setUrl(connection.getUrl());
 			connectionDAO.merge(connectionDB);
-			return ReturnMessageType.success;
+			return new ResponseEntity<String>(descriptionContentDB.getSlug(), HttpStatus.OK);
 		    }
 		}
 	    } else {
-		return ReturnMessageType.anonymous_not_allowed;
+		return new ResponseEntity<String>(ReturnMessageType.anonymous_not_allowed.name(),
+			HttpStatus.BAD_REQUEST);
 	    }
 	} catch (Exception ex) {
 	    logger.log(Level.SEVERE, "saveOrUpdateConnection exception: " + ex);
-	    return ReturnMessageType.exception;
+	    return new ResponseEntity<String>(ReturnMessageType.exception.name(), HttpStatus.BAD_REQUEST);
 	}
     }
 

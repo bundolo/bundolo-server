@@ -32,6 +32,8 @@ import org.bundolo.model.enumeration.ReturnMessageType;
 import org.bundolo.model.enumeration.UserProfileStatusType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -282,22 +284,23 @@ public class UserServiceImpl implements UserService {
     }
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    private ReturnMessageType saveUser(String username, String email, String password) {
+    private ResponseEntity<String> saveUser(String username, String email, String password) {
 	try {
 	    if (StringUtils.isBlank(username) || StringUtils.isBlank(email) || StringUtils.isBlank(password)) {
-		return ReturnMessageType.no_data;
+		return new ResponseEntity<String>(ReturnMessageType.no_data.name(), HttpStatus.BAD_REQUEST);
 	    }
 	    UserProfile userProfile = userProfileDAO.findByField("username", username);
 	    if (userProfile != null) {
-		return ReturnMessageType.username_taken;
+		return new ResponseEntity<String>(ReturnMessageType.username_taken.name(), HttpStatus.BAD_REQUEST);
 	    }
+	    // TODO slug
 	    userProfile = userProfileDAO.findByField("email", email);
 	    if (userProfile != null) {
-		return ReturnMessageType.email_taken;
+		return new ResponseEntity<String>(ReturnMessageType.email_taken.name(), HttpStatus.BAD_REQUEST);
 	    }
 	    userProfile = userProfileDAO.findByField("new_email", email);
 	    if (userProfile != null) {
-		return ReturnMessageType.email_taken;
+		return new ResponseEntity<String>(ReturnMessageType.email_taken.name(), HttpStatus.BAD_REQUEST);
 	    }
 	    userProfile = new UserProfile();
 	    userProfile.setEmail(email);
@@ -311,7 +314,8 @@ public class UserServiceImpl implements UserService {
 
 	    Date creationDate = dateUtils.newDate();
 	    Content descriptionContent = new Content(null, null, ContentKindType.user_description, null, "",
-		    Constants.DEFAULT_LOCALE, creationDate, creationDate, ContentStatusType.pending, null);
+		    Constants.DEFAULT_LOCALE, creationDate, creationDate, ContentStatusType.pending, null,
+		    ContentKindType.user_description.getLocalizedName() + "/" + username);
 	    userProfile.setDescriptionContent(descriptionContent);
 
 	    List<String> hashResult = SecurityUtils.getHashWithSalt(password);
@@ -340,19 +344,19 @@ public class UserServiceImpl implements UserService {
 	    String emailSubject = "aktivacija bundolo korisničkog naloga";
 	    mailingUtils.sendEmail(emailBody, emailSubject, email);
 	    // TODO rollback db if email sending failed, or notify admin somehow
-	    return ReturnMessageType.success;
+	    return new ResponseEntity<String>(ReturnMessageType.title_taken.name(), HttpStatus.OK);
 	} catch (Exception ex) {
 	    logger.log(Level.SEVERE, "saveUser exception: " + ex);
-	    return ReturnMessageType.exception;
+	    return new ResponseEntity<String>(ReturnMessageType.exception.name(), HttpStatus.BAD_REQUEST);
 	}
     }
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public ReturnMessageType saveOrUpdateUser(UserProfile userProfile) {
+    public ResponseEntity<String> saveOrUpdateUser(UserProfile userProfile) {
 	try {
 	    if (userProfile == null || StringUtils.isBlank(userProfile.getUsername())) {
-		return ReturnMessageType.no_data;
+		return new ResponseEntity<String>(ReturnMessageType.no_data.name(), HttpStatus.BAD_REQUEST);
 	    }
 	    UserProfile userProfileDB = userProfileDAO.findByField("username", userProfile.getUsername());
 	    if (userProfileDB == null) {
@@ -363,17 +367,17 @@ public class UserServiceImpl implements UserService {
 		// user is not the owner of the account he is updating
 		// TODO if this was registration and username is already taken, it will fail here instead of in saveUser
 		// return ReturnMessageType.not_owner;
-		return ReturnMessageType.username_taken;
+		return new ResponseEntity<String>(ReturnMessageType.username_taken.name(), HttpStatus.BAD_REQUEST);
 	    }
 	    if (StringUtils.isNotBlank(userProfile.getNewEmail())) {
 		UserProfile testUserProfile = null;
 		testUserProfile = userProfileDAO.findByField("email", userProfile.getNewEmail());
 		if (testUserProfile != null) {
-		    return ReturnMessageType.email_taken;
+		    return new ResponseEntity<String>(ReturnMessageType.email_taken.name(), HttpStatus.BAD_REQUEST);
 		}
 		testUserProfile = userProfileDAO.findByField("new_email", userProfile.getNewEmail());
 		if (testUserProfile != null) {
-		    return ReturnMessageType.email_taken;
+		    return new ResponseEntity<String>(ReturnMessageType.email_taken.name(), HttpStatus.BAD_REQUEST);
 		}
 	    }
 
@@ -439,10 +443,10 @@ public class UserServiceImpl implements UserService {
 		String emailSubject = "aktivacija nove adrese elektronske pošte za bundolo korisnički nalog";
 		mailingUtils.sendEmail(emailBody, emailSubject, userProfile.getNewEmail());
 	    }
-	    return ReturnMessageType.success;
+	    return new ResponseEntity<String>(userProfileDB.getDescriptionContent().getSlug(), HttpStatus.OK);
 	} catch (Exception ex) {
 	    logger.log(Level.SEVERE, "updateUser exception: " + ex);
-	    return ReturnMessageType.exception;
+	    return new ResponseEntity<String>(ReturnMessageType.exception.name(), HttpStatus.BAD_REQUEST);
 	}
     }
 

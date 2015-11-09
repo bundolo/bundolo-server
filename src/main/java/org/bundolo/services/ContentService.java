@@ -4,8 +4,9 @@ import java.util.Date;
 import java.util.List;
 
 import org.bundolo.model.Content;
+import org.bundolo.model.enumeration.ContentKindType;
 import org.bundolo.model.enumeration.PageKindType;
-import org.bundolo.model.enumeration.ReturnMessageType;
+import org.springframework.http.ResponseEntity;
 
 public interface ContentService {
 
@@ -49,7 +50,7 @@ public interface ContentService {
 
     // public Boolean saveOrUpdateContent(Content content);
 
-    public ReturnMessageType saveOrUpdateContent(Content content, boolean anonymousAllowed);
+    public ResponseEntity<String> saveOrUpdateContent(Content content, boolean anonymousAllowed);
 
     public Boolean updateLastActivity(Long contentId, Date lastActivity);
 
@@ -70,4 +71,7 @@ public interface ContentService {
     public List<Content> findRecent(Date fromDate, Integer limit);
 
     public List<Content> findItemListItems(String itemListIds);
+
+    // TODO remove it from interface, make it private, once all slugs have been populated
+    public String getNewSlug(String name, ContentKindType kind, String parent, int counter);
 }

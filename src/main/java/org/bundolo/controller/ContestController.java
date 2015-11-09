@@ -11,6 +11,8 @@ import org.bundolo.model.Contest;
 import org.bundolo.model.enumeration.ReturnMessageType;
 import org.bundolo.services.ContestService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -44,14 +46,14 @@ public class ContestController {
 
     @RequestMapping(value = Constants.REST_PATH_CONTEST + "/{title}", method = RequestMethod.PUT)
     public @ResponseBody
-    ReturnMessageType saveOrUpdate(@PathVariable String title, @RequestBody final Contest contest) {
+    ResponseEntity<String> saveOrUpdate(@PathVariable String title, @RequestBody final Contest contest) {
 	logger.log(Level.INFO, "saveOrUpdate, contest: " + contest);
 	if (!title.matches(Constants.URL_SAFE_REGEX)) {
-	    return ReturnMessageType.title_not_url_safe;
+	    return new ResponseEntity<String>(ReturnMessageType.title_not_url_safe.name(), HttpStatus.BAD_REQUEST);
 	}
 	contest.getDescriptionContent().setName(title.trim());
-	ReturnMessageType result = contestService.saveOrUpdateContest(contest);
-	if (ReturnMessageType.success.equals(result)) {
+	ResponseEntity<String> result = contestService.saveOrUpdateContest(contest);
+	if (HttpStatus.OK.equals(result)) {
 	    contestService.clearSession();
 	}
 	return result;

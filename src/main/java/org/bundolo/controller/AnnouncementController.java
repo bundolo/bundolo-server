@@ -12,6 +12,8 @@ import org.bundolo.model.enumeration.ContentKindType;
 import org.bundolo.model.enumeration.ReturnMessageType;
 import org.bundolo.services.ContentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -47,15 +49,15 @@ public class AnnouncementController {
 
     @RequestMapping(value = Constants.REST_PATH_ANNOUNCEMENT + "/{title}", method = RequestMethod.PUT)
     public @ResponseBody
-    ReturnMessageType saveOrUpdate(@PathVariable String title, @RequestBody final Content announcement) {
+    ResponseEntity<String> saveOrUpdate(@PathVariable String title, @RequestBody final Content announcement) {
 	logger.log(Level.INFO, "saveOrUpdate, announcement: " + announcement);
 	if (!title.matches(Constants.URL_SAFE_REGEX)) {
-	    return ReturnMessageType.title_not_url_safe;
+	    return new ResponseEntity<String>(ReturnMessageType.title_not_url_safe.name(), HttpStatus.BAD_REQUEST);
 	}
 	announcement.setName(title.trim());
 	announcement.setKind(ContentKindType.news);
-	ReturnMessageType result = contentService.saveOrUpdateContent(announcement, false);
-	if (ReturnMessageType.success.equals(result)) {
+	ResponseEntity<String> result = contentService.saveOrUpdateContent(announcement, false);
+	if (HttpStatus.OK.equals(result.getStatusCode())) {
 	    contentService.clearSession();
 	}
 	return result;

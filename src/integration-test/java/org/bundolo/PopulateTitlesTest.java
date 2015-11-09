@@ -1,6 +1,11 @@
 package org.bundolo;
 
-import org.bundolo.dao.ContentDAO;
+import java.util.List;
+
+import org.bundolo.model.Connection;
+import org.bundolo.model.Content;
+import org.bundolo.services.ConnectionService;
+import org.bundolo.services.ContentService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,17 +21,20 @@ import org.springframework.test.context.transaction.TransactionConfiguration;
 public class PopulateTitlesTest {
 
     @Autowired
-    private ContentDAO contentDAO;
+    private ConnectionService connectionService;
 
     @Autowired
-    private SlugifyUtils slugifyUtils;
+    private ContentService contentService;
 
     @Test
     public void convertTitles() {
-	String[] contentNames = { "aaab", "šđžlčć", "ĆRtz", "љњертзуиопшђж", "асдфгхјклчћ", "ѕџцвбнм,.-", "ЂĐ}",
-		"- ~!@#$%^&*()_", ".,;\"'=?", "ЉЊ", "", "đ", "Đ" };
-	for (String contentName : contentNames) {
-	    System.out.println(contentName + " = " + slugifyUtils.slugify(contentName));
+	List<Connection> connections = connectionService.findConnections(0, 9, null, null, null, null);
+	for (Connection connection : connections) {
+	    Content content = connection.getDescriptionContent();
+	    System.out.println(content.getName()
+		    + " = "
+		    + contentService.getNewSlug(content.getName(), content.getKind(), content.getKind()
+			    .getLocalizedName(), 0));
 	}
 
 	// assertEquals("Unexpected result", "aaa", contentName);

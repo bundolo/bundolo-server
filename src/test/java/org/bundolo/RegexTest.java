@@ -5,6 +5,7 @@ import org.junit.Test;
 
 public class RegexTest {
 
+    // TODO fix tests
     public static final String[] SHOULD_MATCH_URL = { "kibla", "kib la", "kib lšća Не даш се надћутати" };
     public static final String[] SHOULD_NOT_MATCH_URL = { "ki~bla", "kibla'", ":kibla", "kibl{a", "kibl\\a", "kibl+a",
 	    "kibl#a", "kibl^a", "kibl*a", "kibl\\/a", "kibl[]a", "kibl''a" };

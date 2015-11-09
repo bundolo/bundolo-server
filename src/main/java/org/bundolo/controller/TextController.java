@@ -13,6 +13,8 @@ import org.bundolo.model.enumeration.ReturnMessageType;
 import org.bundolo.services.CommentService;
 import org.bundolo.services.ContentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -59,16 +61,16 @@ public class TextController {
 
     @RequestMapping(value = Constants.REST_PATH_TEXT + "/{username}/{title}", method = RequestMethod.PUT)
     public @ResponseBody
-    ReturnMessageType saveOrUpdate(@PathVariable String username, @PathVariable String title,
+    ResponseEntity<String> saveOrUpdate(@PathVariable String username, @PathVariable String title,
 	    @RequestBody final Content text) {
 	logger.log(Level.INFO, "saveOrUpdate, title: " + title + ", text: " + text);
 	if (!title.matches(Constants.URL_SAFE_REGEX)) {
-	    return ReturnMessageType.title_not_url_safe;
+	    return new ResponseEntity<String>(ReturnMessageType.title_not_url_safe.name(), HttpStatus.BAD_REQUEST);
 	}
 	text.setKind(ContentKindType.text);
 	text.setName(title.trim());
-	ReturnMessageType result = contentService.saveOrUpdateContent(text, false);
-	if (ReturnMessageType.success.equals(result)) {
+	ResponseEntity<String> result = contentService.saveOrUpdateContent(text, false);
+	if (HttpStatus.OK.equals(result)) {
 	    contentService.clearSession();
 	}
 	return result;

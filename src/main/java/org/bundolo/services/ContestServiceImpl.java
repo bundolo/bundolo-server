@@ -26,6 +26,8 @@ import org.bundolo.model.enumeration.RatingKindType;
 import org.bundolo.model.enumeration.RatingStatusType;
 import org.bundolo.model.enumeration.ReturnMessageType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -56,11 +58,11 @@ public class ContestServiceImpl implements ContestService {
     }
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    private ReturnMessageType saveContest(Contest contest) {
+    private ResponseEntity<String> saveContest(Contest contest) {
 	try {
 	    if (contestDAO.findByTitle(contest.getDescriptionContent().getName()) != null) {
 		// contest title already taken
-		return ReturnMessageType.title_taken;
+		return new ResponseEntity<String>(ReturnMessageType.title_taken.name(), HttpStatus.BAD_REQUEST);
 	    }
 	    contest.setContestStatus(ContestStatusType.active);
 	    contest.setCreationDate(dateUtils.newDate());
@@ -72,11 +74,12 @@ public class ContestServiceImpl implements ContestService {
 	    descriptionContent.setKind(ContentKindType.contest_description);
 	    descriptionContent.setLocale(Constants.DEFAULT_LOCALE);
 	    descriptionContent.setLastActivity(dateUtils.newDate());
+	    // TODO slug
 	    contestDAO.persist(contest);
-	    return ReturnMessageType.success;
+	    return new ResponseEntity<String>(descriptionContent.getSlug(), HttpStatus.OK);
 	} catch (Exception ex) {
 	    logger.log(Level.SEVERE, "saveContest exception: " + ex);
-	    return ReturnMessageType.exception;
+	    return new ResponseEntity<String>(ReturnMessageType.exception.name(), HttpStatus.BAD_REQUEST);
 	}
     }
 
@@ -118,11 +121,11 @@ public class ContestServiceImpl implements ContestService {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public ReturnMessageType saveOrUpdateContest(Contest contest) {
+    public ResponseEntity<String> saveOrUpdateContest(Contest contest) {
 	try {
 	    if (contest == null || contest.getDescriptionContent() == null
 		    || StringUtils.isBlank(contest.getDescriptionContent().getName())) {
-		return ReturnMessageType.no_data;
+		return new ResponseEntity<String>(ReturnMessageType.no_data.name(), HttpStatus.BAD_REQUEST);
 	    }
 	    String senderUsername = SecurityUtils.getUsername();
 	    if (senderUsername != null) {
@@ -133,33 +136,37 @@ public class ContestServiceImpl implements ContestService {
 		    Contest contestDB = contestDAO.findById(contest.getContestId());
 		    if (contestDB == null) {
 			// no such contest
-			return ReturnMessageType.not_found;
+			return new ResponseEntity<String>(ReturnMessageType.not_found.name(), HttpStatus.BAD_REQUEST);
 		    } else {
 			if (!contestDB.getAuthorUsername().equals(senderUsername)) {
 			    // user is not the owner
-			    return ReturnMessageType.not_owner;
+			    return new ResponseEntity<String>(ReturnMessageType.not_owner.name(),
+				    HttpStatus.BAD_REQUEST);
 			}
 			Content descriptionContent = contest.getDescriptionContent();
 			Content descriptionContentDB = contestDB.getDescriptionContent();
 			if (!descriptionContentDB.getName().equals(descriptionContent.getName())
 				&& contestDAO.findByTitle(descriptionContent.getName()) != null) {
 			    // new contest title already taken
-			    return ReturnMessageType.title_taken;
+			    return new ResponseEntity<String>(ReturnMessageType.title_taken.name(),
+				    HttpStatus.BAD_REQUEST);
 			}
 			descriptionContentDB.setName(descriptionContent.getName());
 			descriptionContentDB.setText(descriptionContent.getText());
 			descriptionContentDB.setLastActivity(dateUtils.newDate());
 			contestDB.setExpirationDate(contest.getExpirationDate());
+			// TODO slug
 			contestDAO.merge(contestDB);
-			return ReturnMessageType.success;
+			return new ResponseEntity<String>(descriptionContentDB.getSlug(), HttpStatus.OK);
 		    }
 		}
 	    } else {
-		return ReturnMessageType.anonymous_not_allowed;
+		return new ResponseEntity<String>(ReturnMessageType.anonymous_not_allowed.name(),
+			HttpStatus.BAD_REQUEST);
 	    }
 	} catch (Exception ex) {
 	    logger.log(Level.SEVERE, "saveOrUpdateContest exception: " + ex);
-	    return ReturnMessageType.exception;
+	    return new ResponseEntity<String>(ReturnMessageType.exception.name(), HttpStatus.BAD_REQUEST);
 	}
     }
 

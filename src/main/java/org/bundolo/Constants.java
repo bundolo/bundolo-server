@@ -50,8 +50,9 @@ public class Constants {
     public static final String REST_PATH_ITEM_LIST = "/item_list";
     public static final String REST_PATH_METRICS = "/metrics";
 
+    // TODO rework validation
     public static final String URL_SAFE_REGEX = "^[^~\\\\/\\[\\]\\{\\}\\(\\);\\:\\\"\\\'\\|<>\\?\\+=`#$%\\^&\\*]+$";
-    public static final String USERNAME_SAFE_REGEX = "^[A-Za-z0-9 _-]{3,25}$";
+    public static final String USERNAME_SAFE_REGEX = "^[A-Za-z0-9_-]{3,25}$";
 
     public static final int DEFAULT_PASSWORD_LENGTH = 8;
 

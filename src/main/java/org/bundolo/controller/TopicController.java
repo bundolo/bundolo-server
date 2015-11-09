@@ -16,6 +16,7 @@ import org.bundolo.model.enumeration.ReturnMessageType;
 import org.bundolo.services.ContentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -60,15 +61,15 @@ public class TopicController {
 
     @RequestMapping(value = Constants.REST_PATH_TOPIC + "/{title}", method = RequestMethod.PUT)
     public @ResponseBody
-    ReturnMessageType saveOrUpdate(@PathVariable String title, @RequestBody final Content topic) {
+    ResponseEntity<String> saveOrUpdate(@PathVariable String title, @RequestBody final Content topic) {
 	logger.log(Level.INFO, "saveOrUpdate, topic: " + topic);
 	if (!title.matches(Constants.URL_SAFE_REGEX)) {
-	    return ReturnMessageType.title_not_url_safe;
+	    return new ResponseEntity<String>(ReturnMessageType.title_not_url_safe.name(), HttpStatus.BAD_REQUEST);
 	}
 	topic.setKind(ContentKindType.forum_topic);
 	topic.setName(title.trim());
-	ReturnMessageType result = contentService.saveOrUpdateContent(topic, true);
-	if (ReturnMessageType.success.equals(result)) {
+	ResponseEntity<String> result = contentService.saveOrUpdateContent(topic, true);
+	if (HttpStatus.OK.equals(result)) {
 	    contentService.clearSession();
 	}
 	return result;
@@ -87,13 +88,13 @@ public class TopicController {
     @RequestMapping(value = Constants.REST_PATH_POST, method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
     public @ResponseBody
-    ReturnMessageType save(@RequestBody final Content post) {
+    ResponseEntity<String> save(@RequestBody final Content post) {
 	logger.log(Level.INFO, "saving post: " + post);
 	Date creationDate = dateUtils.newDate();
 	post.setLastActivity(creationDate);
 	post.setKind(ContentKindType.forum_post);
-	ReturnMessageType result = contentService.saveOrUpdateContent(post, true);
-	if (ReturnMessageType.success.equals(result)) {
+	ResponseEntity<String> result = contentService.saveOrUpdateContent(post, true);
+	if (HttpStatus.OK.equals(result)) {
 	    contentService.updateLastActivity(post.getParentContent().getContentId(), creationDate);
 	    contentService.clearSession();
 	}

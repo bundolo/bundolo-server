@@ -27,6 +27,8 @@ import org.bundolo.model.enumeration.RatingKindType;
 import org.bundolo.model.enumeration.RatingStatusType;
 import org.bundolo.model.enumeration.ReturnMessageType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,11 +62,12 @@ public class ItemListServiceImpl implements ItemListService {
     }
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    private ReturnMessageType saveItemList(ItemList itemList) {
+    private ResponseEntity<String> saveItemList(ItemList itemList) {
 	try {
 	    if (itemListDAO.findItemList(itemList.getAuthorUsername(), itemList.getDescriptionContent().getName()) != null) {
-		// contest title already taken
-		return ReturnMessageType.title_taken;
+		// item list title already taken
+		return new ResponseEntity<String>(ReturnMessageType.title_taken.name(), HttpStatus.BAD_REQUEST);
+
 	    }
 	    itemList.setItemListStatus(ItemListStatusType.active);
 	    itemList.setCreationDate(dateUtils.newDate());
@@ -76,11 +79,12 @@ public class ItemListServiceImpl implements ItemListService {
 	    descriptionContent.setKind(ContentKindType.item_list_description);
 	    descriptionContent.setLocale(Constants.DEFAULT_LOCALE);
 	    descriptionContent.setLastActivity(itemList.getCreationDate());
+	    // TODO slug
 	    itemListDAO.persist(itemList);
-	    return ReturnMessageType.success;
+	    return new ResponseEntity<String>(itemList.getDescriptionContent().getSlug(), HttpStatus.OK);
 	} catch (Exception ex) {
 	    logger.log(Level.SEVERE, "saveItemList exception: " + ex);
-	    return ReturnMessageType.exception;
+	    return new ResponseEntity<String>(ReturnMessageType.exception.name(), HttpStatus.BAD_REQUEST);
 	}
     }
 
@@ -124,11 +128,11 @@ public class ItemListServiceImpl implements ItemListService {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public ReturnMessageType saveOrUpdateItemList(ItemList itemList) {
+    public ResponseEntity<String> saveOrUpdateItemList(ItemList itemList) {
 	try {
 	    if (itemList == null || itemList.getDescriptionContent() == null
 		    || StringUtils.isBlank(itemList.getDescriptionContent().getName())) {
-		return ReturnMessageType.no_data;
+		return new ResponseEntity<String>(ReturnMessageType.no_data.name(), HttpStatus.BAD_REQUEST);
 	    }
 	    String senderUsername = SecurityUtils.getUsername();
 	    if (senderUsername != null) {
@@ -139,12 +143,13 @@ public class ItemListServiceImpl implements ItemListService {
 		    ItemList itemListDB = itemListDAO.findById(itemList.getItemListId());
 		    if (itemListDB == null) {
 			// no such contest
-			return ReturnMessageType.not_found;
+			return new ResponseEntity<String>(ReturnMessageType.not_found.name(), HttpStatus.BAD_REQUEST);
 		    } else {
 			if (itemListDB.getAuthorUsername() == null
 				|| !itemListDB.getAuthorUsername().equals(senderUsername)) {
 			    // user is not the owner
-			    return ReturnMessageType.not_owner;
+			    return new ResponseEntity<String>(ReturnMessageType.not_owner.name(),
+				    HttpStatus.BAD_REQUEST);
 			}
 			Content descriptionContent = itemList.getDescriptionContent();
 			Content descriptionContentDB = itemListDB.getDescriptionContent();
@@ -152,22 +157,25 @@ public class ItemListServiceImpl implements ItemListService {
 				&& itemListDAO.findItemList(itemListDB.getAuthorUsername(),
 					descriptionContent.getName()) != null) {
 			    // new item list title already taken
-			    return ReturnMessageType.title_taken;
+			    return new ResponseEntity<String>(ReturnMessageType.title_taken.name(),
+				    HttpStatus.BAD_REQUEST);
 			}
 			descriptionContentDB.setName(descriptionContent.getName());
 			descriptionContentDB.setText(descriptionContent.getText());
 			descriptionContentDB.setLastActivity(dateUtils.newDate());
+			// TODO slug
 			itemListDB.setQuery(itemList.getQuery());
 			itemListDAO.merge(itemListDB);
-			return ReturnMessageType.success;
+			return new ResponseEntity<String>(itemListDB.getDescriptionContent().getSlug(), HttpStatus.OK);
 		    }
 		}
 	    } else {
-		return ReturnMessageType.anonymous_not_allowed;
+		return new ResponseEntity<String>(ReturnMessageType.anonymous_not_allowed.name(),
+			HttpStatus.BAD_REQUEST);
 	    }
 	} catch (Exception ex) {
 	    logger.log(Level.SEVERE, "saveOrUpdateItemList exception: " + ex);
-	    return ReturnMessageType.exception;
+	    return new ResponseEntity<String>(ReturnMessageType.exception.name(), HttpStatus.BAD_REQUEST);
 	}
     }
 

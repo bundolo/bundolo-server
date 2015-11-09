@@ -13,6 +13,7 @@ import javax.annotation.PreDestroy;
 import org.bundolo.Constants;
 import org.bundolo.DateUtils;
 import org.bundolo.SecurityUtils;
+import org.bundolo.SlugifyUtils;
 import org.bundolo.dao.CommentDAO;
 import org.bundolo.dao.ContentDAO;
 import org.bundolo.model.Content;
@@ -25,6 +26,8 @@ import org.bundolo.model.enumeration.RatingStatusType;
 import org.bundolo.model.enumeration.ReturnMessageType;
 import org.bundolo.model.enumeration.TextColumnType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,6 +45,9 @@ public class ContentServiceImpl implements ContentService {
 
     @Autowired
     private DateUtils dateUtils;
+
+    @Autowired
+    private SlugifyUtils slugifyUtils;
 
     @PostConstruct
     public void init() throws Exception {
@@ -230,18 +236,19 @@ public class ContentServiceImpl implements ContentService {
     }
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    private ReturnMessageType saveContent(Content content) {
+    private ResponseEntity<String> saveContent(Content content) {
 	// logger.log(Level.WARNING, "saveContent: " + content);
 	try {
 	    if (contentViolatesDBConstraints(content)) {
-		return ReturnMessageType.title_taken;
+		return new ResponseEntity<String>(ReturnMessageType.title_taken.name(), HttpStatus.BAD_REQUEST);
 	    }
+	    // TODO slug
 	    if (ContentKindType.episode.equals(content.getKind())) {
 		// if this is episode and the last one in the serial is pending, saving is not allowed
 		List<Content> episodes = contentDAO.findEpisodes(content.getParentContent().getContentId(), 0, -1);
 		if (episodes != null && episodes.size() > 0
 			&& ContentStatusType.pending.equals(episodes.get(episodes.size() - 1).getContentStatus())) {
-		    return ReturnMessageType.serial_pending;
+		    return new ResponseEntity<String>(ReturnMessageType.serial_pending.name(), HttpStatus.BAD_REQUEST);
 		}
 	    }
 	    if (content.getContentStatus() == null) {
@@ -259,25 +266,27 @@ public class ContentServiceImpl implements ContentService {
 		descriptionContent.setLastActivity(creationDate);
 		descriptionContent.setKind(ContentKindType.text_description);
 		descriptionContent.setLocale(Constants.DEFAULT_LOCALE);
+		descriptionContent.setSlug(getNewSlug(content.getName(), content.getKind(),
+			content.getAuthorUsername(), 0));
 	    }
 	    contentDAO.persist(content);
-	    return ReturnMessageType.success;
+	    return new ResponseEntity<String>(content.getSlug(), HttpStatus.OK);
 	} catch (Exception ex) {
 	    logger.log(Level.SEVERE, "saveContent exception: " + ex);
-	    return ReturnMessageType.exception;
+	    return new ResponseEntity<String>(ReturnMessageType.exception.name(), HttpStatus.BAD_REQUEST);
 	}
     }
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public ReturnMessageType saveOrUpdateContent(Content content, boolean anonymousAllowed) {
+    public ResponseEntity<String> saveOrUpdateContent(Content content, boolean anonymousAllowed) {
 	try {
 	    if (content == null) {
-		return ReturnMessageType.no_data;
+		return new ResponseEntity<String>(ReturnMessageType.no_data.name(), HttpStatus.BAD_REQUEST);
 	    }
 	    if (ContentKindType.episode.equals(content.getKind()) && content.getParentContent().getContentId() == null) {
 		// episode that is not attached to a serial is not allowed
-		return ReturnMessageType.episode_detached;
+		return new ResponseEntity<String>(ReturnMessageType.episode_detached.name(), HttpStatus.BAD_REQUEST);
 	    }
 
 	    String senderUsername = SecurityUtils.getUsername();
@@ -289,17 +298,19 @@ public class ContentServiceImpl implements ContentService {
 		    Content contentDB = contentDAO.findById(content.getContentId());
 		    if (contentDB == null) {
 			// no such content
-			return ReturnMessageType.not_found;
+			return new ResponseEntity<String>(ReturnMessageType.not_found.name(), HttpStatus.BAD_REQUEST);
 		    }
 		    if (!senderUsername.equals(contentDB.getAuthorUsername())) {
 			// user is not the owner
-			return ReturnMessageType.not_owner;
+			return new ResponseEntity<String>(ReturnMessageType.not_owner.name(), HttpStatus.BAD_REQUEST);
 		    }
 		    if (!contentDB.getName().equals(content.getName())) {
 			content.setAuthorUsername(contentDB.getAuthorUsername());
 			if (contentViolatesDBConstraints(content)) {
-			    return ReturnMessageType.title_taken;
+			    return new ResponseEntity<String>(ReturnMessageType.title_taken.name(),
+				    HttpStatus.BAD_REQUEST);
 			}
+			// TODO slug
 		    }
 		    if (ContentKindType.text.equals(content.getKind())) {
 			Content descriptionContent = (Content) content.getDescription().toArray()[0];
@@ -318,14 +329,15 @@ public class ContentServiceImpl implements ContentService {
 			contentDB.setContentStatus(content.getContentStatus());
 		    }
 		    contentDAO.merge(contentDB);
-		    return ReturnMessageType.success;
+		    return new ResponseEntity<String>(contentDB.getSlug(), HttpStatus.OK);
 		}
 	    } else {
-		return ReturnMessageType.anonymous_not_allowed;
+		return new ResponseEntity<String>(ReturnMessageType.anonymous_not_allowed.name(),
+			HttpStatus.BAD_REQUEST);
 	    }
 	} catch (Exception ex) {
 	    logger.log(Level.SEVERE, "saveOrUpdateContent exception: " + ex);
-	    return ReturnMessageType.exception;
+	    return new ResponseEntity<String>(ReturnMessageType.exception.name(), HttpStatus.BAD_REQUEST);
 	}
     }
 
@@ -493,5 +505,20 @@ public class ContentServiceImpl implements ContentService {
     @Override
     public List<Content> findItemListItems(String itemListIds) {
 	return contentDAO.findItemListItems(itemListIds);
+    }
+
+    // TODO
+    @Override
+    public String getNewSlug(String name, ContentKindType kind, String parent, int counter) {
+	String result = parent + "/" + slugifyUtils.slugify(name);
+	if (counter > 0) {
+	    result += "-" + counter;
+	}
+	Content content = contentDAO.findBySlug(result, kind);
+	if (content != null) {
+	    return getNewSlug(name, kind, parent, counter + 1);
+	} else {
+	    return result;
+	}
     }
 }

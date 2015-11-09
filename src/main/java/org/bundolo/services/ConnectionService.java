@@ -3,7 +3,7 @@ package org.bundolo.services;
 import java.util.List;
 
 import org.bundolo.model.Connection;
-import org.bundolo.model.enumeration.ReturnMessageType;
+import org.springframework.http.ResponseEntity;
 
 public interface ConnectionService {
 
@@ -11,7 +11,7 @@ public interface ConnectionService {
 
     public Connection findConnection(String title);
 
-    public ReturnMessageType saveOrUpdateConnection(Connection connection);
+    public ResponseEntity<String> saveOrUpdateConnection(Connection connection);
 
     public List<Connection> findConnections(Integer start, Integer end, String[] orderBy, String[] order,
 	    String[] filterBy, String[] filter);

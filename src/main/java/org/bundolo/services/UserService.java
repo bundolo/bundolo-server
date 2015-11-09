@@ -5,6 +5,7 @@ import java.util.List;
 import org.bundolo.model.User;
 import org.bundolo.model.UserProfile;
 import org.bundolo.model.enumeration.ReturnMessageType;
+import org.springframework.http.ResponseEntity;
 
 public interface UserService {
 
@@ -21,7 +22,7 @@ public interface UserService {
 
     public ReturnMessageType sendNewPassword(String username, String email);
 
-    public ReturnMessageType saveOrUpdateUser(UserProfile userProfile);
+    public ResponseEntity<String> saveOrUpdateUser(UserProfile userProfile);
 
     public User findNext(String username, String orderBy, String fixBy, boolean ascending);
 

@@ -81,13 +81,16 @@ public class Content implements java.io.Serializable {
     @Where(clause = "kind like '%_description'")
     private Collection<Content> description;
 
+    @Column(name = "slug")
+    private String slug;
+
     public Content() {
 	super();
     }
 
     public Content(Long contentId, String authorUsername, ContentKindType kind, String name, String text,
 	    String locale, Date creationDate, Date lastActivity, ContentStatusType contentStatus,
-	    Collection<Rating> rating) {
+	    Collection<Rating> rating, String slug) {
 	super();
 	this.contentId = contentId;
 	this.authorUsername = authorUsername;
@@ -99,6 +102,7 @@ public class Content implements java.io.Serializable {
 	this.lastActivity = lastActivity;
 	this.contentStatus = contentStatus;
 	this.rating = rating;
+	this.slug = slug;
     }
 
     public Long getContentId() {
@@ -205,10 +209,18 @@ public class Content implements java.io.Serializable {
 	this.parentGroup = parentGroup;
     }
 
+    public String getSlug() {
+	return slug;
+    }
+
+    public void setSlug(String slug) {
+	this.slug = slug;
+    }
+
     @Override
     public String toString() {
 	return "Content [contentId=" + contentId + ", authorUsername=" + authorUsername + ", kind=" + kind + ", name="
 		+ name + ", locale=" + locale + ", creationDate=" + creationDate + ", lastActivity=" + lastActivity
-		+ ", contentStatus=" + contentStatus + ", rating=" + rating + "]";
+		+ ", contentStatus=" + contentStatus + ", rating=" + rating + ", slug=" + slug + "]";
     }
 }
