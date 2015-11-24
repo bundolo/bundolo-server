@@ -18,6 +18,7 @@ import org.bundolo.Constants;
 import org.bundolo.DateUtils;
 import org.bundolo.MailingUtils;
 import org.bundolo.SecurityUtils;
+import org.bundolo.dao.ContentDAO;
 import org.bundolo.dao.UserDAO;
 import org.bundolo.dao.UserProfileDAO;
 import org.bundolo.model.Content;
@@ -50,6 +51,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserProfileDAO userProfileDAO;
+
+    @Autowired
+    private ContentDAO contentDAO;
 
     @Autowired
     private MailingUtils mailingUtils;
@@ -190,8 +194,10 @@ public class UserServiceImpl implements UserService {
 		    if (serverNonce.equals(nonce)) {
 			userProfile.setUserProfileStatus(UserProfileStatusType.active);
 			userProfile.setNonce(null);
-			userProfile.getDescriptionContent().setAuthorUsername(userProfile.getUsername());
-			userProfile.getDescriptionContent().setContentStatus(ContentStatusType.active);
+			Content descriptionContent = userProfile.getDescriptionContent();
+			descriptionContent.setAuthorUsername(userProfile.getUsername());
+			descriptionContent.setContentStatus(ContentStatusType.active);
+			descriptionContent.setSlug(contentDAO.getNewSlug(descriptionContent));
 			userProfile.setSubscribed(true);
 			userProfileDAO.merge(userProfile);
 			result = ReturnMessageType.success;
@@ -285,6 +291,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     private ResponseEntity<String> saveUser(String username, String email, String password) {
+	// TODO make username case insensitive probably, to make sure slug is always equal to username
 	try {
 	    if (StringUtils.isBlank(username) || StringUtils.isBlank(email) || StringUtils.isBlank(password)) {
 		return new ResponseEntity<String>(ReturnMessageType.no_data.name(), HttpStatus.BAD_REQUEST);
@@ -293,7 +300,6 @@ public class UserServiceImpl implements UserService {
 	    if (userProfile != null) {
 		return new ResponseEntity<String>(ReturnMessageType.username_taken.name(), HttpStatus.BAD_REQUEST);
 	    }
-	    // TODO slug
 	    userProfile = userProfileDAO.findByField("email", email);
 	    if (userProfile != null) {
 		return new ResponseEntity<String>(ReturnMessageType.email_taken.name(), HttpStatus.BAD_REQUEST);
@@ -314,8 +320,7 @@ public class UserServiceImpl implements UserService {
 
 	    Date creationDate = dateUtils.newDate();
 	    Content descriptionContent = new Content(null, null, ContentKindType.user_description, null, "",
-		    Constants.DEFAULT_LOCALE, creationDate, creationDate, ContentStatusType.pending, null,
-		    ContentKindType.user_description.getLocalizedName() + "/" + username);
+		    Constants.DEFAULT_LOCALE, creationDate, creationDate, ContentStatusType.pending, null, null);
 	    userProfile.setDescriptionContent(descriptionContent);
 
 	    List<String> hashResult = SecurityUtils.getHashWithSalt(password);
@@ -344,7 +349,8 @@ public class UserServiceImpl implements UserService {
 	    String emailSubject = "aktivacija bundolo korisničkog naloga";
 	    mailingUtils.sendEmail(emailBody, emailSubject, email);
 	    // TODO rollback db if email sending failed, or notify admin somehow
-	    return new ResponseEntity<String>(ReturnMessageType.title_taken.name(), HttpStatus.OK);
+	    // user doesn't have slug until email gets activated
+	    return new ResponseEntity<String>("", HttpStatus.OK);
 	} catch (Exception ex) {
 	    logger.log(Level.SEVERE, "saveUser exception: " + ex);
 	    return new ResponseEntity<String>(ReturnMessageType.exception.name(), HttpStatus.BAD_REQUEST);

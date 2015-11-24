@@ -15,6 +15,7 @@ import org.bundolo.Constants;
 import org.bundolo.DateUtils;
 import org.bundolo.SecurityUtils;
 import org.bundolo.dao.ConnectionDAO;
+import org.bundolo.dao.ContentDAO;
 import org.bundolo.model.Connection;
 import org.bundolo.model.Content;
 import org.bundolo.model.Rating;
@@ -39,6 +40,9 @@ public class ConnectionServiceImpl implements ConnectionService {
 
     @Autowired
     private ConnectionDAO connectionDAO;
+
+    @Autowired
+    private ContentDAO contentDAO;
 
     @Autowired
     private DateUtils dateUtils;
@@ -76,7 +80,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 	    descriptionContent.setKind(ContentKindType.connection_description);
 	    descriptionContent.setLocale(Constants.DEFAULT_LOCALE);
 	    descriptionContent.setLastActivity(dateUtils.newDate());
-	    // TODO slug
+	    descriptionContent.setSlug(contentDAO.getNewSlug(descriptionContent));
 	    connectionDAO.persist(connection);
 	    return new ResponseEntity<String>(descriptionContent.getSlug(), HttpStatus.OK);
 	} catch (Exception ex) {
@@ -161,12 +165,10 @@ public class ConnectionServiceImpl implements ConnectionService {
 			    if (connectionDAO.findByTitle(descriptionContent.getName()) != null) {
 				return new ResponseEntity<String>(ReturnMessageType.title_taken.name(),
 					HttpStatus.BAD_REQUEST);
-			    } else {
-				// TODO slug
-				// descriptionContentDB.setSlug(slug);
 			    }
+			    descriptionContentDB.setName(descriptionContent.getName());
+			    descriptionContentDB.setSlug(contentDAO.getNewSlug(descriptionContentDB));
 			}
-			descriptionContentDB.setName(descriptionContent.getName());
 			descriptionContentDB.setText(descriptionContent.getText());
 			descriptionContentDB.setLastActivity(dateUtils.newDate());
 			connectionDB.setEmail(connection.getEmail());

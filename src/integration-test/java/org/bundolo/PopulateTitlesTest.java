@@ -2,10 +2,10 @@ package org.bundolo;
 
 import java.util.List;
 
+import org.bundolo.dao.ContentDAO;
 import org.bundolo.model.Connection;
 import org.bundolo.model.Content;
 import org.bundolo.services.ConnectionService;
-import org.bundolo.services.ContentService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,17 +24,14 @@ public class PopulateTitlesTest {
     private ConnectionService connectionService;
 
     @Autowired
-    private ContentService contentService;
+    private ContentDAO contentDAO;
 
     @Test
     public void convertTitles() {
 	List<Connection> connections = connectionService.findConnections(0, 9, null, null, null, null);
 	for (Connection connection : connections) {
 	    Content content = connection.getDescriptionContent();
-	    System.out.println(content.getName()
-		    + " = "
-		    + contentService.getNewSlug(content.getName(), content.getKind(), content.getKind()
-			    .getLocalizedName(), 0));
+	    System.out.println(content.getName() + " = " + contentDAO.getNewSlug(content));
 	}
 
 	// assertEquals("Unexpected result", "aaa", contentName);
@@ -44,5 +41,4 @@ public class PopulateTitlesTest {
 	// end. check if slug exists, if it does, increase counter and repeat while it's unique. save new slug.
 
     }
-
 }

@@ -10,7 +10,8 @@ public class TestBase {
     protected ThreadLocal<WebDriver> threadDriver = null;
 
     static {
-	System.setProperty("webdriver.chrome.driver", "D:/projects/bundolo/chromedriver.exe");
+	System.out.println("setProperty: webdriver.chrome.driver: " + TestConstants.CHROME_DRIVER_LOCATION);
+	System.setProperty("webdriver.chrome.driver", TestConstants.CHROME_DRIVER_LOCATION);
     }
 
     @Before
@@ -26,6 +27,5 @@ public class TestBase {
     @After
     public void closeBrowser() {
 	getDriver().quit();
-
     }
 }

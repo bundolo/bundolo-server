@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.bundolo.model.Content;
-import org.bundolo.model.enumeration.ContentKindType;
 import org.bundolo.model.enumeration.PageKindType;
 import org.springframework.http.ResponseEntity;
 
@@ -72,6 +71,4 @@ public interface ContentService {
 
     public List<Content> findItemListItems(String itemListIds);
 
-    // TODO remove it from interface, make it private, once all slugs have been populated
-    public String getNewSlug(String name, ContentKindType kind, String parent, int counter);
 }

@@ -21,6 +21,6 @@ public enum ContentKindType {
 
     @Override
     public String toString() {
-	return name() + ": " + getLocalizedName();
+	return name();
     }
 }

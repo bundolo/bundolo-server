@@ -59,6 +59,7 @@ public class CommentController {
 
     // TODO this should eventually become put method, to avoid saving the same comment twice, but it's going to be a
     // problem finding unique url format for them
+    // should use slug
     @RequestMapping(value = Constants.REST_PATH_COMMENT, method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
     public @ResponseBody

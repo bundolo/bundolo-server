@@ -14,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.bundolo.Constants;
 import org.bundolo.DateUtils;
 import org.bundolo.SecurityUtils;
+import org.bundolo.dao.ContentDAO;
 import org.bundolo.dao.ContestDAO;
 import org.bundolo.model.Content;
 import org.bundolo.model.Contest;
@@ -39,6 +40,9 @@ public class ContestServiceImpl implements ContestService {
 
     @Autowired
     private ContestDAO contestDAO;
+
+    @Autowired
+    private ContentDAO contentDAO;
 
     @Autowired
     private DateUtils dateUtils;
@@ -74,7 +78,7 @@ public class ContestServiceImpl implements ContestService {
 	    descriptionContent.setKind(ContentKindType.contest_description);
 	    descriptionContent.setLocale(Constants.DEFAULT_LOCALE);
 	    descriptionContent.setLastActivity(dateUtils.newDate());
-	    // TODO slug
+	    descriptionContent.setSlug(contentDAO.getNewSlug(descriptionContent));
 	    contestDAO.persist(contest);
 	    return new ResponseEntity<String>(descriptionContent.getSlug(), HttpStatus.OK);
 	} catch (Exception ex) {
@@ -145,17 +149,18 @@ public class ContestServiceImpl implements ContestService {
 			}
 			Content descriptionContent = contest.getDescriptionContent();
 			Content descriptionContentDB = contestDB.getDescriptionContent();
-			if (!descriptionContentDB.getName().equals(descriptionContent.getName())
-				&& contestDAO.findByTitle(descriptionContent.getName()) != null) {
-			    // new contest title already taken
-			    return new ResponseEntity<String>(ReturnMessageType.title_taken.name(),
-				    HttpStatus.BAD_REQUEST);
+			if (!descriptionContentDB.getName().equals(descriptionContent.getName())) {
+			    if (contestDAO.findByTitle(descriptionContent.getName()) != null) {
+				// new contest title already taken
+				return new ResponseEntity<String>(ReturnMessageType.title_taken.name(),
+					HttpStatus.BAD_REQUEST);
+			    }
+			    descriptionContentDB.setName(descriptionContent.getName());
+			    descriptionContentDB.setSlug(contentDAO.getNewSlug(descriptionContentDB));
 			}
-			descriptionContentDB.setName(descriptionContent.getName());
 			descriptionContentDB.setText(descriptionContent.getText());
 			descriptionContentDB.setLastActivity(dateUtils.newDate());
 			contestDB.setExpirationDate(contest.getExpirationDate());
-			// TODO slug
 			contestDAO.merge(contestDB);
 			return new ResponseEntity<String>(descriptionContentDB.getSlug(), HttpStatus.OK);
 		    }

@@ -69,6 +69,7 @@ public class ListController {
     @Autowired
     private UserProfileDAO userProfileDAO;
 
+    // TODO investigate returning ResponseEntity<List<Connection>> instead of List<Connection>
     @RequestMapping(value = { Constants.REST_PATH_CONNECTIONS,
 	    Constants.REST_PATH_CONNECTIONS + Constants.BOT_REQUEST_SUFFIX,
 	    Constants.REST_PATH_CONNECTIONS + Constants.BOT_REQUEST_SUFFIX_ESCAPED }, method = RequestMethod.GET)

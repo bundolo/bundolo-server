@@ -79,7 +79,7 @@ public class ItemListServiceImpl implements ItemListService {
 	    descriptionContent.setKind(ContentKindType.item_list_description);
 	    descriptionContent.setLocale(Constants.DEFAULT_LOCALE);
 	    descriptionContent.setLastActivity(itemList.getCreationDate());
-	    // TODO slug
+	    descriptionContent.setSlug(contentDAO.getNewSlug(descriptionContent));
 	    itemListDAO.persist(itemList);
 	    return new ResponseEntity<String>(itemList.getDescriptionContent().getSlug(), HttpStatus.OK);
 	} catch (Exception ex) {
@@ -153,14 +153,15 @@ public class ItemListServiceImpl implements ItemListService {
 			}
 			Content descriptionContent = itemList.getDescriptionContent();
 			Content descriptionContentDB = itemListDB.getDescriptionContent();
-			if (!descriptionContentDB.getName().equals(descriptionContent.getName())
-				&& itemListDAO.findItemList(itemListDB.getAuthorUsername(),
-					descriptionContent.getName()) != null) {
-			    // new item list title already taken
-			    return new ResponseEntity<String>(ReturnMessageType.title_taken.name(),
-				    HttpStatus.BAD_REQUEST);
+			if (!descriptionContentDB.getName().equals(descriptionContent.getName())) {
+			    if (itemListDAO.findItemList(itemListDB.getAuthorUsername(), descriptionContent.getName()) != null) {
+				// new item list title already taken
+				return new ResponseEntity<String>(ReturnMessageType.title_taken.name(),
+					HttpStatus.BAD_REQUEST);
+			    }
+			    descriptionContentDB.setName(descriptionContent.getName());
+			    descriptionContentDB.setSlug(contentDAO.getNewSlug(descriptionContentDB));
 			}
-			descriptionContentDB.setName(descriptionContent.getName());
 			descriptionContentDB.setText(descriptionContent.getText());
 			descriptionContentDB.setLastActivity(dateUtils.newDate());
 			// TODO slug

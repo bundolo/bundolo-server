@@ -10,16 +10,21 @@ import javax.persistence.Query;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bundolo.SecurityUtils;
+import org.bundolo.SlugifyUtils;
 import org.bundolo.model.Content;
 import org.bundolo.model.enumeration.ContentKindType;
 import org.bundolo.model.enumeration.ContentStatusType;
 import org.bundolo.model.enumeration.PageKindType;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 @Repository("contentDAO")
 public class ContentDAO extends JpaDAO<Long, Content> {
 
     private static final Logger logger = Logger.getLogger(ContentDAO.class.getName());
+
+    @Autowired
+    private SlugifyUtils slugifyUtils;
 
     @SuppressWarnings("unchecked")
     public List<Content> findTexts(Integer start, Integer end, String[] orderBy, String[] order, String[] filterBy,
@@ -266,6 +271,7 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 
     @SuppressWarnings("unchecked")
     public Content findBySlug(String slug, ContentKindType kind) {
+	// TODO passing kind might not be needed
 	logger.log(Level.INFO, "findBySlug: " + slug + ", kind: " + kind);
 	if (slug == null) {
 	    return null;
@@ -574,5 +580,57 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	    }
 	}
 	return recentContent;
+    }
+
+    // TODO
+    public String getNewSlug(Content content) {
+	switch (content.getKind()) {
+	case news:
+	    return getNewSlug(content.getName(), content.getKind(), content.getKind().getLocalizedName(), 0);
+	case connection_description:
+	    return getNewSlug(content.getName(), content.getKind(), content.getKind().getLocalizedName(), 0);
+	case contest_description:
+	    return getNewSlug(content.getName(), content.getKind(), content.getKind().getLocalizedName(), 0);
+	case forum_topic:
+	    return getNewSlug(content.getName(), content.getKind(), content.getKind().getLocalizedName(), 0);
+	case user_description:
+	    // slug is set directly in UserService, this is not going to be used
+	    return getNewSlug(content.getAuthorUsername(), content.getKind(), content.getKind().getLocalizedName(), 0);
+	case item_list_description:
+	    // TODO username will have to be in the slug for non-public item lists
+	    return getNewSlug(content.getName(), content.getKind(), content.getKind().getLocalizedName(), 0);
+	case text:
+	    return getNewSlug(content.getName(), content.getKind(), content.getKind().getLocalizedName() + "/"
+		    + content.getAuthorUsername(), 0);
+	case episode_group:
+	    return getNewSlug(content.getName(), content.getKind(), content.getKind().getLocalizedName(), 0);
+	case episode:
+	    String parentContentName = content.getParentContent().getName();
+	    if (StringUtils.isEmpty(parentContentName)) {
+		Content parentContent = findById(content.getParentContent().getContentId());
+		parentContentName = parentContent.getName();
+	    }
+	    return getNewSlug(content.getName(), content.getKind(), content.getKind().getLocalizedName() + "/"
+		    + parentContentName, 0);
+	case forum_post:
+	    // TODO forum posts don't have slug, but might need it in the future
+	    return null;
+	default:
+	    return "";
+	}
+    }
+
+    private String getNewSlug(String name, ContentKindType kind, String parent, int counter) {
+	String result = parent + "/" + slugifyUtils.slugify(name);
+	if (counter > 0) {
+	    result += "-" + counter;
+	}
+	// TODO consider how slug should be assigned if new content name matches old but deleted content's name
+	Content content = findBySlug(result, kind);
+	if (content != null) {
+	    return getNewSlug(name, kind, parent, counter + 1);
+	} else {
+	    return result;
+	}
     }
 }

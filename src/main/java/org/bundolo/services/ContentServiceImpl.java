@@ -13,7 +13,6 @@ import javax.annotation.PreDestroy;
 import org.bundolo.Constants;
 import org.bundolo.DateUtils;
 import org.bundolo.SecurityUtils;
-import org.bundolo.SlugifyUtils;
 import org.bundolo.dao.CommentDAO;
 import org.bundolo.dao.ContentDAO;
 import org.bundolo.model.Content;
@@ -45,9 +44,6 @@ public class ContentServiceImpl implements ContentService {
 
     @Autowired
     private DateUtils dateUtils;
-
-    @Autowired
-    private SlugifyUtils slugifyUtils;
 
     @PostConstruct
     public void init() throws Exception {
@@ -242,7 +238,7 @@ public class ContentServiceImpl implements ContentService {
 	    if (contentViolatesDBConstraints(content)) {
 		return new ResponseEntity<String>(ReturnMessageType.title_taken.name(), HttpStatus.BAD_REQUEST);
 	    }
-	    // TODO slug
+	    content.setSlug(contentDAO.getNewSlug(content));
 	    if (ContentKindType.episode.equals(content.getKind())) {
 		// if this is episode and the last one in the serial is pending, saving is not allowed
 		List<Content> episodes = contentDAO.findEpisodes(content.getParentContent().getContentId(), 0, -1);
@@ -266,8 +262,7 @@ public class ContentServiceImpl implements ContentService {
 		descriptionContent.setLastActivity(creationDate);
 		descriptionContent.setKind(ContentKindType.text_description);
 		descriptionContent.setLocale(Constants.DEFAULT_LOCALE);
-		descriptionContent.setSlug(getNewSlug(content.getName(), content.getKind(),
-			content.getAuthorUsername(), 0));
+		// no need to set slug
 	    }
 	    contentDAO.persist(content);
 	    return new ResponseEntity<String>(content.getSlug(), HttpStatus.OK);
@@ -310,14 +305,14 @@ public class ContentServiceImpl implements ContentService {
 			    return new ResponseEntity<String>(ReturnMessageType.title_taken.name(),
 				    HttpStatus.BAD_REQUEST);
 			}
-			// TODO slug
+			contentDB.setName(content.getName());
+			contentDB.setSlug(contentDAO.getNewSlug(contentDB));
 		    }
 		    if (ContentKindType.text.equals(content.getKind())) {
 			Content descriptionContent = (Content) content.getDescription().toArray()[0];
 			Content descriptionContentDB = (Content) contentDB.getDescription().toArray()[0];
 			descriptionContentDB.setText(descriptionContent.getText());
 		    }
-		    contentDB.setName(content.getName());
 		    contentDB.setText(content.getText());
 		    if (content.getLastActivity() != null) {
 			// this normally will not happen, we want last activity to be updated
@@ -505,20 +500,5 @@ public class ContentServiceImpl implements ContentService {
     @Override
     public List<Content> findItemListItems(String itemListIds) {
 	return contentDAO.findItemListItems(itemListIds);
-    }
-
-    // TODO
-    @Override
-    public String getNewSlug(String name, ContentKindType kind, String parent, int counter) {
-	String result = parent + "/" + slugifyUtils.slugify(name);
-	if (counter > 0) {
-	    result += "-" + counter;
-	}
-	Content content = contentDAO.findBySlug(result, kind);
-	if (content != null) {
-	    return getNewSlug(name, kind, parent, counter + 1);
-	} else {
-	    return result;
-	}
     }
 }
