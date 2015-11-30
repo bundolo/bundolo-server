@@ -54,6 +54,22 @@ public abstract class JpaDAO<K, E> {
 	return q.getResultList();
     }
 
+    //TODO this is not generic
+    @SuppressWarnings("unchecked")
+    public List<E> findAllPaged(int start, int maxResults) {
+	// Query q = entityManager.createQuery("SELECT h FROM " + entityClass.getName() + " h");
+	Query q = entityManager.createQuery("SELECT h FROM " + entityClass.getName() + " h order by contentId");
+	// Query q = entityManager
+	// .createQuery("SELECT h FROM "
+	// + entityClass.getName()
+	// +
+	// " h where contentId in (2412, 2361, 2311, 2439, 2316, 2319, 2410, 2330, 2326, 2331, 2377, 2333, 2335, 2348, 2336, 2337, 2339, 2366, 2340, 2341, 2342, 2343, 2344, 2345, 2349, 2350, 2354, 2355, 2356, 2357, 2358, 2359, 2360, 2363, 2435, 2364, 2367, 2370, 2375, 2380, 2383, 2384, 2386, 2388, 2387, 2389, 2390, 2393, 2394, 2489, 2479, 2362, 2450, 2436, 2369, 2474, 2429, 2409, 2476, 2465, 2382, 2418, 2365, 2413, 2329, 2313, 2470, 2490, 2372, 2403, 2351, 2338, 2396, 2408, 2368, 2461, 2346, 2376, 2504, 324002, 324098)");
+	//
+	q.setFirstResult(start);
+	q.setMaxResults(maxResults);
+	return q.getResultList();
+    }
+
     public Integer removeAll() {
 	Query q = entityManager.createQuery("DELETE FROM " + entityClass.getName() + " h");
 	return q.executeUpdate();

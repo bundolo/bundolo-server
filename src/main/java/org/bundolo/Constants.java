@@ -11,7 +11,7 @@ public class Constants {
     // TODO i18n
     public static final String DEFAULT_DATE_FORMAT = "dd.MM.yyyy.";
 
-    public static final String DEFAULT_GUEST_USERNAME = "gost";
+    public static final String DEFAULT_GUEST_SLUG = "author/gost";
 
     public static final String REST_PATH_TEXTS = "/texts";
     public static final String REST_PATH_TEXT = "/text";
@@ -51,8 +51,8 @@ public class Constants {
     public static final String REST_PATH_METRICS = "/metrics";
 
     // TODO rework validation
-    public static final String URL_SAFE_REGEX = "^[^~\\\\/\\[\\]\\{\\}\\(\\);\\:\\\"\\\'\\|<>\\?\\+=`#$%\\^&\\*]+$";
-    public static final String USERNAME_SAFE_REGEX = "^[A-Za-z0-9_-]{3,25}$";
+    // public static final String URL_SAFE_REGEX = "^[^~\\\\/\\[\\]\\{\\}\\(\\);\\:\\\"\\\'\\|<>\\?\\+=`#$%\\^&\\*]+$";
+    // public static final String USERNAME_SAFE_REGEX = "^[A-Za-z0-9_-]{3,25}$";
 
     public static final int DEFAULT_PASSWORD_LENGTH = 8;
 
@@ -60,4 +60,9 @@ public class Constants {
 
     public static final String BOT_REQUEST_SUFFIX = "?_escaped_fragment_=";
     public static final String BOT_REQUEST_SUFFIX_ESCAPED = "?_escaped_fragment_=";
+
+    // TODO remove after slugs are populated
+    public static final int PAGE_SIZE = 1000;
+
+    public static final int SLUG_MAX_LENGTH = 255;
 }

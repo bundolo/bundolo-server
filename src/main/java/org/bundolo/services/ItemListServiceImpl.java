@@ -96,8 +96,8 @@ public class ItemListServiceImpl implements ItemListService {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public ItemList findItemList(String title) {
-	ItemList itemList = itemListDAO.findItemList(SecurityUtils.getUsername(), title);
+    public ItemList findItemList(String slug) {
+	ItemList itemList = itemListDAO.findItemList(slug);
 	if (itemList != null) {
 	    Collection<Rating> ratings = itemList.getDescriptionContent().getRating();
 	    if (ratings == null) {
@@ -192,9 +192,9 @@ public class ItemListServiceImpl implements ItemListService {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public Long deleteItemList(String title) {
-	logger.log(Level.INFO, "deleteItemList: title: " + title);
-	ItemList itemList = itemListDAO.findItemList(SecurityUtils.getUsername(), title);
+    public Long deleteItemList(String slug) {
+	logger.log(Level.INFO, "deleteItemList: slug: " + slug);
+	ItemList itemList = itemListDAO.findItemList(slug);
 	if (itemList == null) {
 	    // no such content
 	    return null;

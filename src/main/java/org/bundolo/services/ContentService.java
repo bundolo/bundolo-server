@@ -11,6 +11,9 @@ public interface ContentService {
 
     public Content findContent(Long contentId);
 
+    // this method is only for back end, rating should not be updated
+    public Content findContent(String slug);
+
     public List<Content> findTexts(Integer start, Integer end, String[] orderBy, String[] order, String[] filterBy,
 	    String[] filter);
 
@@ -30,21 +33,21 @@ public interface ContentService {
 
     public List<Content> findTopicGroups();
 
-    public Content findAnnouncement(String title);
+    public Content findAnnouncement(String slug);
 
-    public Content findSerial(String title);
+    public Content findSerial(String slug);
 
     public List<Content> findEpisodes(Long parentId, Integer start, Integer end);
 
-    public Content findEpisode(String serialTitle, String title);
+    public Content findEpisode(String slug);
 
-    public Content findText(String username, String title);
+    public Content findText(String slug);
 
-    public Content findTopic(String title);
+    public Content findTopic(String slug);
 
     public List<Content> findPosts(Long parentId, Integer start, Integer end);
 
-    public List<Content> findAuthorItems(String username, Integer start, Integer end, String[] orderBy, String[] order,
+    public List<Content> findAuthorItems(String slug, Integer start, Integer end, String[] orderBy, String[] order,
 	    String[] filterBy, String[] filter);
 
     // public Boolean saveOrUpdateContent(Content content);
@@ -57,18 +60,21 @@ public interface ContentService {
 
     public void clearSession();
 
-    public Long deleteAnnouncement(String title);
+    public Long deleteAnnouncement(String slug);
 
-    public Long deleteSerial(String title);
+    public Long deleteSerial(String slug);
 
-    public Long deleteEpisode(String serialTitle, String title);
+    public Long deleteEpisode(String slug);
 
-    public Long deleteText(String username, String title);
+    public Long deleteText(String slug);
 
-    public Long deleteTopic(String title);
+    public Long deleteTopic(String slug);
 
     public List<Content> findRecent(Date fromDate, Integer limit);
 
     public List<Content> findItemListItems(String itemListIds);
+
+    // TODO remove after slugs are populated
+    public int populateSlugs(int page);
 
 }

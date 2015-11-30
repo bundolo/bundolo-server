@@ -3,12 +3,9 @@ package org.bundolo.controller;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.bundolo.Constants;
-import org.bundolo.SecurityUtils;
 import org.bundolo.model.Contest;
-import org.bundolo.model.enumeration.ReturnMessageType;
+import org.bundolo.model.enumeration.ContentKindType;
 import org.bundolo.services.ContestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.HandlerMapping;
 
 @Controller
 public class ContestController {
@@ -29,29 +25,22 @@ public class ContestController {
     @Autowired
     private ContestService contestService;
 
-    @RequestMapping(value = Constants.REST_PATH_CONTEST + "/**", method = RequestMethod.GET)
+    @RequestMapping(value = Constants.REST_PATH_CONTEST + "/{slug}", method = RequestMethod.GET)
     public @ResponseBody
-    Contest contest(HttpServletRequest request) {
-	String restOfTheUrl = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
-	restOfTheUrl = SecurityUtils.removeBotSuffix(restOfTheUrl);
-	return contestService.findContest(restOfTheUrl.substring(Constants.REST_PATH_CONTEST.length() + 1));
+    Contest contest(@PathVariable String slug) {
+	return contestService.findContest(ContentKindType.contest_description.getLocalizedName() + "/" + slug);
     }
 
-    @RequestMapping(value = Constants.REST_PATH_CONTEST + "/**", method = RequestMethod.DELETE)
+    @RequestMapping(value = Constants.REST_PATH_CONTEST + "{slug}", method = RequestMethod.DELETE)
     public @ResponseBody
-    Boolean delete(HttpServletRequest request) {
-	String restOfTheUrl = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
-	return contestService.deleteContest(restOfTheUrl.substring(Constants.REST_PATH_CONTEST.length() + 1)) != null;
+    Boolean delete(@PathVariable String slug) {
+	return contestService.deleteContest(ContentKindType.contest_description.getLocalizedName() + "/" + slug) != null;
     }
 
-    @RequestMapping(value = Constants.REST_PATH_CONTEST + "/{title}", method = RequestMethod.PUT)
+    @RequestMapping(value = Constants.REST_PATH_CONTEST, method = RequestMethod.POST)
     public @ResponseBody
-    ResponseEntity<String> saveOrUpdate(@PathVariable String title, @RequestBody final Contest contest) {
+    ResponseEntity<String> saveOrUpdate(@RequestBody final Contest contest) {
 	logger.log(Level.INFO, "saveOrUpdate, contest: " + contest);
-	if (!title.matches(Constants.URL_SAFE_REGEX)) {
-	    return new ResponseEntity<String>(ReturnMessageType.title_not_url_safe.name(), HttpStatus.BAD_REQUEST);
-	}
-	contest.getDescriptionContent().setName(title.trim());
 	ResponseEntity<String> result = contestService.saveOrUpdateContest(contest);
 	if (HttpStatus.OK.equals(result)) {
 	    contestService.clearSession();

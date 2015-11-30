@@ -60,6 +60,12 @@ public class ContentServiceImpl implements ContentService {
     }
 
     @Override
+    public Content findContent(String slug) {
+	Content content = contentDAO.findBySlug(slug);
+	return content;
+    }
+
+    @Override
     public List<Content> findTexts(Integer start, Integer end, String[] orderBy, String[] order, String[] filterBy,
 	    String[] filter) {
 	return contentDAO.findTexts(start, end, orderBy, order, filterBy, filter);
@@ -110,9 +116,10 @@ public class ContentServiceImpl implements ContentService {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public Content findAnnouncement(String title) {
-	Content announcement = contentDAO.findByTitle(title, ContentKindType.news);
-	if (announcement != null) {
+    public Content findAnnouncement(String slug) {
+	// TODO replacing all find methods by single findBySlug which would handle all
+	Content announcement = contentDAO.findBySlug(slug);
+	if (announcement != null && ContentKindType.news.equals(announcement.getKind())) {
 	    Collection<Rating> ratings = announcement.getRating();
 	    if (ratings == null) {
 		ratings = new ArrayList<Rating>();
@@ -139,8 +146,8 @@ public class ContentServiceImpl implements ContentService {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public Content findSerial(String title) {
-	Content serial = contentDAO.findByTitle(title, ContentKindType.episode_group);
+    public Content findSerial(String slug) {
+	Content serial = contentDAO.findBySlug(slug);
 	if (serial != null) {
 	    Collection<Rating> ratings = serial.getRating();
 	    if (ratings == null) {
@@ -168,8 +175,8 @@ public class ContentServiceImpl implements ContentService {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public Content findText(String username, String title) {
-	Content text = contentDAO.findText(username, title);
+    public Content findText(String slug) {
+	Content text = contentDAO.findText(slug);
 	if (text != null) {
 	    Collection<Rating> ratings = text.getRating();
 	    if (ratings == null) {
@@ -197,8 +204,8 @@ public class ContentServiceImpl implements ContentService {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public Content findTopic(String title) {
-	Content topic = contentDAO.findByTitle(title, ContentKindType.forum_topic);
+    public Content findTopic(String slug) {
+	Content topic = contentDAO.findBySlug(slug);
 	if (topic != null) {
 	    Collection<Rating> ratings = topic.getRating();
 	    if (ratings == null) {
@@ -358,8 +365,8 @@ public class ContentServiceImpl implements ContentService {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public Content findEpisode(String serialTitle, String title) {
-	Content episode = contentDAO.findEpisode(serialTitle, title);
+    public Content findEpisode(String slug) {
+	Content episode = contentDAO.findEpisode(slug);
 	if (episode != null) {
 	    Collection<Rating> ratings = episode.getRating();
 	    if (ratings == null) {
@@ -402,9 +409,9 @@ public class ContentServiceImpl implements ContentService {
     }
 
     @Override
-    public List<Content> findAuthorItems(String username, Integer start, Integer end, String[] orderBy, String[] order,
+    public List<Content> findAuthorItems(String slug, Integer start, Integer end, String[] orderBy, String[] order,
 	    String[] filterBy, String[] filter) {
-	return contentDAO.findAuthorItems(username, start, end, orderBy, order, filterBy, filter);
+	return contentDAO.findAuthorItems(slug, start, end, orderBy, order, filterBy, filter);
     }
 
     @Override
@@ -413,22 +420,22 @@ public class ContentServiceImpl implements ContentService {
     }
 
     @Override
-    public Long deleteAnnouncement(String title) {
+    public Long deleteAnnouncement(String slug) {
 	// TODO
 	return null;
     }
 
     @Override
-    public Long deleteSerial(String title) {
+    public Long deleteSerial(String slug) {
 	// TODO
 	return null;
     }
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public Long deleteEpisode(String serialTitle, String title) {
-	logger.log(Level.WARNING, "deleteEpisode: username: " + serialTitle + ", title: " + title);
-	Content episode = contentDAO.findEpisode(serialTitle, title);
+    public Long deleteEpisode(String slug) {
+	logger.log(Level.WARNING, "deleteEpisode: slug: " + slug);
+	Content episode = contentDAO.findEpisode(slug);
 	if (episode == null) {
 	    // no such content
 	    return null;
@@ -451,9 +458,9 @@ public class ContentServiceImpl implements ContentService {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public Long deleteText(String username, String title) {
-	logger.log(Level.INFO, "deleteText: username: " + username + ", title: " + title);
-	Content text = contentDAO.findText(username, title);
+    public Long deleteText(String slug) {
+	logger.log(Level.INFO, "deleteText: slug: " + slug);
+	Content text = contentDAO.findText(slug);
 	if (text == null) {
 	    // no such content
 	    return null;
@@ -468,7 +475,7 @@ public class ContentServiceImpl implements ContentService {
     }
 
     @Override
-    public Long deleteTopic(String title) {
+    public Long deleteTopic(String slug) {
 	// TODO
 	return null;
     }
@@ -500,5 +507,25 @@ public class ContentServiceImpl implements ContentService {
     @Override
     public List<Content> findItemListItems(String itemListIds) {
 	return contentDAO.findItemListItems(itemListIds);
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    public int populateSlugs(int page) {
+	List<Content> contents = contentDAO.findAllPaged(page * Constants.PAGE_SIZE, Constants.PAGE_SIZE);
+	String slug;
+	for (Content content : contents) {
+	    // logger.log(Level.WARNING, "kind: " + content.getKind() + "id: " + content.getContentId());
+	    if (!ContentStatusType.disabled.equals(content.getContentStatus())) {
+		slug = contentDAO.getNewSlug(content);
+		if (slug != null) {
+		    content.setSlug(slug);
+		    // logger.log(Level.WARNING, "slug: " + slug);
+		    contentDAO.merge(content);
+		    contentDAO.flush(content);
+		}
+	    }
+	}
+	return contents.size();
     }
 }

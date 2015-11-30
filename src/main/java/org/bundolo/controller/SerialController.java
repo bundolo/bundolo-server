@@ -5,14 +5,10 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.bundolo.Constants;
 import org.bundolo.DateUtils;
-import org.bundolo.SecurityUtils;
 import org.bundolo.model.Content;
 import org.bundolo.model.enumeration.ContentKindType;
-import org.bundolo.model.enumeration.ReturnMessageType;
 import org.bundolo.services.CommentService;
 import org.bundolo.services.ContentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.HandlerMapping;
 
 @Controller
 public class SerialController {
@@ -41,30 +36,23 @@ public class SerialController {
     @Autowired
     private DateUtils dateUtils;
 
-    @RequestMapping(value = Constants.REST_PATH_SERIAL + "/**", method = RequestMethod.GET)
+    @RequestMapping(value = Constants.REST_PATH_SERIAL + "/{slug}", method = RequestMethod.GET)
     public @ResponseBody
-    Content serial(HttpServletRequest request) {
-	String restOfTheUrl = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
-	restOfTheUrl = SecurityUtils.removeBotSuffix(restOfTheUrl);
-	return contentService.findSerial(restOfTheUrl.substring(Constants.REST_PATH_SERIAL.length() + 1));
+    Content serial(@PathVariable String slug) {
+	return contentService.findSerial(ContentKindType.episode_group.getLocalizedName() + "/" + slug);
     }
 
-    @RequestMapping(value = Constants.REST_PATH_SERIAL + "/**", method = RequestMethod.DELETE)
+    @RequestMapping(value = Constants.REST_PATH_SERIAL + "/{slug}", method = RequestMethod.DELETE)
     public @ResponseBody
-    Boolean deleteSerial(HttpServletRequest request) {
-	String restOfTheUrl = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
-	return contentService.deleteSerial(restOfTheUrl.substring(Constants.REST_PATH_SERIAL.length() + 1)) != null;
+    Boolean deleteSerial(@PathVariable String slug) {
+	return contentService.deleteSerial(ContentKindType.episode_group.getLocalizedName() + "/" + slug) != null;
     }
 
-    @RequestMapping(value = Constants.REST_PATH_SERIAL + "/{title}", method = RequestMethod.PUT)
+    @RequestMapping(value = Constants.REST_PATH_SERIAL, method = RequestMethod.POST)
     public @ResponseBody
-    ResponseEntity<String> saveOrUpdate(@PathVariable String title, @RequestBody final Content serial) {
+    ResponseEntity<String> saveOrUpdate(@RequestBody final Content serial) {
 	logger.log(Level.INFO, "saveOrUpdate, serial: " + serial);
-	if (!title.matches(Constants.URL_SAFE_REGEX)) {
-	    return new ResponseEntity<String>(ReturnMessageType.title_not_url_safe.name(), HttpStatus.BAD_REQUEST);
-	}
 	serial.setKind(ContentKindType.episode_group);
-	serial.setName(title.trim());
 	ResponseEntity<String> result = contentService.saveOrUpdateContent(serial, false);
 	if (HttpStatus.OK.equals(result)) {
 	    contentService.clearSession();
@@ -80,21 +68,17 @@ public class SerialController {
 	return contentService.findEpisodes(parentId, start, end);
     }
 
-    @RequestMapping(value = Constants.REST_PATH_EPISODE + "/{serialTitle}/**", method = RequestMethod.GET)
+    @RequestMapping(value = Constants.REST_PATH_EPISODE + "/{serialSlug}/{episodeSlug}", method = RequestMethod.GET)
     public @ResponseBody
-    Content episode(@PathVariable String serialTitle, HttpServletRequest request) {
-	String restOfTheUrl = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
-	restOfTheUrl = restOfTheUrl.substring(restOfTheUrl.indexOf(serialTitle));
-	restOfTheUrl = SecurityUtils.removeBotSuffix(restOfTheUrl);
-	return contentService.findEpisode(serialTitle, restOfTheUrl.substring(serialTitle.length() + 1));
+    Content episode(@PathVariable String serialSlug, @PathVariable String episodeSlug) {
+	return contentService.findEpisode(ContentKindType.episode.getLocalizedName() + "/" + serialSlug + "/"
+		+ episodeSlug);
     }
 
-    @RequestMapping(value = Constants.REST_PATH_EPISODE + "/{serialTitle}/**", method = RequestMethod.DELETE)
+    @RequestMapping(value = Constants.REST_PATH_EPISODE + "/{slug}", method = RequestMethod.DELETE)
     public @ResponseBody
-    Boolean deleteEpisode(@PathVariable String serialTitle, HttpServletRequest request) {
-	String restOfTheUrl = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
-	restOfTheUrl = restOfTheUrl.substring(restOfTheUrl.indexOf(serialTitle));
-	Long episodeId = contentService.deleteEpisode(serialTitle, restOfTheUrl.substring(serialTitle.length() + 1));
+    Boolean deleteEpisode(@PathVariable String slug) {
+	Long episodeId = contentService.deleteEpisode(ContentKindType.episode.getLocalizedName() + "/" + slug);
 	Boolean result = episodeId != null;
 	if (result) {
 	    // contentService.clearSession();
@@ -104,21 +88,13 @@ public class SerialController {
 	return result;
     }
 
-    @RequestMapping(value = Constants.REST_PATH_EPISODE + "/{serialTitle}/{title}", method = RequestMethod.PUT)
+    @RequestMapping(value = Constants.REST_PATH_EPISODE, method = RequestMethod.POST)
     public @ResponseBody
-    ResponseEntity<String> saveOrUpdateEpisode(@PathVariable String serialTitle, @PathVariable String title,
-	    @RequestBody final Content episode) {
+    ResponseEntity<String> saveOrUpdateEpisode(@RequestBody final Content episode) {
 	logger.log(Level.INFO, "saveOrUpdate, episode: " + episode);
-	if (!title.matches(Constants.URL_SAFE_REGEX)) {
-	    return new ResponseEntity<String>(ReturnMessageType.title_not_url_safe.name(), HttpStatus.BAD_REQUEST);
-	}
-	Content serial = contentService.findSerial(serialTitle);
-	episode.getParentContent().setContentId(serial.getContentId());
-	episode.getParentContent().setName(serial.getName());
 	Date creationDate = dateUtils.newDate();
 	episode.setLastActivity(creationDate);
 	episode.setKind(ContentKindType.episode);
-	episode.setName(title.trim());
 	ResponseEntity<String> result = contentService.saveOrUpdateContent(episode, false);
 	if (HttpStatus.OK.equals(result)) {
 	    contentService.updateLastActivity(episode.getParentContent().getContentId(), creationDate);

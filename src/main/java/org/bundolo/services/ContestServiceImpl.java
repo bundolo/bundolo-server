@@ -95,8 +95,8 @@ public class ContestServiceImpl implements ContestService {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public Contest findContest(String title) {
-	Contest contest = contestDAO.findByTitle(title);
+    public Contest findContest(String slug) {
+	Contest contest = contestDAO.findBySlug(slug);
 	if (contest != null) {
 	    Collection<Rating> ratings = contest.getDescriptionContent().getRating();
 	    if (ratings == null) {
@@ -186,7 +186,7 @@ public class ContestServiceImpl implements ContestService {
     }
 
     @Override
-    public Long deleteContest(String title) {
+    public Long deleteContest(String slug) {
 	// TODO
 	return null;
     }

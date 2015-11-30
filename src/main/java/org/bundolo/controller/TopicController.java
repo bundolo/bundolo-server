@@ -5,14 +5,10 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.bundolo.Constants;
 import org.bundolo.DateUtils;
-import org.bundolo.SecurityUtils;
 import org.bundolo.model.Content;
 import org.bundolo.model.enumeration.ContentKindType;
-import org.bundolo.model.enumeration.ReturnMessageType;
 import org.bundolo.services.ContentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.servlet.HandlerMapping;
 
 @Controller
 public class TopicController {
@@ -38,19 +33,16 @@ public class TopicController {
     @Autowired
     private DateUtils dateUtils;
 
-    @RequestMapping(value = Constants.REST_PATH_TOPIC + "/**", method = RequestMethod.GET)
+    @RequestMapping(value = Constants.REST_PATH_TOPIC + "/{slug}", method = RequestMethod.GET)
     public @ResponseBody
-    Content topic(HttpServletRequest request) {
-	String restOfTheUrl = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
-	restOfTheUrl = SecurityUtils.removeBotSuffix(restOfTheUrl);
-	return contentService.findTopic(restOfTheUrl.substring(Constants.REST_PATH_TOPIC.length() + 1));
+    Content topic(@PathVariable String slug) {
+	return contentService.findTopic(ContentKindType.forum_topic.getLocalizedName() + "/" + slug);
     }
 
-    @RequestMapping(value = Constants.REST_PATH_TOPIC + "/**", method = RequestMethod.DELETE)
+    @RequestMapping(value = Constants.REST_PATH_TOPIC + "/{slug}", method = RequestMethod.DELETE)
     public @ResponseBody
-    Boolean delete(HttpServletRequest request) {
-	String restOfTheUrl = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
-	return contentService.deleteTopic(restOfTheUrl.substring(Constants.REST_PATH_TOPIC.length() + 1)) != null;
+    Boolean delete(@PathVariable String slug) {
+	return contentService.deleteTopic(ContentKindType.forum_topic.getLocalizedName() + "/" + slug) != null;
     }
 
     @RequestMapping(value = Constants.REST_PATH_TOPIC_GROUPS, method = RequestMethod.GET)
@@ -59,15 +51,11 @@ public class TopicController {
 	return contentService.findTopicGroups();
     }
 
-    @RequestMapping(value = Constants.REST_PATH_TOPIC + "/{title}", method = RequestMethod.PUT)
+    @RequestMapping(value = Constants.REST_PATH_TOPIC, method = RequestMethod.POST)
     public @ResponseBody
-    ResponseEntity<String> saveOrUpdate(@PathVariable String title, @RequestBody final Content topic) {
+    ResponseEntity<String> saveOrUpdate(@RequestBody final Content topic) {
 	logger.log(Level.INFO, "saveOrUpdate, topic: " + topic);
-	if (!title.matches(Constants.URL_SAFE_REGEX)) {
-	    return new ResponseEntity<String>(ReturnMessageType.title_not_url_safe.name(), HttpStatus.BAD_REQUEST);
-	}
 	topic.setKind(ContentKindType.forum_topic);
-	topic.setName(title.trim());
 	ResponseEntity<String> result = contentService.saveOrUpdateContent(topic, true);
 	if (HttpStatus.OK.equals(result)) {
 	    contentService.clearSession();
@@ -85,6 +73,7 @@ public class TopicController {
 
     // TODO this should eventually become put method, to avoid saving the same post twice, but it's going to be a
     // problem finding unique url format for them
+    // TODO see why is there @ResponseStatus(HttpStatus.CREATED)
     @RequestMapping(value = Constants.REST_PATH_POST, method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
     public @ResponseBody

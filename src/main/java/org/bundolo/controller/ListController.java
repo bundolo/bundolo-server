@@ -23,6 +23,7 @@ import org.bundolo.model.enumeration.AuthorItemsColumnType;
 import org.bundolo.model.enumeration.ColumnDataType;
 import org.bundolo.model.enumeration.CommentColumnType;
 import org.bundolo.model.enumeration.ConnectionColumnType;
+import org.bundolo.model.enumeration.ContentKindType;
 import org.bundolo.model.enumeration.ContestColumnType;
 import org.bundolo.model.enumeration.EpisodeColumnType;
 import org.bundolo.model.enumeration.ItemListColumnType;
@@ -385,7 +386,7 @@ public class ListController {
 		    StringUtils.isNotBlank(fixBy) ? ContestColumnType.valueOf(fixBy).getColumnName() : null, ascending);
 	    break;
 	case "author":
-	    result = userService.findNext(id, AuthorColumnType.valueOf(orderBy).getColumnName(),
+	    result = userService.findNext(Long.valueOf(id), AuthorColumnType.valueOf(orderBy).getColumnName(),
 		    StringUtils.isNotBlank(fixBy) ? AuthorColumnType.valueOf(fixBy).getColumnName() : null, ascending);
 	    break;
 	case "announcement":
@@ -431,10 +432,10 @@ public class ListController {
 	return contentService.findRecent(fromDate, limit);
     }
 
-    @RequestMapping(value = { Constants.REST_PATH_AUTHOR_ITEMS + "/{username:.+}",
-	    Constants.REST_PATH_USER_ITEMS + "/{username:.+}" }, method = RequestMethod.GET)
+    @RequestMapping(value = { Constants.REST_PATH_AUTHOR_ITEMS + "/" + Constants.REST_PATH_AUTHOR + "/{slug}",
+	    Constants.REST_PATH_USER_ITEMS + "/{slug}" }, method = RequestMethod.GET)
     public @ResponseBody
-    List<Content> authorItems(@PathVariable String username,
+    List<Content> authorItems(@PathVariable String slug,
 	    @RequestParam(required = false, defaultValue = "0") Integer start,
 	    @RequestParam(required = false, defaultValue = "0") Integer end,
 	    @RequestParam(required = false) String orderBy, @RequestParam(required = false) String filterBy) {
@@ -458,8 +459,8 @@ public class ListController {
 		filterByTexts.add(params[i + 1]);
 	    }
 	}
-	return contentService.findAuthorItems(username, start, end,
-		orderByColumns.toArray(new String[orderByColumns.size()]),
+	return contentService.findAuthorItems(ContentKindType.user_description.getLocalizedName() + "/" + slug, start,
+		end, orderByColumns.toArray(new String[orderByColumns.size()]),
 		orderByDirections.toArray(new String[orderByDirections.size()]),
 		filterByColumns.toArray(new String[filterByColumns.size()]),
 		filterByTexts.toArray(new String[filterByTexts.size()]));

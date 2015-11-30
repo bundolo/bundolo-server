@@ -75,8 +75,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public User findUser(String username) {
-	User user = userDAO.findById(username);
+    public User findUser(String slug) {
+	User user = userDAO.findBySlug(slug);
 	if (user != null) {
 	    Collection<Rating> ratings = user.getDescriptionContent().getRating();
 	    if (ratings == null) {
@@ -104,6 +104,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User findUserByUsername(String username) {
+	return userDAO.findById(username);
+    }
+
+    @Override
     public List<User> findUsers(Integer start, Integer end, String[] orderBy, String[] order, String[] filterBy,
 	    String[] filter) {
 	return userDAO.findUsers(start, end, orderBy, order, filterBy, filter);
@@ -111,17 +116,17 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public ReturnMessageType authenticateUser(String username, String password) {
-	logger.log(Level.INFO, "login: " + username + ", " + password);
+    public ReturnMessageType authenticateUser(String slug, String password) {
+	logger.log(Level.INFO, "login: " + slug + ", " + password);
 	ReturnMessageType result = ReturnMessageType.login_failed;
 	// we intentionally set default values to make the method run the same amount of time regardless of being
 	// successful or not
 	String proposedUsername;
 	String proposedPassword;
-	if (StringUtils.isBlank(username)) {
-	    proposedUsername = Constants.DEFAULT_GUEST_USERNAME;
+	if (StringUtils.isBlank(slug)) {
+	    proposedUsername = Constants.DEFAULT_GUEST_SLUG;
 	} else {
-	    proposedUsername = username;
+	    proposedUsername = slug;
 	}
 	if (StringUtils.isBlank(password)) {
 	    proposedPassword = " ";
@@ -129,7 +134,7 @@ public class UserServiceImpl implements UserService {
 	    proposedPassword = password;
 	}
 	try {
-	    UserProfile userProfile = userProfileDAO.findByField("username", proposedUsername);
+	    UserProfile userProfile = userProfileDAO.findByField("descriptionContent.slug", proposedUsername);
 	    String dbSalt;
 	    String dbPassword;
 	    UserProfileStatusType dbStatus;
@@ -213,12 +218,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public ReturnMessageType sendNewPassword(String username, String email) {
+    public ReturnMessageType sendNewPassword(String slug, String email) {
 	try {
-	    if (StringUtils.isBlank(username) || StringUtils.isBlank(email)) {
+	    if (StringUtils.isBlank(slug) || StringUtils.isBlank(email)) {
 		return ReturnMessageType.no_data;
 	    }
-	    UserProfile recipientUserProfile = userProfileDAO.findByField("username", username);
+	    UserProfile recipientUserProfile = userProfileDAO.findByField("descriptionContent.slug", slug);
 	    if (recipientUserProfile == null || !recipientUserProfile.getEmail().equals(email)) {
 		return ReturnMessageType.not_found;
 	    }
@@ -250,17 +255,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ReturnMessageType sendMessage(String title, String text, String recipientUsername) {
-	logger.log(Level.WARNING, "sendMessage: " + title + ", " + recipientUsername);
+    public ReturnMessageType sendMessage(String title, String text, String slug) {
+	logger.log(Level.WARNING, "sendMessage: " + title + ", " + slug);
 	try {
 	    String senderUsername = SecurityUtils.getUsername();
 	    String recipientEmailAddress;
-	    if (StringUtils.isNotBlank(recipientUsername)) {
+	    if (StringUtils.isNotBlank(slug)) {
 		if (StringUtils.isBlank(senderUsername)) {
 		    // guests can't send messages to users
 		    return ReturnMessageType.anonymous_not_allowed;
 		}
-		UserProfile recipientUserProfile = userProfileDAO.findByField("username", recipientUsername);
+		UserProfile recipientUserProfile = userProfileDAO.findByField("descriptionContent.slug", slug);
 		if (recipientUserProfile != null) {
 		    recipientEmailAddress = recipientUserProfile.getEmail();
 		} else {
@@ -271,7 +276,7 @@ public class UserServiceImpl implements UserService {
 		recipientEmailAddress = properties.getProperty("mail.to");
 	    }
 	    if (StringUtils.isBlank(senderUsername)) {
-		senderUsername = Constants.DEFAULT_GUEST_USERNAME;
+		senderUsername = Constants.DEFAULT_GUEST_SLUG;
 	    }
 	    String emailSubject = "bundolo (NO REPLAY) privatna poruka od korisnika " + senderUsername + ": " + title;
 	    String emailBody = text
@@ -462,8 +467,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findNext(String username, String orderBy, String fixBy, boolean ascending) {
-	return userDAO.findNext(username, orderBy, fixBy, ascending);
+    public User findNext(Long userId, String orderBy, String fixBy, boolean ascending) {
+	return userDAO.findNext(userId, orderBy, fixBy, ascending);
     }
 
     @Override

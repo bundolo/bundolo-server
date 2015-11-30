@@ -9,7 +9,7 @@ public interface ItemListService {
 
     public ItemList findItemList(Long itemListId);
 
-    public ItemList findItemList(String title);
+    public ItemList findItemList(String slug);
 
     public ResponseEntity<String> saveOrUpdateItemList(ItemList itemList);
 
@@ -20,5 +20,5 @@ public interface ItemListService {
 
     public void clearSession();
 
-    public Long deleteItemList(String title);
+    public Long deleteItemList(String slug);
 }

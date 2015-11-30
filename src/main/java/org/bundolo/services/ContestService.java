@@ -9,7 +9,7 @@ public interface ContestService {
 
     public Contest findContest(Long contestId);
 
-    public Contest findContest(String title);
+    public Contest findContest(String slug);
 
     public ResponseEntity<String> saveOrUpdateContest(Contest contest);
 
@@ -20,5 +20,5 @@ public interface ContestService {
 
     public void clearSession();
 
-    public Long deleteContest(String title);
+    public Long deleteContest(String slug);
 }

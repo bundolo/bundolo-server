@@ -106,8 +106,8 @@ public class ConnectionServiceImpl implements ConnectionService {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public Connection findConnection(String title) {
-	Connection connection = connectionDAO.findByTitle(title);
+    public Connection findConnection(String slug) {
+	Connection connection = connectionDAO.findBySlug(slug);
 	if (connection != null) {
 	    Collection<Rating> ratings = connection.getDescriptionContent().getRating();
 	    if (ratings == null) {
@@ -198,7 +198,7 @@ public class ConnectionServiceImpl implements ConnectionService {
     }
 
     @Override
-    public Long deleteConnection(String title) {
+    public Long deleteConnection(String slug) {
 	// TODO
 	return null;
     }

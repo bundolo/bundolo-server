@@ -9,6 +9,7 @@ import javax.persistence.Query;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.bundolo.Constants;
 import org.bundolo.SecurityUtils;
 import org.bundolo.SlugifyUtils;
 import org.bundolo.model.Content;
@@ -58,7 +59,7 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 		prefix = nextPrefix;
 	    }
 	}
-	logger.log(Level.INFO, "queryString: " + queryString.toString() + ", start: " + start + ", max results: "
+	logger.log(Level.FINE, "queryString: " + queryString.toString() + ", start: " + start + ", max results: "
 		+ (end - start + 1));
 	Query q = entityManager.createQuery(queryString.toString());
 	if (filterParamCounter > 0) {
@@ -109,7 +110,7 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 		prefix = nextPrefix;
 	    }
 	}
-	logger.log(Level.INFO, "queryString: " + queryString.toString() + ", start: " + start + ", max results: "
+	logger.log(Level.FINE, "queryString: " + queryString.toString() + ", start: " + start + ", max results: "
 		+ (end - start + 1));
 	Query q = entityManager.createQuery(queryString.toString());
 	if (filterParamCounter > 0) {
@@ -155,7 +156,7 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 		prefix = nextPrefix;
 	    }
 	}
-	logger.log(Level.INFO, "queryString: " + queryString.toString() + ", start: " + start + ", max results: "
+	logger.log(Level.FINE, "queryString: " + queryString.toString() + ", start: " + start + ", max results: "
 		+ (end - start + 1));
 	Query q = entityManager.createQuery(queryString.toString());
 	if (filterParamCounter > 0) {
@@ -205,7 +206,7 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 		prefix = nextPrefix;
 	    }
 	}
-	logger.log(Level.INFO, "queryString: " + queryString.toString() + ", start: " + start + ", max results: "
+	logger.log(Level.FINE, "queryString: " + queryString.toString() + ", start: " + start + ", max results: "
 		+ (end - start + 1));
 	Query q = entityManager.createQuery(queryString.toString());
 	if (filterParamCounter > 0) {
@@ -225,7 +226,7 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	    String queryString = "SELECT c FROM Content c, Page p";
 	    queryString += " WHERE p.kind ='" + pageKind + "'";
 	    queryString += " AND p.descriptionContentId = c.contentId";
-	    logger.log(Level.INFO, "queryString: " + queryString);
+	    logger.log(Level.FINE, "queryString: " + queryString);
 
 	    Query q = entityManager.createQuery(queryString);
 	    q.setMaxResults(1);
@@ -237,10 +238,10 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	return result;
     }
 
-    // TODO remove this and switch to findBySlug
+    // TODO this should be replaced by findBySlug but it's still used to check uniqueness
     @SuppressWarnings("unchecked")
     public Content findByTitle(String title, ContentKindType kind) {
-	logger.log(Level.INFO, "findByTitle: " + title + ", kind: " + kind);
+	logger.log(Level.FINE, "findByTitle: " + title + ", kind: " + kind);
 	if (title == null) {
 	    return null;
 	}
@@ -252,7 +253,7 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	} else {
 	    queryString += " AND content_status='active'";
 	}
-	logger.log(Level.INFO, "queryString: " + queryString);
+	logger.log(Level.FINE, "queryString: " + queryString);
 
 	Query q = entityManager.createQuery(queryString);
 	q.setParameter(1, title);
@@ -270,21 +271,15 @@ public class ContentDAO extends JpaDAO<Long, Content> {
     }
 
     @SuppressWarnings("unchecked")
-    public Content findBySlug(String slug, ContentKindType kind) {
-	// TODO passing kind might not be needed
-	logger.log(Level.INFO, "findBySlug: " + slug + ", kind: " + kind);
+    public Content findBySlug(String slug) {
+	logger.log(Level.FINE, "findBySlug: " + slug);
 	if (slug == null) {
 	    return null;
 	}
 	String queryString = "SELECT c FROM Content c";
-	queryString += " WHERE kind = '" + kind + "'";
-	queryString += " AND slug =?1";
-	if (ContentKindType.episode_group.equals(kind)) {
-	    queryString += " AND (content_status='active' OR content_status='pending')";
-	} else {
-	    queryString += " AND content_status='active'";
-	}
-	logger.log(Level.INFO, "queryString: " + queryString);
+	queryString += " WHERE slug =?1";
+	queryString += " AND (content_status='active' OR content_status='pending')";
+	logger.log(Level.FINE, "queryString: " + queryString);
 
 	Query q = entityManager.createQuery(queryString);
 	q.setParameter(1, slug);
@@ -292,7 +287,8 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	List<Content> resultList = q.getResultList();
 	if (resultList != null && resultList.size() > 0) {
 	    Content result = resultList.get(0);
-	    if (ContentKindType.forum_topic.equals(kind) || ContentKindType.episode.equals(kind)) {
+	    if (ContentKindType.forum_topic.equals(result.getKind())
+		    || ContentKindType.episode.equals(result.getKind())) {
 		result.setParentGroup(result.getParentContent().getName());
 	    }
 	    return result;
@@ -301,6 +297,7 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	}
     }
 
+    // this should be replaced by findText(String slug), it's only used to check constraints
     @SuppressWarnings("unchecked")
     public Content findText(String username, String title) {
 	if (username == null || title == null) {
@@ -311,7 +308,7 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	queryString += " AND author_username =?1";
 	queryString += " AND content_name =?2";
 	queryString += " AND content_status='active'";
-	logger.log(Level.INFO, "queryString: " + queryString);
+	logger.log(Level.FINE, "queryString: " + queryString);
 
 	Query q = entityManager.createQuery(queryString);
 	q.setParameter(1, username);
@@ -326,11 +323,33 @@ public class ContentDAO extends JpaDAO<Long, Content> {
     }
 
     @SuppressWarnings("unchecked")
+    public Content findText(String slug) {
+	if (slug == null) {
+	    return null;
+	}
+	String queryString = "SELECT c FROM Content c";
+	queryString += " WHERE kind = '" + ContentKindType.text + "'";
+	queryString += " AND slug =?1";
+	queryString += " AND content_status='active'";
+	logger.log(Level.FINE, "queryString: " + queryString);
+
+	Query q = entityManager.createQuery(queryString);
+	q.setParameter(1, slug);
+	q.setMaxResults(1);
+	List<Content> resultList = q.getResultList();
+	if (resultList != null && resultList.size() > 0) {
+	    return resultList.get(0);
+	} else {
+	    return null;
+	}
+    }
+
+    @SuppressWarnings("unchecked")
     public List<Content> findConnectionGroups() {
 	StringBuilder queryString = new StringBuilder();
 	queryString
 		.append("SELECT c FROM Content c WHERE kind='connection_group' AND content_status='active' ORDER BY creation_date ASC");
-	logger.log(Level.INFO, "queryString: " + queryString.toString());
+	logger.log(Level.FINE, "queryString: " + queryString.toString());
 	Query q = entityManager.createQuery(queryString.toString());
 	return q.getResultList();
     }
@@ -340,7 +359,7 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	StringBuilder queryString = new StringBuilder();
 	queryString
 		.append("SELECT c FROM Content c WHERE kind='forum_group' AND content_status='active' ORDER BY creation_date ASC");
-	logger.log(Level.INFO, "queryString: " + queryString.toString());
+	logger.log(Level.FINE, "queryString: " + queryString.toString());
 	Query q = entityManager.createQuery(queryString.toString());
 	return q.getResultList();
     }
@@ -353,7 +372,7 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	String queryString = "SELECT c FROM Content c WHERE kind='forum_post' AND content_status='active'";
 	queryString += " AND parent_content_id =?1";
 	queryString += " ORDER BY creationDate";
-	logger.log(Level.INFO, "queryString: " + queryString.toString() + ", start: " + start + ", max results: "
+	logger.log(Level.FINE, "queryString: " + queryString.toString() + ", start: " + start + ", max results: "
 		+ (end - start + 1));
 	Query q = entityManager.createQuery(queryString.toString());
 	q.setParameter(1, parentId);
@@ -370,7 +389,7 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	String queryString = "SELECT c FROM Content c WHERE kind='episode' AND (content_status='active' OR content_status='pending')";
 	queryString += " AND parent_content_id =?1";
 	queryString += " ORDER BY creationDate";
-	logger.log(Level.INFO, "queryString: " + queryString.toString() + ", start: " + start + ", max results: "
+	logger.log(Level.FINE, "queryString: " + queryString.toString() + ", start: " + start + ", max results: "
 		+ (end - start + 1));
 	Query q = entityManager.createQuery(queryString.toString());
 	q.setParameter(1, parentId);
@@ -381,6 +400,7 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	return q.getResultList();
     }
 
+    // this should be replaced by findEpisode(String slug), it's only used to check constraints
     @SuppressWarnings("unchecked")
     public Content findEpisode(String serialTitle, String title) {
 	if (serialTitle == null || title == null) {
@@ -391,7 +411,7 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	queryString += " AND parentContent.name =?1";
 	queryString += " AND c.name =?2";
 	queryString += " AND (c.contentStatus='active' OR c.contentStatus='pending')";
-	logger.log(Level.INFO, "queryString: " + queryString);
+	logger.log(Level.FINE, "queryString: " + queryString);
 
 	Query q = entityManager.createQuery(queryString);
 	q.setParameter(1, serialTitle);
@@ -408,23 +428,49 @@ public class ContentDAO extends JpaDAO<Long, Content> {
     }
 
     @SuppressWarnings("unchecked")
-    public List<Content> findAuthorItems(String username, Integer start, Integer end, String[] orderBy, String[] order,
+    public Content findEpisode(String slug) {
+	if (slug == null) {
+	    return null;
+	}
+	String queryString = "SELECT c FROM Content c";
+	queryString += " WHERE c.kind = '" + ContentKindType.episode + "'";
+	queryString += " AND c.slug =?1";
+	queryString += " AND (c.contentStatus='active' OR c.contentStatus='pending')";
+	logger.log(Level.FINE, "queryString: " + queryString);
+
+	Query q = entityManager.createQuery(queryString);
+	q.setParameter(1, slug);
+	q.setMaxResults(1);
+	List<Content> resultList = q.getResultList();
+	if (resultList != null && resultList.size() > 0) {
+	    Content result = resultList.get(0);
+	    result.setParentGroup(result.getParentContent().getName());
+	    return result;
+	} else {
+	    return null;
+	}
+    }
+
+    // TODO fix this!
+    @SuppressWarnings("unchecked")
+    public List<Content> findAuthorItems(String slug, Integer start, Integer end, String[] orderBy, String[] order,
 	    String[] filterBy, String[] filter) {
-	if (username == null) {
+	if (slug == null) {
 	    return null;
 	}
 	int filterParamCounter = 0;
 	StringBuilder queryString = new StringBuilder();
-	queryString.append("SELECT c FROM Content c join c.rating r WHERE c.authorUsername =?1");
+	queryString
+		.append("SELECT c FROM User u, Content c join c.rating r WHERE u.descriptionContent.slug=?1 and c.authorUsername =u.username");
 	queryString.append(" AND (c.kind='" + ContentKindType.text + "' OR c.kind='" + ContentKindType.episode + "'");
 
 	String senderUsername = SecurityUtils.getUsername();
-	if (senderUsername != null && senderUsername.equals(username)) {
+	if (senderUsername != null) {
 	    queryString.append("  OR (c.authorUsername='" + senderUsername + "' AND c.kind='"
 		    + ContentKindType.item_list_description + "')");
 	}
 	queryString.append(")");
-	queryString.append(" AND (content_status='active' OR content_status='pending')");
+	queryString.append(" AND (c.contentStatus='active' OR c.contentStatus='pending')");
 	if (ArrayUtils.isNotEmpty(filterBy)) {
 	    String prefix = " AND LOWER(";
 	    String suffix = ") LIKE '%";
@@ -451,10 +497,10 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 		prefix = nextPrefix;
 	    }
 	}
-	logger.log(Level.INFO, "queryString: " + queryString.toString() + ", start: " + start + ", max results: "
+	logger.log(Level.FINE, "queryString: " + queryString.toString() + ", start: " + start + ", max results: "
 		+ (end - start + 1));
 	Query q = entityManager.createQuery(queryString.toString());
-	q.setParameter(1, username);
+	q.setParameter(1, slug);
 	if (filterParamCounter > 0) {
 	    for (int i = 0; i < filterBy.length; i++) {
 		q.setParameter(i + 2, filter[i].toLowerCase());
@@ -491,7 +537,7 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	}
 	queryString.append(" AND c1." + orderBy + (ascending ? ">" : "<") + "c2." + orderBy);
 	queryString.append(" ORDER BY c1." + orderBy + " " + (ascending ? "ASC" : "DESC"));
-	logger.log(Level.INFO, "queryString: " + queryString.toString());
+	logger.log(Level.FINE, "queryString: " + queryString.toString());
 	Query q = entityManager.createQuery(queryString.toString());
 	q.setParameter(1, contentId);
 	q.setMaxResults(1);
@@ -512,7 +558,7 @@ public class ContentDAO extends JpaDAO<Long, Content> {
     public void disable(Content content) {
 	String queryString = "SELECT c FROM Content c";
 	queryString += " WHERE parent_content_id =?1";
-	logger.log(Level.INFO, "queryString: " + queryString);
+	logger.log(Level.FINE, "queryString: " + queryString);
 	Query q = entityManager.createQuery(queryString);
 	q.setParameter(1, content.getContentId());
 	List<Content> children = q.getResultList();
@@ -522,6 +568,7 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	    }
 	}
 	content.setContentStatus(ContentStatusType.disabled);
+	content.setSlug(null);
 	merge(content);
     }
 
@@ -535,7 +582,7 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	queryString.append(" AND (kind='text' OR kind='forum_topic' OR kind='connection_description' OR kind='news' "
 		+ "OR kind='contest_description' OR kind='episode' OR kind='user_description')");
 	queryString.append(" ORDER BY last_activity desc");
-	logger.log(Level.INFO, "queryString: " + queryString + ", fromDate: " + fromDate + ", limit: " + limit);
+	logger.log(Level.FINE, "queryString: " + queryString + ", fromDate: " + fromDate + ", limit: " + limit);
 	Query q = entityManager.createQuery(queryString.toString());
 	if (fromDate != null) {
 	    q.setParameter(1, fromDate);
@@ -586,49 +633,60 @@ public class ContentDAO extends JpaDAO<Long, Content> {
     public String getNewSlug(Content content) {
 	switch (content.getKind()) {
 	case news:
-	    return getNewSlug(content.getName(), content.getKind(), content.getKind().getLocalizedName(), 0);
+	    return getNewSlug(content.getName(), content.getKind().getLocalizedName(), 0);
 	case connection_description:
-	    return getNewSlug(content.getName(), content.getKind(), content.getKind().getLocalizedName(), 0);
+	    return getNewSlug(content.getName(), content.getKind().getLocalizedName(), 0);
 	case contest_description:
-	    return getNewSlug(content.getName(), content.getKind(), content.getKind().getLocalizedName(), 0);
+	    return getNewSlug(content.getName(), content.getKind().getLocalizedName(), 0);
 	case forum_topic:
-	    return getNewSlug(content.getName(), content.getKind(), content.getKind().getLocalizedName(), 0);
+	    return getNewSlug(content.getName(), content.getKind().getLocalizedName(), 0);
 	case user_description:
 	    // slug is set directly in UserService, this is not going to be used
-	    return getNewSlug(content.getAuthorUsername(), content.getKind(), content.getKind().getLocalizedName(), 0);
+	    return getNewSlug(content.getAuthorUsername(), content.getKind().getLocalizedName(), 0);
 	case item_list_description:
 	    // TODO username will have to be in the slug for non-public item lists
-	    return getNewSlug(content.getName(), content.getKind(), content.getKind().getLocalizedName(), 0);
+	    return getNewSlug(content.getName(), content.getKind().getLocalizedName(), 0);
 	case text:
-	    return getNewSlug(content.getName(), content.getKind(), content.getKind().getLocalizedName() + "/"
-		    + content.getAuthorUsername(), 0);
+	    return getNewSlug(content.getName(),
+		    content.getKind().getLocalizedName() + "/" + slugifyUtils.slugify(content.getAuthorUsername()), 0);
 	case episode_group:
-	    return getNewSlug(content.getName(), content.getKind(), content.getKind().getLocalizedName(), 0);
+	    return getNewSlug(content.getName(), content.getKind().getLocalizedName(), 0);
 	case episode:
 	    String parentContentName = content.getParentContent().getName();
 	    if (StringUtils.isEmpty(parentContentName)) {
 		Content parentContent = findById(content.getParentContent().getContentId());
 		parentContentName = parentContent.getName();
 	    }
-	    return getNewSlug(content.getName(), content.getKind(), content.getKind().getLocalizedName() + "/"
-		    + parentContentName, 0);
+	    return getNewSlug(content.getName(),
+		    content.getKind().getLocalizedName() + "/" + slugifyUtils.slugify(parentContentName), 0);
 	case forum_post:
 	    // TODO forum posts don't have slug, but might need it in the future
 	    return null;
 	default:
-	    return "";
+	    return null;
 	}
     }
 
-    private String getNewSlug(String name, ContentKindType kind, String parent, int counter) {
+    private String getNewSlug(String name, String parent, int counter) {
+	// parent should be slugified already
 	String result = parent + "/" + slugifyUtils.slugify(name);
-	if (counter > 0) {
+
+	if (counter == 0) {
+	    // if counter should not be attached, check for result length
+	    if (result.length() > Constants.SLUG_MAX_LENGTH) {
+		result = result.substring(0, Constants.SLUG_MAX_LENGTH);
+	    }
+	} else {
+	    // if counter should be attached, check for total length, trim text, to make space for counter
+	    if (result.length() + String.valueOf(counter).length() + 1 > Constants.SLUG_MAX_LENGTH) {
+		result = result.substring(0, Constants.SLUG_MAX_LENGTH - (String.valueOf(counter).length() + 1));
+	    }
+	    // add counter
 	    result += "-" + counter;
 	}
-	// TODO consider how slug should be assigned if new content name matches old but deleted content's name
-	Content content = findBySlug(result, kind);
+	Content content = findBySlug(result);
 	if (content != null) {
-	    return getNewSlug(name, kind, parent, counter + 1);
+	    return getNewSlug(name, parent, counter + 1);
 	} else {
 	    return result;
 	}

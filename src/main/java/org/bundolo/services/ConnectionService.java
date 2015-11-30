@@ -9,7 +9,7 @@ public interface ConnectionService {
 
     public Connection findConnection(Long connectionId);
 
-    public Connection findConnection(String title);
+    public Connection findConnection(String slug);
 
     public ResponseEntity<String> saveOrUpdateConnection(Connection connection);
 
@@ -20,5 +20,5 @@ public interface ConnectionService {
 
     public void clearSession();
 
-    public Long deleteConnection(String title);
+    public Long deleteConnection(String slug);
 }

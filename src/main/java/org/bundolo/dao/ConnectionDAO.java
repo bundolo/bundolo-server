@@ -86,6 +86,29 @@ public class ConnectionDAO extends JpaDAO<Long, Connection> {
     }
 
     @SuppressWarnings("unchecked")
+    public Connection findBySlug(String slug) {
+	if (slug == null) {
+	    return null;
+	}
+	String queryString = "SELECT c1 FROM Connection c1, Content c2";
+	queryString += " WHERE c2.kind = '" + ContentKindType.connection_description + "'";
+	queryString += " AND c2.slug =?1";
+	queryString += " AND c1.connectionStatus='active'";
+	queryString += " AND c1.descriptionContent.contentId=c2.contentId";
+	logger.log(Level.INFO, "queryString: " + queryString);
+
+	Query q = entityManager.createQuery(queryString);
+	q.setParameter(1, slug);
+	q.setMaxResults(1);
+	List<Connection> resultList = q.getResultList();
+	if (resultList != null && resultList.size() > 0) {
+	    return resultList.get(0);
+	} else {
+	    return null;
+	}
+    }
+
+    @SuppressWarnings("unchecked")
     public Connection findNext(Long connectionId, String orderBy, String fixBy, boolean ascending) {
 	if (connectionId == null) {
 	    return null;

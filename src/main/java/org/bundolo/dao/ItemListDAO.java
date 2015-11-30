@@ -52,6 +52,33 @@ public class ItemListDAO extends JpaDAO<Long, ItemList> {
     }
 
     @SuppressWarnings("unchecked")
+    public ItemList findItemList(String slug) {
+	if (slug == null) {
+	    return null;
+	}
+	StringBuilder queryString = new StringBuilder();
+	queryString.append("SELECT i FROM ItemList i, Content c");
+	queryString.append(" WHERE i.itemListStatus='" + ItemListStatusType.active + "'");
+	queryString.append(" AND (i.kind = '" + ItemListKindType.general + "' OR i.kind = '" + ItemListKindType.elected
+		+ "' OR i.kind = '" + ItemListKindType.personal + "')");
+	queryString.append(" AND i.descriptionContent.contentId=c.contentId");
+	queryString.append(" AND c.kind = '" + ContentKindType.item_list_description + "'");
+	queryString.append(" AND c.slug =?1");
+	queryString.append(" ORDER BY i.kind DESC");
+	// if they have the same title, personal item lists have the highest priority, then elected, then general
+	logger.log(Level.INFO, "queryString: " + queryString.toString() + ", slug: " + slug);
+	Query q = entityManager.createQuery(queryString.toString());
+	q.setParameter(1, slug);
+	q.setMaxResults(1);
+	List<ItemList> resultList = q.getResultList();
+	if (resultList != null && resultList.size() > 0) {
+	    return resultList.get(0);
+	} else {
+	    return null;
+	}
+    }
+
+    @SuppressWarnings("unchecked")
     public List<ItemList> findItemLists(Integer start, Integer end, String[] orderBy, String[] order,
 	    String[] filterBy, String[] filter) {
 	int filterParamCounter = 0;

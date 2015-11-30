@@ -3,12 +3,9 @@ package org.bundolo.controller;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.bundolo.Constants;
-import org.bundolo.SecurityUtils;
 import org.bundolo.model.ItemList;
-import org.bundolo.model.enumeration.ReturnMessageType;
+import org.bundolo.model.enumeration.ContentKindType;
 import org.bundolo.services.ContentService;
 import org.bundolo.services.ItemListService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.HandlerMapping;
 
 @Controller
 public class ItemListController {
@@ -33,34 +29,27 @@ public class ItemListController {
     @Autowired
     private ContentService contentService;
 
-    @RequestMapping(value = Constants.REST_PATH_ITEM_LIST + "/**", method = RequestMethod.GET)
+    @RequestMapping(value = Constants.REST_PATH_ITEM_LIST + "/{slug}", method = RequestMethod.GET)
     public @ResponseBody
-    ItemList itemList(HttpServletRequest request) {
-	String restOfTheUrl = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
-	restOfTheUrl = SecurityUtils.removeBotSuffix(restOfTheUrl);
-	String title = restOfTheUrl.substring(Constants.REST_PATH_ITEM_LIST.length() + 1);
-	logger.log(Level.INFO, "itemList, title: " + title);
-	ItemList result = itemListService.findItemList(title);
+    ItemList itemList(@PathVariable String slug) {
+	logger.log(Level.INFO, "itemList, slug: " + slug);
+	ItemList result = itemListService.findItemList(ContentKindType.item_list_description.getLocalizedName() + "/"
+		+ slug);
 	if (result != null) {
 	    result.setItems(contentService.findItemListItems(result.getQuery()));
 	}
 	return result;
     }
 
-    @RequestMapping(value = Constants.REST_PATH_ITEM_LIST + "/**", method = RequestMethod.DELETE)
+    @RequestMapping(value = Constants.REST_PATH_ITEM_LIST + "/{slug}", method = RequestMethod.DELETE)
     public @ResponseBody
-    Boolean delete(HttpServletRequest request) {
-	String restOfTheUrl = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
-	return itemListService.deleteItemList(restOfTheUrl.substring(Constants.REST_PATH_ITEM_LIST.length() + 1)) != null;
+    Boolean delete(@PathVariable String slug) {
+	return itemListService.deleteItemList(ContentKindType.item_list_description.getLocalizedName() + "/" + slug) != null;
     }
 
-    @RequestMapping(value = Constants.REST_PATH_ITEM_LIST + "/{title}", method = RequestMethod.PUT)
+    @RequestMapping(value = Constants.REST_PATH_ITEM_LIST, method = RequestMethod.POST)
     public @ResponseBody
-    ResponseEntity<String> saveOrUpdate(@PathVariable String title, @RequestBody final ItemList itemList) {
-	if (!title.matches(Constants.URL_SAFE_REGEX)) {
-	    return new ResponseEntity<String>(ReturnMessageType.title_not_url_safe.name(), HttpStatus.BAD_REQUEST);
-	}
-	itemList.getDescriptionContent().setName(title.trim());
+    ResponseEntity<String> saveOrUpdate(@RequestBody final ItemList itemList) {
 	logger.log(Level.INFO, "saveOrUpdate, itemList: " + itemList);
 	ResponseEntity<String> result = itemListService.saveOrUpdateItemList(itemList);
 	if (HttpStatus.OK.equals(result)) {

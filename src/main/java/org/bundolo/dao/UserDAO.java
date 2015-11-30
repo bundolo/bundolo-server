@@ -66,14 +66,14 @@ public class UserDAO extends JpaDAO<String, User> {
     }
 
     @SuppressWarnings("unchecked")
-    public User findNext(String username, String orderBy, String fixBy, boolean ascending) {
-	if (username == null) {
+    public User findNext(Long userId, String orderBy, String fixBy, boolean ascending) {
+	if (userId == null) {
 	    return null;
 	}
 	// TODO this is not nice. since we don't keep user status in User, we retrieve UserProfile and then get User
 	StringBuilder queryString = new StringBuilder();
 	queryString.append("SELECT u1 FROM UserProfile u1, UserProfile u2");
-	queryString.append(" WHERE u2.username = ?1");
+	queryString.append(" WHERE u2.userId = ?1");
 	queryString.append(" AND u1.userProfileStatus='active'");
 	if (StringUtils.isNotBlank(fixBy)) {
 	    queryString.append(" AND u1." + fixBy + "=u2." + fixBy);
@@ -82,11 +82,34 @@ public class UserDAO extends JpaDAO<String, User> {
 	queryString.append(" ORDER BY u1." + orderBy + " " + (ascending ? "ASC" : "DESC"));
 	logger.log(Level.INFO, "queryString: " + queryString.toString());
 	Query q = entityManager.createQuery(queryString.toString());
-	q.setParameter(1, username);
+	q.setParameter(1, userId);
 	q.setMaxResults(1);
 	List<UserProfile> resultList = q.getResultList();
 	if (resultList != null && resultList.size() > 0) {
 	    return findById(resultList.get(0).getUsername());
+	} else {
+	    return null;
+	}
+    }
+
+    @SuppressWarnings("unchecked")
+    public User findBySlug(String slug) {
+	logger.log(Level.INFO, "findBySlug: " + slug);
+	if (slug == null) {
+	    return null;
+	}
+	String queryString = "SELECT u FROM User u";
+	queryString += " WHERE descriptionContent.slug =?1";
+	queryString += " AND user_profile_status='active'";
+	logger.log(Level.INFO, "queryString: " + queryString);
+
+	Query q = entityManager.createQuery(queryString);
+	q.setParameter(1, slug);
+	q.setMaxResults(1);
+	List<User> resultList = q.getResultList();
+	if (resultList != null && resultList.size() > 0) {
+	    User result = resultList.get(0);
+	    return result;
 	} else {
 	    return null;
 	}
