@@ -61,10 +61,12 @@ public class AuthorController {
 	return userService.deleteUser(ContentKindType.user_description.getLocalizedName() + "/" + slug) != null;
     }
 
-    @RequestMapping(value = Constants.REST_PATH_AUTH + "/{slug}", method = RequestMethod.POST)
+    @RequestMapping(value = Constants.REST_PATH_AUTH, method = RequestMethod.POST)
     public @ResponseBody
-    ReturnMessageType auth(@PathVariable String slug, @RequestParam(required = true) String password) {
-	return userService.authenticateUser(slug, password);
+    ResponseEntity<String> auth(@RequestParam(required = true) String username,
+	    @RequestParam(required = true) String password) {
+	logger.log(Level.INFO, "auth, username: " + username + ", password: " + password);
+	return userService.authenticateUser(username, password);
     }
 
     @RequestMapping(value = Constants.REST_PATH_PASSWORD + "/{slug}", method = RequestMethod.POST)

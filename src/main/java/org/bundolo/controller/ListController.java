@@ -433,7 +433,7 @@ public class ListController {
     }
 
     @RequestMapping(value = { Constants.REST_PATH_AUTHOR_ITEMS + "/" + Constants.REST_PATH_AUTHOR + "/{slug}",
-	    Constants.REST_PATH_USER_ITEMS + "/{slug}" }, method = RequestMethod.GET)
+	    Constants.REST_PATH_USER_ITEMS + "/" + Constants.REST_PATH_AUTHOR + "/{slug}" }, method = RequestMethod.GET)
     public @ResponseBody
     List<Content> authorItems(@PathVariable String slug,
 	    @RequestParam(required = false, defaultValue = "0") Integer start,

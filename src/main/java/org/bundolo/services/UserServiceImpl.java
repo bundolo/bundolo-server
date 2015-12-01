@@ -116,17 +116,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public ReturnMessageType authenticateUser(String slug, String password) {
-	logger.log(Level.INFO, "login: " + slug + ", " + password);
-	ReturnMessageType result = ReturnMessageType.login_failed;
+    public ResponseEntity<String> authenticateUser(String username, String password) {
+	logger.log(Level.INFO, "login: " + username + ", " + password);
+	ResponseEntity<String> result = new ResponseEntity<String>(ReturnMessageType.login_failed.name(),
+		HttpStatus.BAD_REQUEST);
 	// we intentionally set default values to make the method run the same amount of time regardless of being
 	// successful or not
 	String proposedUsername;
 	String proposedPassword;
-	if (StringUtils.isBlank(slug)) {
+	if (StringUtils.isBlank(username)) {
 	    proposedUsername = Constants.DEFAULT_GUEST_SLUG;
 	} else {
-	    proposedUsername = slug;
+	    proposedUsername = username;
 	}
 	if (StringUtils.isBlank(password)) {
 	    proposedPassword = " ";
@@ -134,7 +135,7 @@ public class UserServiceImpl implements UserService {
 	    proposedPassword = password;
 	}
 	try {
-	    UserProfile userProfile = userProfileDAO.findByField("descriptionContent.slug", proposedUsername);
+	    UserProfile userProfile = userProfileDAO.findByField("username", proposedUsername);
 	    String dbSalt;
 	    String dbPassword;
 	    UserProfileStatusType dbStatus;
@@ -144,7 +145,7 @@ public class UserServiceImpl implements UserService {
 		dbStatus = userProfile.getUserProfileStatus();
 	    } else {
 		// if user is not found it is ok to skip the rest since usernames are not secret
-		return ReturnMessageType.login_failed;
+		return result;
 	    }
 	    userProfile.setPreviousActivity(userProfile.getDescriptionContent().getLastActivity());
 	    // update guest account in case of failed login to make this run the same amount of time regardless of being
@@ -154,13 +155,13 @@ public class UserServiceImpl implements UserService {
 	    userProfileDAO.merge(userProfile);
 	    if (SecurityUtils.getHashWithPredefinedSalt(proposedPassword, dbSalt).equals(dbPassword)
 		    && (UserProfileStatusType.active.equals(dbStatus))) {
-		result = ReturnMessageType.success;
+		result = new ResponseEntity<String>(userProfile.getDescriptionContent().getSlug(), HttpStatus.OK);
 	    } else {
-		result = ReturnMessageType.login_failed;
+		result = new ResponseEntity<String>(ReturnMessageType.login_failed.name(), HttpStatus.BAD_REQUEST);
 	    }
 	} catch (Exception ex) {
 	    logger.log(Level.SEVERE, "authenticateUser exception: " + ex);
-	    result = ReturnMessageType.exception;
+	    result = new ResponseEntity<String>(ReturnMessageType.exception.name(), HttpStatus.BAD_REQUEST);
 	}
 	return result;
     }

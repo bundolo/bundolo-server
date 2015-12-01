@@ -17,13 +17,13 @@ public interface UserService {
     public List<User> findUsers(Integer start, Integer end, String[] orderBy, String[] order, String[] filterBy,
 	    String[] filter);
 
-    public ReturnMessageType authenticateUser(String slug, String password);
+    public ResponseEntity<String> authenticateUser(String username, String password);
 
     public ReturnMessageType activateUserEmailAddress(String email, String nonce);
 
     public ReturnMessageType sendMessage(String title, String text, String slug);
 
-    public ReturnMessageType sendNewPassword(String slug, String email);
+    public ReturnMessageType sendNewPassword(String username, String email);
 
     public ResponseEntity<String> saveOrUpdateUser(UserProfile userProfile);
 
