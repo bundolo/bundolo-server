@@ -36,11 +36,12 @@ public class TextController {
 	return contentService.findText(ContentKindType.text.getLocalizedName() + "/" + authorSlug + "/" + textSlug);
     }
 
-    @RequestMapping(value = Constants.REST_PATH_TEXT + "/{slug}", method = RequestMethod.DELETE)
+    @RequestMapping(value = Constants.REST_PATH_TEXT + "/{authorSlug}/{textSlug}", method = RequestMethod.DELETE)
     public @ResponseBody
-    Boolean delete(@PathVariable String slug) {
-	logger.log(Level.INFO, "delete, slug: " + slug);
-	Long textId = contentService.deleteText(ContentKindType.text.getLocalizedName() + "/" + slug);
+    Boolean delete(@PathVariable String authorSlug, @PathVariable String textSlug) {
+	logger.log(Level.INFO, "delete, authorSlug: " + authorSlug + ", textSlug: " + textSlug);
+	Long textId = contentService.deleteText(ContentKindType.text.getLocalizedName() + "/" + authorSlug + "/"
+		+ textSlug);
 	Boolean result = textId != null;
 	if (result) {
 	    // contentService.clearSession();

@@ -451,7 +451,6 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	}
     }
 
-    // TODO fix this!
     @SuppressWarnings("unchecked")
     public List<Content> findAuthorItems(String slug, Integer start, Integer end, String[] orderBy, String[] order,
 	    String[] filterBy, String[] filter) {
@@ -629,7 +628,6 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	return recentContent;
     }
 
-    // TODO
     public String getNewSlug(Content content) {
 	switch (content.getKind()) {
 	case news:

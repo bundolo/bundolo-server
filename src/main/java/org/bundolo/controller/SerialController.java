@@ -42,6 +42,15 @@ public class SerialController {
 	return contentService.findSerial(ContentKindType.episode_group.getLocalizedName() + "/" + slug);
     }
 
+    @RequestMapping(value = Constants.REST_PATH_SERIAL + "/" + Constants.REST_PATH_EPISODE
+	    + "/{serialSlug}/{episodeSlug}", method = RequestMethod.GET)
+    public @ResponseBody
+    Content serialByEpisode(@PathVariable String serialSlug, @PathVariable String episodeSlug) {
+	Content episode = contentService.findContent(ContentKindType.episode.getLocalizedName() + "/" + serialSlug
+		+ "/" + episodeSlug);
+	return contentService.findSerial(episode.getParentContent().getSlug());
+    }
+
     @RequestMapping(value = Constants.REST_PATH_SERIAL + "/{slug}", method = RequestMethod.DELETE)
     public @ResponseBody
     Boolean deleteSerial(@PathVariable String slug) {
@@ -75,10 +84,11 @@ public class SerialController {
 		+ episodeSlug);
     }
 
-    @RequestMapping(value = Constants.REST_PATH_EPISODE + "/{slug}", method = RequestMethod.DELETE)
+    @RequestMapping(value = Constants.REST_PATH_EPISODE + "/{serialSlug}/{episodeSlug}", method = RequestMethod.DELETE)
     public @ResponseBody
-    Boolean deleteEpisode(@PathVariable String slug) {
-	Long episodeId = contentService.deleteEpisode(ContentKindType.episode.getLocalizedName() + "/" + slug);
+    Boolean deleteEpisode(@PathVariable String serialSlug, @PathVariable String episodeSlug) {
+	Long episodeId = contentService.deleteEpisode(ContentKindType.episode.getLocalizedName() + "/" + serialSlug
+		+ "/" + episodeSlug);
 	Boolean result = episodeId != null;
 	if (result) {
 	    // contentService.clearSession();

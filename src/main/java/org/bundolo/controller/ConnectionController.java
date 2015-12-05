@@ -48,7 +48,7 @@ public class ConnectionController {
 
     @RequestMapping(value = Constants.REST_PATH_CONNECTION, method = RequestMethod.POST)
     public @ResponseBody
-    ResponseEntity<String> saveOrUpdate(@PathVariable String title, @RequestBody final Connection connection) {
+    ResponseEntity<String> saveOrUpdate(@RequestBody final Connection connection) {
 	logger.log(Level.INFO, "saveOrUpdate, connection: " + connection);
 	ResponseEntity<String> result = connectionService.saveOrUpdateConnection(connection);
 	if (HttpStatus.OK.equals(result)) {

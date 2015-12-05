@@ -4,11 +4,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.bundolo.Constants;
-import org.bundolo.SecurityUtils;
-import org.bundolo.model.Content;
 import org.bundolo.model.User;
 import org.bundolo.model.UserProfile;
 import org.bundolo.model.enumeration.ContentKindType;
@@ -25,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.HandlerMapping;
 
 @Controller
 public class AuthorController {
@@ -45,16 +40,6 @@ public class AuthorController {
 	return userService.findUser(ContentKindType.user_description.getLocalizedName() + "/" + slug);
     }
 
-    @RequestMapping(value = Constants.REST_PATH_AUTHOR + "/**", method = RequestMethod.GET)
-    public @ResponseBody
-    User author(HttpServletRequest request) {
-	String restOfTheUrl = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
-	restOfTheUrl = SecurityUtils.removeBotSuffix(restOfTheUrl);
-	logger.log(Level.WARNING, "author, restOfTheUrl: " + restOfTheUrl);
-	Content content = contentService.findContent(restOfTheUrl.substring(Constants.REST_PATH_AUTHOR.length() + 1));
-	return userService.findUserByUsername(content.getAuthorUsername());
-    }
-
     @RequestMapping(value = Constants.REST_PATH_AUTHOR + "/{slug}", method = RequestMethod.DELETE)
     public @ResponseBody
     Boolean delete(@PathVariable String slug) {
@@ -69,11 +54,12 @@ public class AuthorController {
 	return userService.authenticateUser(username, password);
     }
 
-    @RequestMapping(value = Constants.REST_PATH_PASSWORD + "/{slug}", method = RequestMethod.POST)
+    @RequestMapping(value = Constants.REST_PATH_PASSWORD, method = RequestMethod.POST)
     public @ResponseBody
-    ReturnMessageType password(@PathVariable String slug, @RequestParam(required = true) String email) {
-	logger.log(Level.INFO, "password, slug: " + slug + ", email: " + email);
-	return userService.sendNewPassword(slug, email);
+    ReturnMessageType password(@RequestParam(required = true) String username,
+	    @RequestParam(required = true) String email) {
+	logger.log(Level.INFO, "password, username: " + username + ", email: " + email);
+	return userService.sendNewPassword(username, email);
     }
 
     @RequestMapping(value = Constants.REST_PATH_AUTHOR, method = RequestMethod.POST)
@@ -98,11 +84,12 @@ public class AuthorController {
 	return result;
     }
 
-    @RequestMapping(value = Constants.REST_PATH_MESSAGE + "/{username:.+}", method = RequestMethod.POST)
+    @RequestMapping(value = Constants.REST_PATH_MESSAGE + "/" + Constants.REST_PATH_AUTHOR + "/{slug}", method = RequestMethod.POST)
     public @ResponseBody
     ReturnMessageType message(@PathVariable String slug, @RequestBody final Map<String, String> message) {
 	logger.log(Level.INFO, "message, slug: " + slug + ", message: " + message);
-	return userService.sendMessage(message.get("title"), message.get("text"), slug);
+	return userService.sendMessage(message.get("title"), message.get("text"),
+		ContentKindType.user_description.getLocalizedName() + "/" + slug);
     }
 
     @RequestMapping(value = Constants.REST_PATH_MESSAGE, method = RequestMethod.POST)

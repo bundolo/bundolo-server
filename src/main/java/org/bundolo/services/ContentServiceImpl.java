@@ -247,6 +247,10 @@ public class ContentServiceImpl implements ContentService {
 	    }
 	    content.setSlug(contentDAO.getNewSlug(content));
 	    if (ContentKindType.episode.equals(content.getKind())) {
+		if (content.getParentContent().getContentId() == null) {
+		    // episode that is not attached to a serial is not allowed
+		    return new ResponseEntity<String>(ReturnMessageType.episode_detached.name(), HttpStatus.BAD_REQUEST);
+		}
 		// if this is episode and the last one in the serial is pending, saving is not allowed
 		List<Content> episodes = contentDAO.findEpisodes(content.getParentContent().getContentId(), 0, -1);
 		if (episodes != null && episodes.size() > 0
@@ -286,11 +290,6 @@ public class ContentServiceImpl implements ContentService {
 	    if (content == null) {
 		return new ResponseEntity<String>(ReturnMessageType.no_data.name(), HttpStatus.BAD_REQUEST);
 	    }
-	    if (ContentKindType.episode.equals(content.getKind()) && content.getParentContent().getContentId() == null) {
-		// episode that is not attached to a serial is not allowed
-		return new ResponseEntity<String>(ReturnMessageType.episode_detached.name(), HttpStatus.BAD_REQUEST);
-	    }
-
 	    String senderUsername = SecurityUtils.getUsername();
 	    if (senderUsername != null || anonymousAllowed) {
 		if (content.getContentId() == null) {
@@ -306,6 +305,7 @@ public class ContentServiceImpl implements ContentService {
 			// user is not the owner
 			return new ResponseEntity<String>(ReturnMessageType.not_owner.name(), HttpStatus.BAD_REQUEST);
 		    }
+		    // TODO if this is episode, check does it belong to the same serial as before
 		    if (!contentDB.getName().equals(content.getName())) {
 			content.setAuthorUsername(contentDB.getAuthorUsername());
 			if (contentViolatesDBConstraints(content)) {

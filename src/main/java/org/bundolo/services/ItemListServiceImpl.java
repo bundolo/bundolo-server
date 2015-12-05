@@ -164,7 +164,6 @@ public class ItemListServiceImpl implements ItemListService {
 			}
 			descriptionContentDB.setText(descriptionContent.getText());
 			descriptionContentDB.setLastActivity(dateUtils.newDate());
-			// TODO slug
 			itemListDB.setQuery(itemList.getQuery());
 			itemListDAO.merge(itemListDB);
 			return new ResponseEntity<String>(itemListDB.getDescriptionContent().getSlug(), HttpStatus.OK);

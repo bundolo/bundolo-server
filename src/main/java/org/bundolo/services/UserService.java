@@ -11,9 +11,6 @@ public interface UserService {
 
     public User findUser(String slug);
 
-    // this method is only for back end, rating and last activity should not be updated
-    public User findUserByUsername(String username);
-
     public List<User> findUsers(Integer start, Integer end, String[] orderBy, String[] order, String[] filterBy,
 	    String[] filter);
 

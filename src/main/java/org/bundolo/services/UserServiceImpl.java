@@ -104,11 +104,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findUserByUsername(String username) {
-	return userDAO.findById(username);
-    }
-
-    @Override
     public List<User> findUsers(Integer start, Integer end, String[] orderBy, String[] order, String[] filterBy,
 	    String[] filter) {
 	return userDAO.findUsers(start, end, orderBy, order, filterBy, filter);
@@ -219,12 +214,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public ReturnMessageType sendNewPassword(String slug, String email) {
+    public ReturnMessageType sendNewPassword(String username, String email) {
 	try {
-	    if (StringUtils.isBlank(slug) || StringUtils.isBlank(email)) {
+	    if (StringUtils.isBlank(username) || StringUtils.isBlank(email)) {
 		return ReturnMessageType.no_data;
 	    }
-	    UserProfile recipientUserProfile = userProfileDAO.findByField("descriptionContent.slug", slug);
+	    UserProfile recipientUserProfile = userProfileDAO.findByField("username", username);
 	    if (recipientUserProfile == null || !recipientUserProfile.getEmail().equals(email)) {
 		return ReturnMessageType.not_found;
 	    }
@@ -297,7 +292,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     private ResponseEntity<String> saveUser(String username, String email, String password) {
-	// TODO make username case insensitive probably, to make sure slug is always equal to username
+	// TODO make username case insensitive maybe, to make sure slug is always equal to username
 	try {
 	    if (StringUtils.isBlank(username) || StringUtils.isBlank(email) || StringUtils.isBlank(password)) {
 		return new ResponseEntity<String>(ReturnMessageType.no_data.name(), HttpStatus.BAD_REQUEST);

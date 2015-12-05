@@ -69,8 +69,8 @@ public class MailingUtils {
 		sendEmailGoDaddy(body, subject, recipient);
 	    }
 	} else {
-	    // logger.log(Level.WARNING, "sendEmail\nrecipient: " + recipient + "\nsubject: " + subject + "\nbody: "
-	    // + body);
+//	    logger.log(Level.WARNING, "sendEmail\nrecipient: " + recipient + "\nsubject: " + subject + "\nbody: "
+//		    + body);
 	    logger.log(Level.WARNING, "sendEmail\nrecipient: " + recipient + "\nsubject: " + subject);
 	}
     }
