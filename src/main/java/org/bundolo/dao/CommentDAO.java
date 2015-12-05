@@ -104,7 +104,8 @@ public class CommentDAO extends JpaDAO<Long, Comment> {
 	for (Comment comment : comments) {
 	    // logger.log(Level.INFO, "comment: " + comment);
 	    Content commentAncestor = comment.getParentContent();
-	    while (commentAncestor.getParentContent() != null) {
+	    while (!ContentKindType.episode.equals(commentAncestor.getKind())
+		    && commentAncestor.getParentContent() != null) {
 		commentAncestor = commentAncestor.getParentContent();
 	    }
 	    // strip parent to the minimum that is going to be used, to make the request run faster
