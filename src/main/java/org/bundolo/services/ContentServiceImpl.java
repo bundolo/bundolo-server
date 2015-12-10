@@ -509,23 +509,4 @@ public class ContentServiceImpl implements ContentService {
 	return contentDAO.findItemListItems(itemListIds);
     }
 
-    @Override
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public int populateSlugs(int page) {
-	List<Content> contents = contentDAO.findAllPaged(page * Constants.PAGE_SIZE, Constants.PAGE_SIZE);
-	String slug;
-	for (Content content : contents) {
-	    // logger.log(Level.WARNING, "kind: " + content.getKind() + "id: " + content.getContentId());
-	    if (!ContentStatusType.disabled.equals(content.getContentStatus())) {
-		slug = contentDAO.getNewSlug(content);
-		if (slug != null) {
-		    content.setSlug(slug);
-		    // logger.log(Level.WARNING, "slug: " + slug);
-		    contentDAO.merge(content);
-		    contentDAO.flush(content);
-		}
-	    }
-	}
-	return contents.size();
-    }
 }

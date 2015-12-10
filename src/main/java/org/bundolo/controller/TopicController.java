@@ -84,6 +84,7 @@ public class TopicController {
 	post.setKind(ContentKindType.forum_post);
 	ResponseEntity<String> result = contentService.saveOrUpdateContent(post, true);
 	if (HttpStatus.OK.equals(result)) {
+	    //TODO this somehow does not update topic last activity
 	    contentService.updateLastActivity(post.getParentContent().getContentId(), creationDate);
 	    contentService.clearSession();
 	}

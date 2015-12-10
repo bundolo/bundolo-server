@@ -74,7 +74,4 @@ public interface ContentService {
 
     public List<Content> findItemListItems(String itemListIds);
 
-    // TODO remove after slugs are populated
-    public int populateSlugs(int page);
-
 }

@@ -61,8 +61,5 @@ public class Constants {
     public static final String BOT_REQUEST_SUFFIX = "?_escaped_fragment_=";
     public static final String BOT_REQUEST_SUFFIX_ESCAPED = "?_escaped_fragment_=";
 
-    // TODO remove after slugs are populated
-    public static final int PAGE_SIZE = 1000;
-
     public static final int SLUG_MAX_LENGTH = 255;
 }
