@@ -63,7 +63,7 @@ public class SerialController {
 	logger.log(Level.INFO, "saveOrUpdate, serial: " + serial);
 	serial.setKind(ContentKindType.episode_group);
 	ResponseEntity<String> result = contentService.saveOrUpdateContent(serial, false);
-	if (HttpStatus.OK.equals(result)) {
+	if (HttpStatus.OK.equals(result.getStatusCode())) {
 	    contentService.clearSession();
 	}
 	return result;
@@ -106,7 +106,7 @@ public class SerialController {
 	episode.setLastActivity(creationDate);
 	episode.setKind(ContentKindType.episode);
 	ResponseEntity<String> result = contentService.saveOrUpdateContent(episode, false);
-	if (HttpStatus.OK.equals(result)) {
+	if (HttpStatus.OK.equals(result.getStatusCode())) {
 	    contentService.updateLastActivity(episode.getParentContent().getContentId(), creationDate);
 	    contentService.clearSession();
 	}

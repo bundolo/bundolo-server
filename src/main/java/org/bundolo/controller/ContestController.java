@@ -42,7 +42,7 @@ public class ContestController {
     ResponseEntity<String> saveOrUpdate(@RequestBody final Contest contest) {
 	logger.log(Level.INFO, "saveOrUpdate, contest: " + contest);
 	ResponseEntity<String> result = contestService.saveOrUpdateContest(contest);
-	if (HttpStatus.OK.equals(result)) {
+	if (HttpStatus.OK.equals(result.getStatusCode())) {
 	    contestService.clearSession();
 	}
 	return result;

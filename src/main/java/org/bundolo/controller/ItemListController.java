@@ -52,7 +52,7 @@ public class ItemListController {
     ResponseEntity<String> saveOrUpdate(@RequestBody final ItemList itemList) {
 	logger.log(Level.INFO, "saveOrUpdate, itemList: " + itemList);
 	ResponseEntity<String> result = itemListService.saveOrUpdateItemList(itemList);
-	if (HttpStatus.OK.equals(result)) {
+	if (HttpStatus.OK.equals(result.getStatusCode())) {
 	    itemListService.clearSession();
 	}
 	return result;

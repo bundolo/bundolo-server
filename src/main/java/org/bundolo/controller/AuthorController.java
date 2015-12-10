@@ -67,7 +67,7 @@ public class AuthorController {
     ResponseEntity<String> saveOrUpdate(@RequestBody final UserProfile userProfile) {
 	logger.log(Level.INFO, "saveOrUpdate, userProfile: " + userProfile);
 	ResponseEntity<String> result = userService.saveOrUpdateUser(userProfile);
-	if (HttpStatus.OK.equals(result)) {
+	if (HttpStatus.OK.equals(result.getStatusCode())) {
 	    userService.clearSession();
 	}
 	return result;

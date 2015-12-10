@@ -57,7 +57,7 @@ public class TextController {
 	logger.log(Level.INFO, "saveOrUpdate, text: " + text);
 	text.setKind(ContentKindType.text);
 	ResponseEntity<String> result = contentService.saveOrUpdateContent(text, false);
-	if (HttpStatus.OK.equals(result)) {
+	if (HttpStatus.OK.equals(result.getStatusCode())) {
 	    contentService.clearSession();
 	}
 	return result;

@@ -51,7 +51,7 @@ public class ConnectionController {
     ResponseEntity<String> saveOrUpdate(@RequestBody final Connection connection) {
 	logger.log(Level.INFO, "saveOrUpdate, connection: " + connection);
 	ResponseEntity<String> result = connectionService.saveOrUpdateConnection(connection);
-	if (HttpStatus.OK.equals(result)) {
+	if (HttpStatus.OK.equals(result.getStatusCode())) {
 	    connectionService.clearSession();
 	}
 	return result;
