@@ -49,6 +49,7 @@ public class Constants {
     public static final String REST_PATH_ITEM_LISTS = "/item_lists";
     public static final String REST_PATH_ITEM_LIST = "/item_list";
     public static final String REST_PATH_METRICS = "/metrics";
+    public static final String REST_PATH_ITEM_LIST_ITEMS = "/item_list_items";
 
     // TODO rework validation
     // public static final String URL_SAFE_REGEX = "^[^~\\\\/\\[\\]\\{\\}\\(\\);\\:\\\"\\\'\\|<>\\?\\+=`#$%\\^&\\*]+$";

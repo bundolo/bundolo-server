@@ -604,19 +604,86 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	return recentContent;
     }
 
+    // @SuppressWarnings("unchecked")
+    // public List<Content> findItemListItems(String itemListIds, Integer limit) {
+    // if (StringUtils.isBlank(itemListIds)) {
+    // return null;
+    // }
+    // StringBuilder queryString = new StringBuilder();
+    // queryString.append("SELECT c FROM Content c WHERE content_status='active'");
+    // queryString.append(" AND content_id IN " + itemListIds.replace("[", "(").replace("]", ")"));
+    // Query q = entityManager.createQuery(queryString.toString());
+    // if (limit > 0) {
+    // q.setMaxResults(limit);
+    // }
+    // // strip to make the request run faster
+    // List<Content> recentContent = q.getResultList();
+    // for (Content content : recentContent) {
+    // if (!ContentKindType.page_description.equals(content.getKind())) {
+    // content.setText("");
+    // }
+    // content.setRating(null);
+    // content.setDescription(null);
+    // if (ContentKindType.episode.equals(content.getKind())) {
+    // content.setParentGroup(content.getParentContent().getName());
+    // }
+    // }
+    // return recentContent;
+    // }
+
     @SuppressWarnings("unchecked")
-    public List<Content> findItemListItems(String itemListIds) {
+    public List<Content> findItemListItems(String itemListIds, Integer start, Integer end, String[] orderBy,
+	    String[] order, String[] filterBy, String[] filter) {
 	if (StringUtils.isBlank(itemListIds)) {
 	    return null;
 	}
+	int filterParamCounter = 0;
 	StringBuilder queryString = new StringBuilder();
 	queryString.append("SELECT c FROM Content c WHERE content_status='active'");
 	queryString.append(" AND content_id IN " + itemListIds.replace("[", "(").replace("]", ")"));
+	if (ArrayUtils.isNotEmpty(filterBy)) {
+	    String prefix = " AND LOWER(";
+	    String suffix = ") LIKE '%";
+	    String postfix = "%'";
+	    for (int i = 0; i < filterBy.length; i++) {
+		queryString.append(prefix);
+		queryString.append(filterBy[i]);
+		queryString.append(suffix);
+		filterParamCounter++;
+		queryString.append("'||?" + filterParamCounter + "||'");
+		queryString.append(postfix);
+	    }
+	}
+	if (ArrayUtils.isNotEmpty(orderBy) && ArrayUtils.isSameLength(orderBy, order)) {
+	    String firstPrefix = " ORDER BY ";
+	    String nextPrefix = ", ";
+	    String prefix = firstPrefix;
+	    String suffix = " ";
+	    for (int i = 0; i < orderBy.length; i++) {
+		queryString.append(prefix);
+		queryString.append(orderBy[i]);
+		queryString.append(suffix);
+		queryString.append(order[i]);
+		prefix = nextPrefix;
+	    }
+	}
+	int maxResults = end - start + 1;
+	logger.log(Level.FINE, "queryString: " + queryString.toString() + ", start: " + start + ", max results: "
+		+ maxResults);
 	Query q = entityManager.createQuery(queryString.toString());
+	if (filterParamCounter > 0) {
+	    for (int i = 0; i < filterBy.length; i++) {
+		q.setParameter(i + 1, filter[i].toLowerCase());
+	    }
+	}
+	q.setFirstResult(start);
+	if (maxResults > 0) {
+	    q.setMaxResults(maxResults);
+	}
 	// strip to make the request run faster
 	List<Content> recentContent = q.getResultList();
 	for (Content content : recentContent) {
-	    if (!ContentKindType.page_description.equals(content.getKind())) {
+	    if (!ContentKindType.page_description.equals(content.getKind()) && maxResults != 1) {
 		content.setText("");
 	    }
 	    content.setRating(null);

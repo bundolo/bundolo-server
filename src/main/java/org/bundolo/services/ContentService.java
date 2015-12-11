@@ -72,6 +72,7 @@ public interface ContentService {
 
     public List<Content> findRecent(Date fromDate, Integer limit);
 
-    public List<Content> findItemListItems(String itemListIds);
+    public List<Content> findItemListItems(String itemListIds, Integer start, Integer end, String[] orderBy,
+	    String[] order, String[] filterBy, String[] filter);
 
 }

@@ -36,7 +36,7 @@ public class ItemListController {
 	ItemList result = itemListService.findItemList(ContentKindType.item_list_description.getLocalizedName() + "/"
 		+ slug);
 	if (result != null) {
-	    result.setItems(contentService.findItemListItems(result.getQuery()));
+	    result.setItems(contentService.findItemListItems(result.getQuery(), 0, -1, null, null, null, null));
 	}
 	return result;
     }

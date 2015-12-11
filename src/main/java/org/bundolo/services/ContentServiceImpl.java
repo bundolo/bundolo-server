@@ -505,8 +505,9 @@ public class ContentServiceImpl implements ContentService {
     }
 
     @Override
-    public List<Content> findItemListItems(String itemListIds) {
-	return contentDAO.findItemListItems(itemListIds);
+    public List<Content> findItemListItems(String itemListIds, Integer start, Integer end, String[] orderBy,
+	    String[] order, String[] filterBy, String[] filter) {
+	return contentDAO.findItemListItems(itemListIds, start, end, orderBy, order, filterBy, filter);
     }
 
 }

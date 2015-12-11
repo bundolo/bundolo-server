@@ -27,6 +27,7 @@ import org.bundolo.model.enumeration.ContentKindType;
 import org.bundolo.model.enumeration.ContestColumnType;
 import org.bundolo.model.enumeration.EpisodeColumnType;
 import org.bundolo.model.enumeration.ItemListColumnType;
+import org.bundolo.model.enumeration.ItemListItemsColumnType;
 import org.bundolo.model.enumeration.SerialColumnType;
 import org.bundolo.model.enumeration.TextColumnType;
 import org.bundolo.model.enumeration.TopicColumnType;
@@ -466,7 +467,47 @@ public class ListController {
 		filterByTexts.toArray(new String[filterByTexts.size()]));
     }
 
-    public static String getFilterByColumn(String columnName, ColumnDataType columnDataType) {
+    @RequestMapping(value = { Constants.REST_PATH_ITEM_LIST_ITEMS + "/" + Constants.REST_PATH_ITEM_LIST + "/{slug}" }, method = RequestMethod.GET)
+    public @ResponseBody
+    List<Content> itemListItems(@PathVariable String slug,
+	    @RequestParam(required = false, defaultValue = "0") Integer start,
+	    @RequestParam(required = false, defaultValue = "0") Integer end,
+	    @RequestParam(required = false) String orderBy, @RequestParam(required = false) String filterBy) {
+	ItemList itemList = itemListService.findItemList(ContentKindType.item_list_description.getLocalizedName() + "/"
+		+ slug);
+	if (itemList == null) {
+	    return null;
+	}
+	List<String> orderByColumns = new ArrayList<String>();
+	List<String> orderByDirections = new ArrayList<String>();
+	if (StringUtils.isNotBlank(orderBy)) {
+	    String[] params = orderBy.split(",");
+	    for (int i = 0; i < params.length; i += 2) {
+		orderByColumns.add(ItemListItemsColumnType.valueOf(params[i]).getColumnName());
+		orderByDirections.add(getOrderByDirection(params[i + 1]));
+	    }
+	}
+	List<String> filterByColumns = new ArrayList<String>();
+	List<String> filterByTexts = new ArrayList<String>();
+	if (StringUtils.isNotBlank(filterBy)) {
+	    String[] params = filterBy.split(",");
+	    for (int i = 0; i < params.length; i += 2) {
+		ItemListItemsColumnType itemListItemsColumnType = ItemListItemsColumnType.valueOf(params[i]);
+		filterByColumns.add(getFilterByColumn(itemListItemsColumnType.getColumnName(),
+			itemListItemsColumnType.getColumnDataType()));
+		filterByTexts.add(params[i + 1]);
+	    }
+	}
+	ItemList result = itemListService.findItemList(ContentKindType.item_list_description.getLocalizedName() + "/"
+		+ slug);
+	return contentService.findItemListItems(itemList.getQuery(), start, end,
+		orderByColumns.toArray(new String[orderByColumns.size()]),
+		orderByDirections.toArray(new String[orderByDirections.size()]),
+		filterByColumns.toArray(new String[filterByColumns.size()]),
+		filterByTexts.toArray(new String[filterByTexts.size()]));
+    }
+
+    private String getFilterByColumn(String columnName, ColumnDataType columnDataType) {
 	switch (columnDataType) {
 	case date:
 	    return "to_char(" + columnName + ", 'DD.MM.YYYY.')";
