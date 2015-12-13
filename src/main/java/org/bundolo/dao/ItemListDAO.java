@@ -110,8 +110,9 @@ public class ItemListDAO extends JpaDAO<Long, ItemList> {
 		prefix = nextPrefix;
 	    }
 	}
+	int maxResults = end - start + 1;
 	logger.log(Level.INFO, "queryString: " + queryString.toString() + ", start: " + start + ", max results: "
-		+ (end - start + 1));
+		+ maxResults);
 	Query q = entityManager.createQuery(queryString.toString());
 	if (filterParamCounter > 0) {
 	    for (int i = 0; i < filterBy.length; i++) {
@@ -119,8 +120,8 @@ public class ItemListDAO extends JpaDAO<Long, ItemList> {
 	    }
 	}
 	q.setFirstResult(start);
-	if (end > 0) {
-	    q.setMaxResults(end - start + 1);
+	if (maxResults > 0) {
+	    q.setMaxResults(maxResults);
 	}
 
 	// TODO if we strip item lists and update them later, we could delete something

@@ -71,7 +71,27 @@ public class ItemListServiceImpl implements ItemListService {
 	    }
 	    itemList.setItemListStatus(ItemListStatusType.active);
 	    itemList.setCreationDate(dateUtils.newDate());
-	    itemList.setKind(ItemListKindType.personal);
+
+	    if (itemList.getKind() != null && ItemListKindType.general.equals(itemList.getKind())) {
+		// there can be only one general item list
+		List<ItemList> generalItemLists = itemListDAO.findItemLists(0, 0, new String[0], new String[0],
+			new String[] { "kind" }, new String[] { "general" });
+		if (!generalItemLists.isEmpty()) {
+		    itemList.setKind(ItemListKindType.personal);
+		}
+	    }
+	    if (itemList.getKind() != null && ItemListKindType.elected.equals(itemList.getKind())) {
+		// there can be only one elected item list
+		List<ItemList> electedItemLists = itemListDAO.findItemLists(0, 0, new String[0], new String[0],
+			new String[] { "kind" }, new String[] { "elected" });
+		if (!electedItemLists.isEmpty()) {
+		    itemList.setKind(ItemListKindType.personal);
+		}
+	    }
+	    if (itemList.getKind() == null) {
+		itemList.setKind(ItemListKindType.personal);
+	    }
+
 	    Content descriptionContent = itemList.getDescriptionContent();
 	    descriptionContent.setAuthorUsername(itemList.getAuthorUsername());
 	    descriptionContent.setContentStatus(ContentStatusType.active);
@@ -165,6 +185,23 @@ public class ItemListServiceImpl implements ItemListService {
 			descriptionContentDB.setText(descriptionContent.getText());
 			descriptionContentDB.setLastActivity(dateUtils.newDate());
 			itemListDB.setQuery(itemList.getQuery());
+			itemListDB.setKind(ItemListKindType.personal);
+			if (itemList.getKind() != null && ItemListKindType.general.equals(itemList.getKind())) {
+			    // there can be only one general item list
+			    List<ItemList> generalItemLists = itemListDAO.findItemLists(0, 0, new String[0],
+				    new String[0], new String[] { "kind" }, new String[] { "general" });
+			    if (generalItemLists.isEmpty()) {
+				itemListDB.setKind(ItemListKindType.general);
+			    }
+			}
+			if (itemList.getKind() != null && ItemListKindType.elected.equals(itemList.getKind())) {
+			    // there can be only one elected item list
+			    List<ItemList> electedItemLists = itemListDAO.findItemLists(0, 0, new String[0],
+				    new String[0], new String[] { "kind" }, new String[] { "elected" });
+			    if (electedItemLists.isEmpty()) {
+				itemListDB.setKind(ItemListKindType.elected);
+			    }
+			}
 			itemListDAO.merge(itemListDB);
 			return new ResponseEntity<String>(itemListDB.getDescriptionContent().getSlug(), HttpStatus.OK);
 		    }

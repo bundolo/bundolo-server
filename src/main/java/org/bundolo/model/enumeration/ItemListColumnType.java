@@ -3,7 +3,7 @@ package org.bundolo.model.enumeration;
 public enum ItemListColumnType {
     author("authorUsername", ColumnDataType.text), date("creationDate", ColumnDataType.date), description(
 	    "descriptionContent.text", ColumnDataType.text), title("descriptionContent.name", ColumnDataType.text), activity(
-	    "descriptionContent.lastActivity", ColumnDataType.date);
+	    "descriptionContent.lastActivity", ColumnDataType.date), kind("kind", ColumnDataType.text);
 
     private final String columnName;
     private final ColumnDataType columnDataType;
