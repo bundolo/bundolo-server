@@ -36,7 +36,7 @@ public class AuthorController {
     @RequestMapping(value = Constants.REST_PATH_AUTHOR + "/{slug}", method = RequestMethod.GET)
     public @ResponseBody
     User author(@PathVariable String slug) {
-	logger.log(Level.WARNING, "author, slug: " + slug);
+	logger.log(Level.INFO, "author, slug: " + slug);
 	return userService.findUser(ContentKindType.user_description.getLocalizedName() + "/" + slug);
     }
 

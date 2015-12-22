@@ -445,7 +445,7 @@ public class ContentServiceImpl implements ContentService {
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public Long deleteEpisode(String slug) {
 	// TODO this should return ResponseEntity
-	logger.log(Level.WARNING, "deleteEpisode: slug: " + slug);
+	logger.log(Level.INFO, "deleteEpisode: slug: " + slug);
 	Content episode = contentDAO.findEpisode(slug);
 	if (episode == null) {
 	    // no such content

@@ -164,7 +164,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public ReturnMessageType activateUserEmailAddress(String email, String nonce) {
-	logger.log(Level.WARNING, "activateUserEmailAddress: " + email + ", " + nonce);
+	logger.log(Level.INFO, "activateUserEmailAddress: " + email + ", " + nonce);
 	try {
 	    if (StringUtils.isBlank(email) || StringUtils.isBlank(nonce)) {
 		return ReturnMessageType.no_data;
@@ -252,7 +252,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ReturnMessageType sendMessage(String title, String text, String slug) {
-	logger.log(Level.WARNING, "sendMessage: " + title + ", " + slug);
+	logger.log(Level.INFO, "sendMessage: " + title + ", " + slug);
 	try {
 	    String senderUsername = SecurityUtils.getUsername();
 	    String recipientEmailAddress;
