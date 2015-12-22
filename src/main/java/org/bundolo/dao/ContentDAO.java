@@ -262,7 +262,7 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	if (resultList != null && resultList.size() > 0) {
 	    Content result = resultList.get(0);
 	    if (ContentKindType.forum_topic.equals(kind) || ContentKindType.episode.equals(kind)) {
-		result.setParentGroup(result.getParentContent().getName());
+		result.setParent(result.getParentContent());
 	    }
 	    return result;
 	} else {
@@ -289,7 +289,7 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	    Content result = resultList.get(0);
 	    if (ContentKindType.forum_topic.equals(result.getKind())
 		    || ContentKindType.episode.equals(result.getKind())) {
-		result.setParentGroup(result.getParentContent().getName());
+		result.setParent(result.getParentContent());
 	    }
 	    return result;
 	} else {
@@ -420,7 +420,7 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	List<Content> resultList = q.getResultList();
 	if (resultList != null && resultList.size() > 0) {
 	    Content result = resultList.get(0);
-	    result.setParentGroup(result.getParentContent().getName());
+	    result.setParent(result.getParentContent());
 	    return result;
 	} else {
 	    return null;
@@ -444,7 +444,7 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	List<Content> resultList = q.getResultList();
 	if (resultList != null && resultList.size() > 0) {
 	    Content result = resultList.get(0);
-	    result.setParentGroup(result.getParentContent().getName());
+	    result.setParent(result.getParentContent());
 	    return result;
 	} else {
 	    return null;
@@ -513,7 +513,7 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	    for (Content result : resultList) {
 		if (ContentKindType.forum_topic.equals(result.getKind())
 			|| ContentKindType.episode.equals(result.getKind()) && result.getParentContent() != null) {
-		    result.setParentGroup(result.getParentContent().getName());
+		    result.setParent(result.getParentContent());
 		}
 		result.setText("");
 	    }
@@ -530,7 +530,8 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	queryString.append("SELECT c1 FROM Content c1, Content c2");
 	queryString.append(" WHERE c2.contentId = ?1");
 	queryString.append(" AND c1.kind = c2.kind");
-	queryString.append(" AND c1.contentStatus='active'");
+	queryString
+		.append(" AND (c1.contentStatus='active' OR (c1.kind='episode_group' AND c1.contentStatus='pending'))");
 	if (StringUtils.isNotBlank(fixBy)) {
 	    queryString.append(" AND c1." + fixBy + "=c2." + fixBy);
 	}
@@ -545,7 +546,7 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	    Content result = resultList.get(0);
 	    if (ContentKindType.forum_topic.equals(result.getKind())
 		    || ContentKindType.episode.equals(result.getKind())) {
-		result.setParentGroup(result.getParentContent().getName());
+		result.setParent(result.getParentContent());
 	    }
 	    return result;
 	} else {
@@ -598,38 +599,11 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	    content.setRating(null);
 	    content.setDescription(null);
 	    if (ContentKindType.episode.equals(content.getKind())) {
-		content.setParentGroup(content.getParentContent().getName());
+		content.setParent(content.getParentContent());
 	    }
 	}
 	return recentContent;
     }
-
-    // @SuppressWarnings("unchecked")
-    // public List<Content> findItemListItems(String itemListIds, Integer limit) {
-    // if (StringUtils.isBlank(itemListIds)) {
-    // return null;
-    // }
-    // StringBuilder queryString = new StringBuilder();
-    // queryString.append("SELECT c FROM Content c WHERE content_status='active'");
-    // queryString.append(" AND content_id IN " + itemListIds.replace("[", "(").replace("]", ")"));
-    // Query q = entityManager.createQuery(queryString.toString());
-    // if (limit > 0) {
-    // q.setMaxResults(limit);
-    // }
-    // // strip to make the request run faster
-    // List<Content> recentContent = q.getResultList();
-    // for (Content content : recentContent) {
-    // if (!ContentKindType.page_description.equals(content.getKind())) {
-    // content.setText("");
-    // }
-    // content.setRating(null);
-    // content.setDescription(null);
-    // if (ContentKindType.episode.equals(content.getKind())) {
-    // content.setParentGroup(content.getParentContent().getName());
-    // }
-    // }
-    // return recentContent;
-    // }
 
     @SuppressWarnings("unchecked")
     public List<Content> findItemListItems(String itemListIds, Integer start, Integer end, String[] orderBy,
@@ -639,7 +613,9 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	}
 	int filterParamCounter = 0;
 	StringBuilder queryString = new StringBuilder();
-	queryString.append("SELECT c FROM Content c WHERE content_status='active'");
+	queryString.append("SELECT c FROM Content c");
+	queryString
+		.append(" WHERE (c.contentStatus='active' OR (c.kind='episode_group' AND c.contentStatus='pending'))");
 	queryString.append(" AND content_id IN " + itemListIds.replace("[", "(").replace("]", ")"));
 	if (ArrayUtils.isNotEmpty(filterBy)) {
 	    String prefix = " AND LOWER(";
@@ -689,7 +665,7 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	    content.setRating(null);
 	    content.setDescription(null);
 	    if (ContentKindType.episode.equals(content.getKind())) {
-		content.setParentGroup(content.getParentContent().getName());
+		content.setParent(content.getParentContent());
 	    }
 	}
 	return recentContent;

@@ -251,11 +251,19 @@ public class ContentServiceImpl implements ContentService {
 		    // episode that is not attached to a serial is not allowed
 		    return new ResponseEntity<String>(ReturnMessageType.episode_detached.name(), HttpStatus.BAD_REQUEST);
 		}
-		// if this is episode and the last one in the serial is pending, saving is not allowed
-		List<Content> episodes = contentDAO.findEpisodes(content.getParentContent().getContentId(), 0, -1);
-		if (episodes != null && episodes.size() > 0
-			&& ContentStatusType.pending.equals(episodes.get(episodes.size() - 1).getContentStatus())) {
-		    return new ResponseEntity<String>(ReturnMessageType.serial_pending.name(), HttpStatus.BAD_REQUEST);
+		Content parentContent = contentDAO.findById(content.getParentContent().getContentId());
+		if (parentContent == null || !ContentKindType.episode_group.equals(parentContent.getKind())) {
+		    // episode that is not attached to a serial is not allowed
+		    return new ResponseEntity<String>(ReturnMessageType.episode_detached.name(), HttpStatus.BAD_REQUEST);
+		}
+		if (ContentStatusType.active.equals(parentContent.getContentStatus())) {
+		    // if serial is active, adding new episode is not allowed if last one is pending
+		    List<Content> episodes = contentDAO.findEpisodes(content.getParentContent().getContentId(), 0, -1);
+		    if (episodes != null && episodes.size() > 0
+			    && ContentStatusType.pending.equals(episodes.get(episodes.size() - 1).getContentStatus())) {
+			return new ResponseEntity<String>(ReturnMessageType.serial_pending.name(),
+				HttpStatus.BAD_REQUEST);
+		    }
 		}
 	    }
 	    if (content.getContentStatus() == null) {
@@ -286,6 +294,7 @@ public class ContentServiceImpl implements ContentService {
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public ResponseEntity<String> saveOrUpdateContent(Content content, boolean anonymousAllowed) {
+	logger.log(Level.INFO, "saveOrUpdateContent content: " + content);
 	try {
 	    if (content == null) {
 		return new ResponseEntity<String>(ReturnMessageType.no_data.name(), HttpStatus.BAD_REQUEST);
@@ -305,7 +314,7 @@ public class ContentServiceImpl implements ContentService {
 			// user is not the owner
 			return new ResponseEntity<String>(ReturnMessageType.not_owner.name(), HttpStatus.BAD_REQUEST);
 		    }
-		    // TODO if this is episode, check does it belong to the same serial as before
+		    // TODO if serial is active, don't allow editing and deleting episodes except last
 		    if (!contentDB.getName().equals(content.getName())) {
 			content.setAuthorUsername(contentDB.getAuthorUsername());
 			if (contentViolatesDBConstraints(content)) {
@@ -327,7 +336,8 @@ public class ContentServiceImpl implements ContentService {
 		    } else {
 			contentDB.setLastActivity(dateUtils.newDate());
 		    }
-		    if (ContentKindType.episode.equals(content.getKind()) && content.getContentStatus() != null) {
+		    if ((ContentKindType.episode.equals(content.getKind()) || ContentKindType.episode_group
+			    .equals(content.getKind())) && content.getContentStatus() != null) {
 			contentDB.setContentStatus(content.getContentStatus());
 		    }
 		    contentDAO.merge(contentDB);
@@ -434,6 +444,7 @@ public class ContentServiceImpl implements ContentService {
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public Long deleteEpisode(String slug) {
+	// TODO this should return ResponseEntity
 	logger.log(Level.WARNING, "deleteEpisode: slug: " + slug);
 	Content episode = contentDAO.findEpisode(slug);
 	if (episode == null) {
@@ -444,12 +455,14 @@ public class ContentServiceImpl implements ContentService {
 		// user is not the owner
 		return null;
 	    }
-	    // TODO it might be sufficient just to check episode status
-	    Content nextEpisode = contentDAO.findNext(episode.getContentId(), TextColumnType.valueOf("date")
-		    .getColumnName(), null, true);
-	    if (nextEpisode != null) {
-		// there is subsequent episode
-		return null;
+	    if (ContentStatusType.active.equals(episode.getParentContent().getContentStatus())) {
+		// don't allow deleting episode in active serial if it's not last
+		Content nextEpisode = contentDAO.findNext(episode.getContentId(), TextColumnType.valueOf("date")
+			.getColumnName(), null, true);
+		if (nextEpisode != null) {
+		    // there is subsequent episode
+		    return null;
+		}
 	    }
 	    contentDAO.disable(episode);
 	    return episode.getContentId();

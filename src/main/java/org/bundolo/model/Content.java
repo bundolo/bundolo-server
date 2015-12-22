@@ -74,7 +74,7 @@ public class Content implements java.io.Serializable {
     private Content parentContent;
 
     @Transient
-    private String parentGroup;
+    private Content parent;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "parentContent")
     @JsonManagedReference
@@ -201,12 +201,13 @@ public class Content implements java.io.Serializable {
 	this.lastActivity = lastActivity;
     }
 
-    public String getParentGroup() {
-	return parentGroup;
+    public Content getParent() {
+	return parent;
     }
 
-    public void setParentGroup(String parentGroup) {
-	this.parentGroup = parentGroup;
+    public void setParent(Content parent) {
+	// TODO trim rating and other unnecessary fields, either here, or where setter is called
+	this.parent = parent;
     }
 
     public String getSlug() {
