@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.embedded.FilterRegistrationBean;
@@ -30,6 +31,9 @@ public class Application {
     }
 
     public static void main(String[] args) {
+	if (StringUtils.isBlank(System.getProperty("env"))) {
+	    System.setProperty("env", "dev");
+	}
 	System.out.println("bundolo " + System.getProperty("env") + " startup at " + new Date());
 	SpringApplication application = new SpringApplication(Application.class);
 	application.setShowBanner(false);
