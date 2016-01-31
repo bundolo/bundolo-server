@@ -123,7 +123,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 		    .newDate() : rating.getLastActivity();
 	    if (rating == null) {
 		rating = new Rating(null, null, RatingKindType.general, lastActivity, RatingStatusType.active,
-			ratingIncrement, connection.getDescriptionContent());
+			ratingIncrement, 0l, connection.getDescriptionContent());
 		connection.getDescriptionContent().getRating().add(rating);
 	    } else {
 		rating.setValue(rating.getValue() + ratingIncrement);

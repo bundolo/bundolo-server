@@ -103,7 +103,7 @@ public class ContentServiceImpl implements ContentService {
 		    .toArray()[0] : null;
 	    if (rating == null) {
 		rating = new Rating(null, null, RatingKindType.general, dateUtils.newDate(), RatingStatusType.active,
-			Constants.DEFAULT_RATING_INCREMENT, pageDescriptionContent);
+			Constants.DEFAULT_RATING_INCREMENT, 0l, pageDescriptionContent);
 		pageDescriptionContent.getRating().add(rating);
 	    } else {
 		rating.setValue(rating.getValue() + Constants.DEFAULT_RATING_INCREMENT);
@@ -133,7 +133,7 @@ public class ContentServiceImpl implements ContentService {
 		    .newDate() : rating.getLastActivity();
 	    if (rating == null) {
 		rating = new Rating(null, null, RatingKindType.general, lastActivity, RatingStatusType.active,
-			ratingIncrement, announcement);
+			ratingIncrement, 0l, announcement);
 		announcement.getRating().add(rating);
 	    } else {
 		rating.setValue(rating.getValue() + ratingIncrement);
@@ -162,7 +162,7 @@ public class ContentServiceImpl implements ContentService {
 		    .newDate() : rating.getLastActivity();
 	    if (rating == null) {
 		rating = new Rating(null, null, RatingKindType.general, lastActivity, RatingStatusType.active,
-			ratingIncrement, serial);
+			ratingIncrement, 0l, serial);
 		serial.getRating().add(rating);
 	    } else {
 		rating.setValue(rating.getValue() + ratingIncrement);
@@ -191,7 +191,7 @@ public class ContentServiceImpl implements ContentService {
 		    .newDate() : rating.getLastActivity();
 	    if (rating == null) {
 		rating = new Rating(null, null, RatingKindType.general, lastActivity, RatingStatusType.active,
-			ratingIncrement, text);
+			ratingIncrement, 0l, text);
 		text.getRating().add(rating);
 	    } else {
 		rating.setValue(rating.getValue() + ratingIncrement);
@@ -222,7 +222,7 @@ public class ContentServiceImpl implements ContentService {
 		    .newDate() : rating.getLastActivity();
 	    if (rating == null) {
 		rating = new Rating(null, null, RatingKindType.general, lastActivity, RatingStatusType.active,
-			ratingIncrement, topic);
+			ratingIncrement, 0l, topic);
 		topic.getRating().add(rating);
 	    } else {
 		rating.setValue(rating.getValue() + ratingIncrement);
@@ -392,7 +392,7 @@ public class ContentServiceImpl implements ContentService {
 		    .newDate() : rating.getLastActivity();
 	    if (rating == null) {
 		rating = new Rating(null, null, RatingKindType.general, lastActivity, RatingStatusType.active,
-			ratingIncrement, episode);
+			ratingIncrement, 0l, episode);
 		episode.getRating().add(rating);
 	    } else {
 		rating.setValue(rating.getValue() + ratingIncrement);
@@ -422,6 +422,12 @@ public class ContentServiceImpl implements ContentService {
     public List<Content> findAuthorItems(String slug, Integer start, Integer end, String[] orderBy, String[] order,
 	    String[] filterBy, String[] filter) {
 	return contentDAO.findAuthorItems(slug, start, end, orderBy, order, filterBy, filter);
+    }
+
+    @Override
+    public List<Content> findAuthorInteractions(String slug, Date fromDate, Integer start, Integer end,
+	    String[] orderBy, String[] order, String[] filterBy, String[] filter) {
+	return contentDAO.findAuthorInteractions(slug, fromDate, start, end, orderBy, order, filterBy, filter);
     }
 
     @Override

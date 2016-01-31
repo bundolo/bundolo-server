@@ -92,7 +92,7 @@ public class UserServiceImpl implements UserService {
 		    .newDate() : rating.getLastActivity();
 	    if (rating == null) {
 		rating = new Rating(null, null, RatingKindType.general, lastActivity, RatingStatusType.active,
-			ratingIncrement, user.getDescriptionContent());
+			ratingIncrement, 0l, user.getDescriptionContent());
 		user.getDescriptionContent().getRating().add(rating);
 	    } else {
 		rating.setValue(rating.getValue() + ratingIncrement);

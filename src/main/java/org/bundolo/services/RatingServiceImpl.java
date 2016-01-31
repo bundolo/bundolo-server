@@ -48,19 +48,26 @@ public class RatingServiceImpl implements RatingService {
     public Rating findPersonalRating(Long contentId) {
 	String senderUsername = SecurityUtils.getUsername();
 	if (senderUsername != null) {
-	    Rating result = ratingDAO.findPersonalRating(contentId, senderUsername);
-	    if (result == null) {
-		Content content = contentDAO.findById(contentId);
-		if (content != null) {
-		    result = new Rating(null, senderUsername, RatingKindType.personal, dateUtils.newDate(),
-			    RatingStatusType.active, Constants.DEFAULT_PERSONAL_RATING, content);
-		    ratingDAO.persist(result);
+	    Rating generalRating = ratingDAO.findRating(contentId, null);
+	    if (generalRating != null) {
+		Rating result = ratingDAO.findRating(contentId, senderUsername);
+		if (result == null) {
+		    Content content = contentDAO.findById(contentId);
+		    if (content != null) {
+			result = new Rating(null, senderUsername, RatingKindType.personal, dateUtils.newDate(),
+				RatingStatusType.active, Constants.DEFAULT_PERSONAL_RATING, generalRating.getValue(),
+				content);
+			ratingDAO.persist(result);
+		    }
+		} else {
+		    result.setLastActivity(dateUtils.newDate());
+		    result.setHistorical(generalRating.getValue());
+		    ratingDAO.merge(result);
 		}
+		return result;
 	    } else {
-		result.setLastActivity(dateUtils.newDate());
-		ratingDAO.merge(result);
+		return null;
 	    }
-	    return result;
 	} else {
 	    return null;
 	}

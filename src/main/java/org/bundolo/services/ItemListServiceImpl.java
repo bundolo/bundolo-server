@@ -135,7 +135,7 @@ public class ItemListServiceImpl implements ItemListService {
 		    .newDate() : rating.getLastActivity();
 	    if (rating == null) {
 		rating = new Rating(null, null, RatingKindType.general, lastActivity, RatingStatusType.active,
-			ratingIncrement, itemList.getDescriptionContent());
+			ratingIncrement, 0l, itemList.getDescriptionContent());
 		itemList.getDescriptionContent().getRating().add(rating);
 	    } else {
 		rating.setValue(rating.getValue() + ratingIncrement);

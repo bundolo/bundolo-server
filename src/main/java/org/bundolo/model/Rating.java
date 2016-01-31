@@ -50,6 +50,9 @@ public class Rating implements java.io.Serializable {
     @Column(name = "value")
     private Long value;
 
+    @Column(name = "historical")
+    private Long historical;
+
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "parent_content_id", nullable = true)
     @JsonBackReference
@@ -60,7 +63,7 @@ public class Rating implements java.io.Serializable {
     }
 
     public Rating(Long ratingId, String authorUsername, RatingKindType kind, Date lastActivity,
-	    RatingStatusType ratingStatus, Long value, Content parentContent) {
+	    RatingStatusType ratingStatus, Long value, Long historical, Content parentContent) {
 	super();
 	this.ratingId = ratingId;
 	this.authorUsername = authorUsername;
@@ -68,6 +71,7 @@ public class Rating implements java.io.Serializable {
 	this.lastActivity = lastActivity;
 	this.ratingStatus = ratingStatus;
 	this.value = value;
+	this.historical = historical;
 	this.parentContent = parentContent;
     }
 
@@ -125,6 +129,14 @@ public class Rating implements java.io.Serializable {
 
     public void setLastActivity(Date lastActivity) {
 	this.lastActivity = lastActivity;
+    }
+
+    public Long getHistorical() {
+	return historical;
+    }
+
+    public void setHistorical(Long historical) {
+	this.historical = historical;
     }
 
     @Override

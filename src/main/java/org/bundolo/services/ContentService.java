@@ -50,6 +50,9 @@ public interface ContentService {
     public List<Content> findAuthorItems(String slug, Integer start, Integer end, String[] orderBy, String[] order,
 	    String[] filterBy, String[] filter);
 
+    public List<Content> findAuthorInteractions(String slug, Date fromDate, Integer start, Integer end,
+	    String[] orderBy, String[] order, String[] filterBy, String[] filter);
+
     // public Boolean saveOrUpdateContent(Content content);
 
     public ResponseEntity<String> saveOrUpdateContent(Content content, boolean anonymousAllowed);

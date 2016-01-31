@@ -112,7 +112,7 @@ public class ContestServiceImpl implements ContestService {
 		    .newDate() : rating.getLastActivity();
 	    if (rating == null) {
 		rating = new Rating(null, null, RatingKindType.general, lastActivity, RatingStatusType.active,
-			ratingIncrement, contest.getDescriptionContent());
+			ratingIncrement, 0l, contest.getDescriptionContent());
 		contest.getDescriptionContent().getRating().add(rating);
 	    } else {
 		rating.setValue(rating.getValue() + ratingIncrement);
