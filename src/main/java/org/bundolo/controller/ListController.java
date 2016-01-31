@@ -2,6 +2,7 @@ package org.bundolo.controller;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -19,6 +20,7 @@ import org.bundolo.model.User;
 import org.bundolo.model.UserProfile;
 import org.bundolo.model.enumeration.AnnouncementColumnType;
 import org.bundolo.model.enumeration.AuthorColumnType;
+import org.bundolo.model.enumeration.AuthorInteractionsColumnType;
 import org.bundolo.model.enumeration.AuthorItemsColumnType;
 import org.bundolo.model.enumeration.ColumnDataType;
 import org.bundolo.model.enumeration.CommentColumnType;
@@ -467,6 +469,54 @@ public class ListController {
 		filterByTexts.toArray(new String[filterByTexts.size()]));
     }
 
+    @RequestMapping(value = { Constants.REST_PATH_AUTHOR_INTERACTIONS + "/" + Constants.REST_PATH_AUTHOR + "/{slug}" }, method = RequestMethod.GET)
+    public @ResponseBody
+    List<Content> authorInteractions(@PathVariable String slug, @RequestParam(required = false) Date fromDate,
+	    @RequestParam(required = false, defaultValue = "0") Integer start,
+	    @RequestParam(required = false, defaultValue = "0") Integer end,
+	    @RequestParam(required = false) String orderBy, @RequestParam(required = false) String filterBy) {
+	List<String> orderByColumns = new ArrayList<String>();
+	List<String> orderByDirections = new ArrayList<String>();
+	if (StringUtils.isNotBlank(orderBy)) {
+	    String[] params = orderBy.split(",");
+	    for (int i = 0; i < params.length; i += 2) {
+		orderByColumns.add(AuthorInteractionsColumnType.valueOf(params[i]).getColumnName());
+		orderByDirections.add(getOrderByDirection(params[i + 1]));
+	    }
+	}
+	List<String> filterByColumns = new ArrayList<String>();
+	List<String> filterByTexts = new ArrayList<String>();
+	if (StringUtils.isNotBlank(filterBy)) {
+	    String[] params = filterBy.split(",");
+	    for (int i = 0; i < params.length; i += 2) {
+		AuthorInteractionsColumnType authorInteractionsColumnType = AuthorInteractionsColumnType
+			.valueOf(params[i]);
+		filterByColumns.add(getFilterByColumn(authorInteractionsColumnType.getColumnName(),
+			authorInteractionsColumnType.getColumnDataType()));
+		filterByTexts.add(params[i + 1]);
+	    }
+	}
+	if (fromDate == null) {
+	    String senderUsername = SecurityUtils.getUsername();
+	    if (senderUsername != null) {
+		// if user is known, fromDate should be set to previousActivity
+		UserProfile userProfile = userProfileDAO.findByField("username", senderUsername);
+		if (userProfile != null) {
+		    fromDate = userProfile.getPreviousActivity();
+		}
+	    }
+	    if (fromDate == null) {
+		fromDate = new GregorianCalendar(1970, 0, 1).getTime();
+	    }
+	}
+
+	return contentService.findAuthorInteractions(ContentKindType.user_description.getLocalizedName() + "/" + slug,
+		fromDate, start, end, orderByColumns.toArray(new String[orderByColumns.size()]),
+		orderByDirections.toArray(new String[orderByDirections.size()]),
+		filterByColumns.toArray(new String[filterByColumns.size()]),
+		filterByTexts.toArray(new String[filterByTexts.size()]));
+    }
+
     @RequestMapping(value = { Constants.REST_PATH_ITEM_LIST_ITEMS + "/" + Constants.REST_PATH_ITEM_LIST + "/{slug}" }, method = RequestMethod.GET)
     public @ResponseBody
     List<Content> itemListItems(@PathVariable String slug,
@@ -498,8 +548,6 @@ public class ListController {
 		filterByTexts.add(params[i + 1]);
 	    }
 	}
-	ItemList result = itemListService.findItemList(ContentKindType.item_list_description.getLocalizedName() + "/"
-		+ slug);
 	return contentService.findItemListItems(itemList.getQuery(), start, end,
 		orderByColumns.toArray(new String[orderByColumns.size()]),
 		orderByDirections.toArray(new String[orderByDirections.size()]),
