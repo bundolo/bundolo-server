@@ -745,7 +745,7 @@ public class ContentDAO extends JpaDAO<Long, Content> {
     @SuppressWarnings("unchecked")
     public List<Content> findItemListItems(String itemListIds, Integer start, Integer end, String[] orderBy,
 	    String[] order, String[] filterBy, String[] filter) {
-	if (StringUtils.isBlank(itemListIds)) {
+	if (StringUtils.isBlank(itemListIds) || "[]".equals(itemListIds)) {
 	    return null;
 	}
 	int filterParamCounter = 0;
