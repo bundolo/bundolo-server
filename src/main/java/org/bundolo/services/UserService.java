@@ -24,7 +24,7 @@ public interface UserService {
 
     public ResponseEntity<String> saveOrUpdateUser(UserProfile userProfile);
 
-    public User findNext(Long userId, String orderBy, String fixBy, boolean ascending);
+    public User findNext(String username, String orderBy, String fixBy, boolean ascending);
 
     public void clearSession();
 

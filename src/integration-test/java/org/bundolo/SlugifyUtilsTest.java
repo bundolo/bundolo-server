@@ -48,9 +48,7 @@ public class SlugifyUtilsTest {
     public void testPrintableASCII() {
 	String s = " !\"#$%&'()*+,-./0123456789:;<=>?@" + "ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`"
 		+ "abcdefghijklmnopqrstuvwxyz{|}~";
-
 	String expected = "+-0123456789-" + "abcdefghijklmnopqrstuvwxyz-_-" + "abcdefghijklmnopqrstuvwxyz";
-
 	assertEquals(expected, slugifyUtils.slugify(s));
     }
 
@@ -58,9 +56,7 @@ public class SlugifyUtilsTest {
     public void testExtendedASCII() {
 	String s = "€‚ƒ„…†‡ˆ‰Š‹ŒŽ‘”•–—˜™š›œžŸ¡¢£¤¥¦§¨©ª«¬®¯°±²³´µ¶"
 		+ "·¸¹º»¼½¾¿ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßàáâãäåæç" + "èéêëìíîïðñòóôõö÷øùúûüýþÿ";
-
 	String expected = "szszyaaaaaeaceeeeiiiinoooooeuuuueyssaaaaaeaceeeeiiiinoooooeuuuueyy";
-
 	assertEquals(expected, slugifyUtils.slugify(s));
     }
 

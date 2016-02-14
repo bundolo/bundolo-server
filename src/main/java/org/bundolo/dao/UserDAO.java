@@ -66,14 +66,14 @@ public class UserDAO extends JpaDAO<String, User> {
     }
 
     @SuppressWarnings("unchecked")
-    public User findNext(Long userId, String orderBy, String fixBy, boolean ascending) {
-	if (userId == null) {
+    public User findNext(String username, String orderBy, String fixBy, boolean ascending) {
+	if (username == null) {
 	    return null;
 	}
 	// TODO this is not nice. since we don't keep user status in User, we retrieve UserProfile and then get User
 	StringBuilder queryString = new StringBuilder();
 	queryString.append("SELECT u1 FROM UserProfile u1, UserProfile u2");
-	queryString.append(" WHERE u2.userId = ?1");
+	queryString.append(" WHERE u2.username = ?1");
 	queryString.append(" AND u1.userProfileStatus='active'");
 	if (StringUtils.isNotBlank(fixBy)) {
 	    queryString.append(" AND u1." + fixBy + "=u2." + fixBy);
@@ -82,7 +82,7 @@ public class UserDAO extends JpaDAO<String, User> {
 	queryString.append(" ORDER BY u1." + orderBy + " " + (ascending ? "ASC" : "DESC"));
 	logger.log(Level.INFO, "queryString: " + queryString.toString());
 	Query q = entityManager.createQuery(queryString.toString());
-	q.setParameter(1, userId);
+	q.setParameter(1, username);
 	q.setMaxResults(1);
 	List<UserProfile> resultList = q.getResultList();
 	if (resultList != null && resultList.size() > 0) {

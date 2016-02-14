@@ -389,7 +389,7 @@ public class ListController {
 		    StringUtils.isNotBlank(fixBy) ? ContestColumnType.valueOf(fixBy).getColumnName() : null, ascending);
 	    break;
 	case "author":
-	    result = userService.findNext(Long.valueOf(id), AuthorColumnType.valueOf(orderBy).getColumnName(),
+	    result = userService.findNext(id, AuthorColumnType.valueOf(orderBy).getColumnName(),
 		    StringUtils.isNotBlank(fixBy) ? AuthorColumnType.valueOf(fixBy).getColumnName() : null, ascending);
 	    break;
 	case "announcement":

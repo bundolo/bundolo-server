@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bundolo.Constants;
 import org.bundolo.DateUtils;
@@ -169,6 +170,7 @@ public class UserServiceImpl implements UserService {
 	    if (StringUtils.isBlank(email) || StringUtils.isBlank(nonce)) {
 		return ReturnMessageType.no_data;
 	    }
+	    email = email.toLowerCase().replace(" ", "");
 	    UserProfile userProfile = userProfileDAO.findByField("nonce", nonce);
 	    if (userProfile == null) {
 		return ReturnMessageType.not_found;
@@ -183,6 +185,7 @@ public class UserServiceImpl implements UserService {
 			userProfile.setEmail(userProfile.getNewEmail());
 			userProfile.setNewEmail(null);
 			userProfile.setNonce(null);
+			userProfile.setAvatarUrl(DigestUtils.md5Hex(email.toLowerCase().trim()));
 			userProfileDAO.merge(userProfile);
 			result = ReturnMessageType.success;
 		    }
@@ -200,6 +203,7 @@ public class UserServiceImpl implements UserService {
 			descriptionContent.setContentStatus(ContentStatusType.active);
 			descriptionContent.setSlug(contentDAO.getNewSlug(descriptionContent));
 			userProfile.setSubscribed(true);
+			userProfile.setAvatarUrl(DigestUtils.md5Hex(email.toLowerCase().trim()));
 			userProfileDAO.merge(userProfile);
 			result = ReturnMessageType.success;
 		    }
@@ -219,6 +223,7 @@ public class UserServiceImpl implements UserService {
 	    if (StringUtils.isBlank(username) || StringUtils.isBlank(email)) {
 		return ReturnMessageType.no_data;
 	    }
+	    email = email.toLowerCase().replace(" ", "");
 	    UserProfile recipientUserProfile = userProfileDAO.findByField("username", username);
 	    if (recipientUserProfile == null || !recipientUserProfile.getEmail().equals(email)) {
 		return ReturnMessageType.not_found;
@@ -297,6 +302,7 @@ public class UserServiceImpl implements UserService {
 	    if (StringUtils.isBlank(username) || StringUtils.isBlank(email) || StringUtils.isBlank(password)) {
 		return new ResponseEntity<String>(ReturnMessageType.no_data.name(), HttpStatus.BAD_REQUEST);
 	    }
+	    email = email.toLowerCase().replace(" ", "");
 	    UserProfile userProfile = userProfileDAO.findByField("username", username);
 	    if (userProfile != null) {
 		return new ResponseEntity<String>(ReturnMessageType.username_taken.name(), HttpStatus.BAD_REQUEST);
@@ -377,6 +383,7 @@ public class UserServiceImpl implements UserService {
 		return new ResponseEntity<String>(ReturnMessageType.username_taken.name(), HttpStatus.BAD_REQUEST);
 	    }
 	    if (StringUtils.isNotBlank(userProfile.getNewEmail())) {
+		userProfile.setNewEmail(userProfile.getNewEmail().toLowerCase().replace(" ", ""));
 		UserProfile testUserProfile = null;
 		testUserProfile = userProfileDAO.findByField("email", userProfile.getNewEmail());
 		if (testUserProfile != null) {
@@ -463,8 +470,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findNext(Long userId, String orderBy, String fixBy, boolean ascending) {
-	return userDAO.findNext(userId, orderBy, fixBy, ascending);
+    public User findNext(String username, String orderBy, String fixBy, boolean ascending) {
+	return userDAO.findNext(username, orderBy, fixBy, ascending);
     }
 
     @Override
