@@ -185,7 +185,14 @@ public class UserServiceImpl implements UserService {
 			userProfile.setEmail(userProfile.getNewEmail());
 			userProfile.setNewEmail(null);
 			userProfile.setNonce(null);
-			userProfile.setAvatarUrl(DigestUtils.md5Hex(email.toLowerCase().trim()));
+			// avatar has to be changed in all user content
+			String newAvatarUrl = DigestUtils.md5Hex(email.toLowerCase().trim());
+			List<Content> contents = contentDAO.findAllByUsername(userProfile.getUsername());
+			for (Content content : contents) {
+			    content.setAvatarUrl(newAvatarUrl);
+			    contentDAO.merge(content);
+			}
+
 			userProfileDAO.merge(userProfile);
 			result = ReturnMessageType.success;
 		    }
@@ -203,7 +210,6 @@ public class UserServiceImpl implements UserService {
 			descriptionContent.setContentStatus(ContentStatusType.active);
 			descriptionContent.setSlug(contentDAO.getNewSlug(descriptionContent));
 			userProfile.setSubscribed(true);
-			userProfile.setAvatarUrl(DigestUtils.md5Hex(email.toLowerCase().trim()));
 			userProfileDAO.merge(userProfile);
 			result = ReturnMessageType.success;
 		    }
@@ -327,7 +333,8 @@ public class UserServiceImpl implements UserService {
 
 	    Date creationDate = dateUtils.newDate();
 	    Content descriptionContent = new Content(null, null, ContentKindType.user_description, null, "",
-		    Constants.DEFAULT_LOCALE, creationDate, creationDate, ContentStatusType.pending, null, null);
+		    Constants.DEFAULT_LOCALE, creationDate, creationDate, ContentStatusType.pending, null, null,
+		    DigestUtils.md5Hex(email.toLowerCase().trim()));
 	    userProfile.setDescriptionContent(descriptionContent);
 
 	    List<String> hashResult = SecurityUtils.getHashWithSalt(password);
@@ -434,7 +441,6 @@ public class UserServiceImpl implements UserService {
 		    userProfileDB.setNewEmail(null);
 		}
 		userProfileDB.setShowPersonal(userProfile.getShowPersonal());
-		userProfileDB.setAvatarUrl(userProfile.getAvatarUrl());
 		userProfileDB.setSubscribed(userProfile.getSubscribed());
 	    }
 

@@ -869,4 +869,15 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	    return result;
 	}
     }
+
+    // used only internally, to update avatar urls on email change
+    @SuppressWarnings("unchecked")
+    public List<Content> findAllByUsername(String username) {
+	StringBuilder queryString = new StringBuilder();
+	queryString.append("SELECT c FROM Content c WHERE authorUsername=?1");
+	logger.log(Level.FINE, "queryString: " + queryString.toString());
+	Query q = entityManager.createQuery(queryString.toString());
+	q.setParameter(1, username);
+	return q.getResultList();
+    }
 }

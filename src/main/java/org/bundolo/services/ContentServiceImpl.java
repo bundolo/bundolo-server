@@ -15,8 +15,10 @@ import org.bundolo.DateUtils;
 import org.bundolo.SecurityUtils;
 import org.bundolo.dao.CommentDAO;
 import org.bundolo.dao.ContentDAO;
+import org.bundolo.dao.UserDAO;
 import org.bundolo.model.Content;
 import org.bundolo.model.Rating;
+import org.bundolo.model.User;
 import org.bundolo.model.enumeration.ContentKindType;
 import org.bundolo.model.enumeration.ContentStatusType;
 import org.bundolo.model.enumeration.PageKindType;
@@ -41,6 +43,9 @@ public class ContentServiceImpl implements ContentService {
 
     @Autowired
     private CommentDAO commentDAO;
+
+    @Autowired
+    private UserDAO userDAO;
 
     @Autowired
     private DateUtils dateUtils;
@@ -281,8 +286,9 @@ public class ContentServiceImpl implements ContentService {
 		descriptionContent.setLastActivity(creationDate);
 		descriptionContent.setKind(ContentKindType.text_description);
 		descriptionContent.setLocale(Constants.DEFAULT_LOCALE);
-		// no need to set slug
+		// no need to set slug and avatar
 	    }
+
 	    contentDAO.persist(content);
 	    return new ResponseEntity<String>(content.getSlug(), HttpStatus.OK);
 	} catch (Exception ex) {
@@ -303,6 +309,10 @@ public class ContentServiceImpl implements ContentService {
 	    if (senderUsername != null || anonymousAllowed) {
 		if (content.getContentId() == null) {
 		    content.setAuthorUsername(senderUsername);
+		    if (senderUsername != null) {
+			User user = userDAO.findById(senderUsername);
+			content.setAvatarUrl(user.getDescriptionContent().getAvatarUrl());
+		    }
 		    return saveContent(content);
 		} else {
 		    Content contentDB = contentDAO.findById(content.getContentId());

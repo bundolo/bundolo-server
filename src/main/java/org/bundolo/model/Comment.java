@@ -83,6 +83,9 @@ public class Comment implements java.io.Serializable {
     // @JsonBackReference
     private Content ancestorContent;
 
+    @Column(name = "avatar_url")
+    private String avatarUrl;
+
     public Comment() {
 	super();
     }
@@ -183,12 +186,20 @@ public class Comment implements java.io.Serializable {
 	this.ancestorContent = ancestorContent;
     }
 
+    public String getAvatarUrl() {
+	return avatarUrl;
+    }
+
+    public void setAvatarUrl(String avatarUrl) {
+	this.avatarUrl = avatarUrl;
+    }
+
     @Override
     public String toString() {
 	return "Comment [contentId=" + contentId + ", authorUsername=" + authorUsername + ", kind=" + kind + ", text="
 		+ text + ", locale=" + locale + ", creationDate=" + creationDate + ", lastActivity=" + lastActivity
 		+ ", contentStatus=" + contentStatus + ", rating=" + rating + ", parentContent=" + parentContent
-		+ ", ancestorContent=" + ancestorContent + ", comments=" + comments + "]";
+		+ ", ancestorContent=" + ancestorContent + ", avatarUrl=" + avatarUrl + ", comments=" + comments + "]";
     }
 
 }

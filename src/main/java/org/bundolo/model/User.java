@@ -48,9 +48,6 @@ public class User implements java.io.Serializable {
     @Column(name = "last_login_date")
     private Date lastLoginDate;
 
-    @Column(name = "avatar_url")
-    private String avatarUrl;
-
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "description_content_id")
     private Content descriptionContent;
@@ -124,14 +121,6 @@ public class User implements java.io.Serializable {
 
     public void setLastLoginDate(Date lastLoginDate) {
 	this.lastLoginDate = lastLoginDate;
-    }
-
-    public String getAvatarUrl() {
-	return avatarUrl;
-    }
-
-    public void setAvatarUrl(String avatarUrl) {
-	this.avatarUrl = avatarUrl;
     }
 
     public Content getDescriptionContent() {

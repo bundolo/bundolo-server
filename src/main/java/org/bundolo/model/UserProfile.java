@@ -77,9 +77,6 @@ public class UserProfile implements java.io.Serializable {
     @Enumerated(EnumType.STRING)
     private UserProfileStatusType userProfileStatus;
 
-    @Column(name = "avatar_url")
-    private String avatarUrl;
-
     @Column(name = "nonce")
     private String nonce;
 
@@ -208,14 +205,6 @@ public class UserProfile implements java.io.Serializable {
 	this.userProfileStatus = userProfileStatus;
     }
 
-    public String getAvatarUrl() {
-	return avatarUrl;
-    }
-
-    public void setAvatarUrl(String avatarUrl) {
-	this.avatarUrl = avatarUrl;
-    }
-
     public Date getBirthDate() {
 	return birthDate;
     }
@@ -278,8 +267,8 @@ public class UserProfile implements java.io.Serializable {
 		+ ", firstName=" + firstName + ", lastName=" + lastName + ", birthDate=" + birthDate + ", gender="
 		+ gender + ", email=" + email + ", showPersonal=" + showPersonal + ", signupDate=" + signupDate
 		+ ", lastLoginDate=" + lastLoginDate + ", lastIp=" + lastIp + ", userProfileStatus="
-		+ userProfileStatus + ", avatarUrl=" + avatarUrl + ", nonce=" + nonce + ", newEmail=" + newEmail
-		+ ", descriptionContent=" + descriptionContent + ", subscribed=" + subscribed
-		+ ", newsletterSendingDate=" + newsletterSendingDate + ", previousActivity=" + previousActivity + "]";
+		+ userProfileStatus + ", nonce=" + nonce + ", newEmail=" + newEmail + ", descriptionContent="
+		+ descriptionContent + ", subscribed=" + subscribed + ", newsletterSendingDate="
+		+ newsletterSendingDate + ", previousActivity=" + previousActivity + "]";
     }
 }

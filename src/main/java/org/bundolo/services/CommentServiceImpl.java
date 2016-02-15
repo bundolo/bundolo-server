@@ -9,7 +9,9 @@ import javax.annotation.PreDestroy;
 
 import org.bundolo.SecurityUtils;
 import org.bundolo.dao.CommentDAO;
+import org.bundolo.dao.UserDAO;
 import org.bundolo.model.Comment;
+import org.bundolo.model.User;
 import org.bundolo.model.enumeration.ContentStatusType;
 import org.bundolo.model.enumeration.ReturnMessageType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,9 @@ public class CommentServiceImpl implements CommentService {
 
     @Autowired
     private CommentDAO commentDAO;
+
+    @Autowired
+    private UserDAO userDAO;
 
     @PostConstruct
     public void init() {
@@ -46,6 +51,10 @@ public class CommentServiceImpl implements CommentService {
 	    comment.setContentStatus(ContentStatusType.active);
 	    comment.setLocale("sr");
 	    comment.setAuthorUsername(SecurityUtils.getUsername());
+	    if (comment.getAuthorUsername() != null) {
+		User user = userDAO.findById(comment.getAuthorUsername());
+		comment.setAvatarUrl(user.getDescriptionContent().getAvatarUrl());
+	    }
 	    commentDAO.persist(comment);
 	    return ReturnMessageType.success;
 	} catch (Exception ex) {

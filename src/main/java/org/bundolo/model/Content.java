@@ -84,13 +84,16 @@ public class Content implements java.io.Serializable {
     @Column(name = "slug")
     private String slug;
 
+    @Column(name = "avatar_url")
+    private String avatarUrl;
+
     public Content() {
 	super();
     }
 
     public Content(Long contentId, String authorUsername, ContentKindType kind, String name, String text,
 	    String locale, Date creationDate, Date lastActivity, ContentStatusType contentStatus,
-	    Collection<Rating> rating, String slug) {
+	    Collection<Rating> rating, String slug, String avatarUrl) {
 	super();
 	this.contentId = contentId;
 	this.authorUsername = authorUsername;
@@ -103,6 +106,7 @@ public class Content implements java.io.Serializable {
 	this.contentStatus = contentStatus;
 	this.rating = rating;
 	this.slug = slug;
+	this.avatarUrl = avatarUrl;
     }
 
     public Long getContentId() {
@@ -218,10 +222,19 @@ public class Content implements java.io.Serializable {
 	this.slug = slug;
     }
 
+    public String getAvatarUrl() {
+	return avatarUrl;
+    }
+
+    public void setAvatarUrl(String avatarUrl) {
+	this.avatarUrl = avatarUrl;
+    }
+
     @Override
     public String toString() {
 	return "Content [contentId=" + contentId + ", authorUsername=" + authorUsername + ", kind=" + kind + ", name="
 		+ name + ", locale=" + locale + ", creationDate=" + creationDate + ", lastActivity=" + lastActivity
-		+ ", contentStatus=" + contentStatus + ", rating=" + rating + ", slug=" + slug + "]";
+		+ ", contentStatus=" + contentStatus + ", rating=" + rating + ", slug=" + slug + ", avatarUrl="
+		+ avatarUrl + "]";
     }
 }
