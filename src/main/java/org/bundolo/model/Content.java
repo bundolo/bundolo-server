@@ -63,7 +63,10 @@ public class Content implements java.io.Serializable {
     @Enumerated(EnumType.STRING)
     private ContentStatusType contentStatus;
 
-    @OneToMany(mappedBy = "parentContent", cascade = CascadeType.ALL)
+    // TODO
+    // this eager is probably needed for newsletters, but make sure it doesn't break something else
+    // @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "parentContent")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "parentContent")
     @Where(clause = "kind = 'general'")
     private Collection<Rating> rating;
 

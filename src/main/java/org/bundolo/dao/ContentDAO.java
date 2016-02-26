@@ -2,6 +2,7 @@ package org.bundolo.dao;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -542,120 +543,150 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	    return null;
 	}
 	int filterParamCounter = 0;
-	StringBuilder queryString = new StringBuilder();
+	StringBuilder queryContentIdsString = new StringBuilder();
 
 	// this had to be native sql because of complexity
 	// having union of two selects has better performance than single select with OR
 	// wrapper select had to be added to enable filtering and sorting
-	queryString.append("SELECT * FROM (SELECT DISTINCT (c.*) FROM content c, content c1");
-	queryString.append(" WHERE c1.author_username=?1");
-	queryString.append(" AND (c1.content_status='active' OR c1.content_status='pending')");
-	queryString
+	// first subquery gives content with children that are author's which had recent activity
+	// second subquery gives author's content with recent rating update
+	queryContentIdsString.append("SELECT c.content_id FROM content c, content c1");
+	queryContentIdsString.append(" WHERE c1.author_username=?1");
+	queryContentIdsString.append(" AND (c1.content_status='active' OR c1.content_status='pending')");
+	queryContentIdsString
 		.append(" AND (c1.last_activity > ?2 AND ((c1.kind LIKE '%comment' AND c.content_id=c1.ancestor_content_id)");
-	queryString.append(" OR (c1.kind='forum_post' AND c.content_id=c1.parent_content_id)");
-	queryString
+	queryContentIdsString.append(" OR (c1.kind='forum_post' AND c.content_id=c1.parent_content_id)");
+	queryContentIdsString
 		.append(" OR (c1.kind!='forum_post' AND c1.kind NOT LIKE '%comment' AND c.content_id=c1.content_id)))");
-
-	queryString.append(" UNION SELECT DISTINCT (c.*) FROM content c, rating r");
-	queryString.append(" WHERE c.author_username=?1");
-	queryString.append(" AND r.parent_content_id=c.content_id");
-	queryString.append(" AND r.last_activity > ?2 AND r.kind='general') AS author_updates");
-	queryString.append(" WHERE (content_status='active' OR content_status='pending')");
-	queryString
-		.append(" AND kind NOT LIKE '%comment' AND kind NOT IN ('forum_group', 'forum_post', 'text_description', 'connection_group')");
-
-	if (ArrayUtils.isNotEmpty(filterBy)) {
-	    String prefix = " AND LOWER(";
-	    String suffix = ") LIKE '%";
-	    String postfix = "%'";
-	    for (int i = 0; i < filterBy.length; i++) {
-		queryString.append(prefix);
-		queryString.append(filterBy[i]);
-		queryString.append(suffix);
-		filterParamCounter++;
-		queryString.append("'||?" + (filterParamCounter + 2) + "||'");
-		queryString.append(postfix);
-	    }
-	}
-	if (ArrayUtils.isNotEmpty(orderBy) && ArrayUtils.isSameLength(orderBy, order)) {
-	    String firstPrefix = " ORDER BY ";
-	    String nextPrefix = ", ";
-	    String prefix = firstPrefix;
-	    String suffix = " ";
-	    for (int i = 0; i < orderBy.length; i++) {
-		queryString.append(prefix);
-		queryString.append(orderBy[i]);
-		queryString.append(suffix);
-		queryString.append(order[i]);
-		prefix = nextPrefix;
-	    }
-	}
-	logger.log(Level.INFO, "queryString: " + queryString.toString() + ", start: " + start + ", max results: "
-		+ (end - start + 1));
-	Query q = entityManager.createNativeQuery(queryString.toString(), Content.class);
-	q.setParameter(1, user.getUsername());
-	q.setParameter(2, fromDate);
-	if (filterParamCounter > 0) {
-	    for (int i = 0; i < filterBy.length; i++) {
-		q.setParameter(i + 3, filter[i].toLowerCase());
-	    }
-	}
-	q.setFirstResult(start);
-	q.setMaxResults(end - start + 1);
-	List<Content> resultList = q.getResultList();
-	// TODO trim
-	if (resultList != null && resultList.size() > 0) {
+	queryContentIdsString.append(" UNION SELECT c.content_id FROM content c, rating r");
+	queryContentIdsString.append(" WHERE c.author_username=?1");
+	queryContentIdsString.append(" AND r.parent_content_id=c.content_id");
+	queryContentIdsString.append(" AND r.last_activity > ?2 AND r.kind='general'");
+	logger.log(Level.INFO, "queryContentIdsString: " + queryContentIdsString.toString());
+	Query queryContentIds = entityManager.createNativeQuery(queryContentIdsString.toString());
+	queryContentIds.setParameter(1, user.getUsername());
+	queryContentIds.setParameter(2, fromDate);
+	List<Number> resultContentIds = queryContentIds.getResultList();
+	if (resultContentIds != null && resultContentIds.size() > 0) {
 	    StringBuilder contentIds = new StringBuilder();
-	    String prefix = "";
-	    for (Content result : resultList) {
-		if (ContentKindType.forum_topic.equals(result.getKind())
-			|| ContentKindType.episode.equals(result.getKind()) && result.getParentContent() != null) {
-		    result.setParent(result.getParentContent());
-		}
-		result.setText("");
+	    String contentIdsPrefix = "";
+	    for (Number resultContentId : resultContentIds) {
 		// compose comma separated list of content ids
-		contentIds.append(prefix);
-		prefix = ", ";
-		contentIds.append(result.getContentId());
+		contentIds.append(contentIdsPrefix);
+		contentIdsPrefix = ", ";
+		contentIds.append(resultContentId);
 	    }
-	    // retrieve personal ratings and number of new comments for contents returned by previous query
-	    // TODO sorting and filtering by these two fields
-	    StringBuilder ratingsQueryString = new StringBuilder();
-	    ratingsQueryString
-		    .append("SELECT r.rating_id, r.author_username, r.parent_content_id, r.kind, r.rating_status,");
-	    ratingsQueryString
-		    .append(" COALESCE((SELECT count(*) from rating r1, content c where r.rating_id=r1.rating_id");
-	    ratingsQueryString.append(" and ((c.kind like '%comment' and c.ancestor_content_id=r1.parent_content_id)");
-	    ratingsQueryString.append(" or (c.kind = 'forum_post' and c.parent_content_id=r1.parent_content_id))");
-	    ratingsQueryString
-		    .append(" and c.content_status='active' and c.creation_date>r1.last_activity group by r1.rating_id), 0) AS value");
-	    ratingsQueryString
-		    .append(", r.last_activity, r.historical FROM rating r WHERE r.kind='personal' AND r.author_username=?1");
-	    ratingsQueryString.append(" AND r.parent_content_id IN (" + contentIds + ")");
-	    logger.log(Level.INFO, "ratingsQueryString: " + ratingsQueryString.toString());
-	    Query ratingsQuery = entityManager.createNativeQuery(ratingsQueryString.toString(), Rating.class);
-	    ratingsQuery.setParameter(1, user.getUsername());
-	    List<Rating> ratingsResultList = ratingsQuery.getResultList();
-	    if (ratingsResultList != null && ratingsResultList.size() > 0) {
-		// compose map of ratings with content ids as keys
-		Map<Long, Rating> ratingsMap = new HashMap<Long, Rating>();
-		for (Rating ratingResult : ratingsResultList) {
-		    ratingsMap.put(ratingResult.getParentContent().getContentId(), ratingResult);
+
+	    StringBuilder queryString = new StringBuilder();
+	    queryString.append("SELECT c FROM Content c where contentId in (" + contentIds + ")");
+	    queryString.append(" AND (content_status='active' OR content_status='pending')");
+	    queryString
+		    .append(" AND kind NOT LIKE '%comment' AND kind NOT IN ('forum_group', 'forum_post', 'text_description', 'connection_group')");
+	    if (ArrayUtils.isNotEmpty(filterBy)) {
+		String prefix = " AND LOWER(";
+		String suffix = ") LIKE '%";
+		String postfix = "%'";
+		for (int i = 0; i < filterBy.length; i++) {
+		    queryString.append(prefix);
+		    queryString.append(filterBy[i]);
+		    queryString.append(suffix);
+		    filterParamCounter++;
+		    queryString.append("'||?" + (filterParamCounter + 2) + "||'");
+		    queryString.append(postfix);
 		}
-		// add personal ratings to content results as second rating
-		for (Content result : resultList) {
-		    Rating generalRating = result.getRating().size() > 0 ? (Rating) result.getRating().toArray()[0]
-			    : null;
-		    Rating personalRating = ratingsMap.get(result.getContentId());
-		    if (generalRating != null && personalRating != null) {
-			// delta between current general rating and personal historical rating is number of new views
-			personalRating.setHistorical(generalRating.getValue() - personalRating.getHistorical());
+	    }
+	    if (ArrayUtils.isNotEmpty(orderBy) && ArrayUtils.isSameLength(orderBy, order)) {
+		String firstPrefix = " ORDER BY ";
+		String nextPrefix = ", ";
+		String prefix = firstPrefix;
+		String suffix = " ";
+		for (int i = 0; i < orderBy.length; i++) {
+		    queryString.append(prefix);
+		    queryString.append(orderBy[i]);
+		    queryString.append(suffix);
+		    queryString.append(order[i]);
+		    prefix = nextPrefix;
+		}
+	    }
+	    logger.log(Level.INFO, "queryString: " + queryString.toString() + ", start: " + start + ", max results: "
+		    + (end - start + 1));
+	    Query q = entityManager.createQuery(queryString.toString());
+	    if (filterParamCounter > 0) {
+		for (int i = 0; i < filterBy.length; i++) {
+		    q.setParameter(i + 1, filter[i].toLowerCase());
+		}
+	    }
+	    q.setFirstResult(start);
+	    if (end >= 0) {
+		q.setMaxResults(end - start + 1);
+	    }
+	    List<Content> resultList = q.getResultList();
+	    if (resultList != null && resultList.size() > 0) {
+		// retrieve personal ratings and number of new comments for contents returned by previous query
+		// TODO sorting and filtering by these two fields
+		StringBuilder ratingsQueryString = new StringBuilder();
+		ratingsQueryString
+			.append("SELECT r.rating_id, r.author_username, r.parent_content_id, r.kind, r.rating_status,");
+		ratingsQueryString
+			.append(" COALESCE((SELECT count(*) from rating r1, content c where r.rating_id=r1.rating_id");
+		ratingsQueryString
+			.append(" and ((c.kind like '%comment' and c.ancestor_content_id=r1.parent_content_id)");
+		ratingsQueryString.append(" or (c.kind = 'forum_post' and c.parent_content_id=r1.parent_content_id))");
+		ratingsQueryString
+			.append(" and c.content_status='active' and c.creation_date>r1.last_activity group by r1.rating_id), 0) AS value");
+		ratingsQueryString
+			.append(", r.last_activity, r.historical FROM rating r WHERE r.kind='personal' AND r.author_username=?1");
+		ratingsQueryString.append(" AND r.parent_content_id IN (" + contentIds + ")");
+		logger.log(Level.INFO, "ratingsQueryString: " + ratingsQueryString.toString());
+		Query ratingsQuery = entityManager.createNativeQuery(ratingsQueryString.toString(), Rating.class);
+		ratingsQuery.setParameter(1, user.getUsername());
+		List<Rating> ratingsResultList = ratingsQuery.getResultList();
+		if (ratingsResultList != null && ratingsResultList.size() > 0) {
+		    // compose map of ratings with content ids as keys
+		    Map<Long, Rating> ratingsMap = new HashMap<Long, Rating>();
+		    for (Rating ratingResult : ratingsResultList) {
+			ratingsMap.put(ratingResult.getParentContent().getContentId(), ratingResult);
 		    }
-		    result.getRating().add(personalRating);
+		    // add personal ratings to content results as second rating
+		    // this has to use iterator to be able to remove elements while looping over them
+		    Iterator<Content> iterator = resultList.iterator();
+		    while (iterator.hasNext()) {
+			Content result = iterator.next();
+			// trimming
+			if (ContentKindType.forum_topic.equals(result.getKind())
+				|| ContentKindType.episode.equals(result.getKind())
+				&& result.getParentContent() != null) {
+			    result.setParent(result.getParentContent());
+			}
+			result.setText("");
+			Rating generalRating = result.getRating().size() > 0 ? (Rating) result.getRating().toArray()[0]
+				: null;
+			Rating personalRating = ratingsMap.get(result.getContentId());
+			// TODO it's possible to have cases when personalRating is null but we want to include it in
+			// interactions
+			if (generalRating != null && personalRating != null) {
+			    // delta between current general rating and personal historical rating is number of new
+			    // views
+			    personalRating.setHistorical(generalRating.getValue() - personalRating.getHistorical());
+			}
+			if ((personalRating == null)
+				|| (personalRating.getHistorical() <= 0 && personalRating.getValue() <= 0)) {
+			    // this result won't show anything but zeros (author visited own content, logged in, or
+			    // something like that)
+			    // remove it from the list
+			    iterator.remove();
+			} else {
+			    // add personal rating filled with rating delta and number of new comments in rating
+			    // collection after general entry
+			    result.getRating().add(personalRating);
+			}
+		    }
 		}
 	    }
+	    return resultList;
+	} else {
+	    return null;
 	}
-	return resultList;
     }
 
     @SuppressWarnings("unchecked")
@@ -711,15 +742,17 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 
     @SuppressWarnings("unchecked")
     public List<Content> findRecent(Date fromDate, Integer limit) {
+	// List<Content> recentContent = findRecentFull(fromDate, limit);
 	StringBuilder queryString = new StringBuilder();
 	queryString.append("SELECT c FROM Content c WHERE content_status='active'");
 	if (fromDate != null) {
 	    queryString.append(" AND last_activity >=?1");
 	}
-	queryString.append(" AND (kind='text' OR kind='forum_topic' OR kind='connection_description' OR kind='news' "
-		+ "OR kind='contest_description' OR kind='episode' OR kind='user_description')");
+	queryString
+		.append(" AND (kind='text' OR kind='forum_topic' OR kind='connection_description' OR kind='news' "
+			+ "OR kind='contest_description' OR kind='episode' OR kind='user_description' OR kind='episode_group')");
 	queryString.append(" ORDER BY last_activity desc");
-	logger.log(Level.FINE, "queryString: " + queryString + ", fromDate: " + fromDate + ", limit: " + limit);
+	logger.log(Level.INFO, "queryString: " + queryString + ", fromDate: " + fromDate + ", limit: " + limit);
 	Query q = entityManager.createQuery(queryString.toString());
 	if (fromDate != null) {
 	    q.setParameter(1, fromDate);
@@ -727,8 +760,8 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	if (limit > 0) {
 	    q.setMaxResults(limit);
 	}
-	// strip text to make the request run faster
 	List<Content> recentContent = q.getResultList();
+	// strip text to make the request run faster
 	for (Content content : recentContent) {
 	    if (!ContentKindType.user_description.equals(content.getKind())) {
 		content.setText("");

@@ -78,7 +78,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 	    descriptionContent.setContentStatus(ContentStatusType.active);
 	    descriptionContent.setCreationDate(connection.getCreationDate());
 	    descriptionContent.setKind(ContentKindType.connection_description);
-	    descriptionContent.setLocale(Constants.DEFAULT_LOCALE);
+	    descriptionContent.setLocale(Constants.DEFAULT_LOCALE_NAME);
 	    descriptionContent.setLastActivity(dateUtils.newDate());
 	    descriptionContent.setSlug(contentDAO.getNewSlug(descriptionContent));
 	    connectionDAO.persist(connection);

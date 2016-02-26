@@ -142,6 +142,7 @@ public class Rating implements java.io.Serializable {
     @Override
     public String toString() {
 	return "Rating [ratingId=" + ratingId + ", authorUsername=" + authorUsername + ", kind=" + kind
-		+ ", lastActivity=" + lastActivity + ", ratingStatus=" + ratingStatus + ", value=" + value + "]";
+		+ ", lastActivity=" + lastActivity + ", ratingStatus=" + ratingStatus + ", value=" + value
+		+ ", historical=" + historical + "]";
     }
 }

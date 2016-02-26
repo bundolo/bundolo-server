@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 import javax.persistence.Query;
 
 import org.bundolo.model.UserProfile;
+import org.bundolo.model.enumeration.DigestKindType;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,7 +40,7 @@ public class UserProfileDAO extends JpaDAO<Long, UserProfile> {
     public List<UserProfile> findNewsletterUsers(Date sendingStart, Integer maxResults) {
 	StringBuilder queryString = new StringBuilder();
 	queryString.append("SELECT u FROM " + entityClass.getName() + " u");
-	queryString.append(" WHERE subscribed = true");
+	queryString.append(" WHERE newsletter_subscription = true");
 	queryString.append(" AND email LIKE '%_@__%.__%'");
 	queryString.append(" AND newsletter_sending_date IS NOT NULL");
 	queryString.append(" AND newsletter_sending_date < ?1");
@@ -70,7 +71,7 @@ public class UserProfileDAO extends JpaDAO<Long, UserProfile> {
 	nextDayMidnight.add(Calendar.DATE, 1);
 
 	String queryString = "SELECT count(u) FROM " + entityClass.getName() + " u";
-	queryString += " WHERE subscribed = true";
+	queryString += " WHERE newsletter_subscription = true";
 	queryString += " AND ((newsletter_sending_date BETWEEN ?1 and ?2)";
 	queryString += " OR (newsletter_sending_date IS NULL))";
 	logger.log(Level.FINE, "queryString: " + queryString);
@@ -85,7 +86,7 @@ public class UserProfileDAO extends JpaDAO<Long, UserProfile> {
 
     public long dailyUndeliverablesCount() {
 	String queryString = "SELECT count(u) FROM " + entityClass.getName() + " u";
-	queryString += " WHERE subscribed = true AND newsletter_sending_date IS NULL";
+	queryString += " WHERE newsletter_subscription = true AND newsletter_sending_date IS NULL";
 	logger.log(Level.FINE, "queryString: " + queryString);
 	Query q = entityManager.createQuery(queryString);
 	long count = (long) q.getSingleResult();
@@ -96,9 +97,9 @@ public class UserProfileDAO extends JpaDAO<Long, UserProfile> {
 
     public void unsubscribeUndeliverables() {
 	String queryString = "UPDATE " + entityClass.getName();
-	queryString += " SET subscribed = false";
+	queryString += " SET newsletter_subscription = false";
 	queryString += ", newsletter_sending_date = to_timestamp(0)";
-	queryString += " WHERE subscribed = true AND newsletter_sending_date IS NULL";
+	queryString += " WHERE newsletter_subscription = true AND newsletter_sending_date IS NULL";
 	logger.log(Level.FINE, "queryString: " + queryString);
 	Query q = entityManager.createQuery(queryString);
 	q.executeUpdate();
@@ -107,12 +108,13 @@ public class UserProfileDAO extends JpaDAO<Long, UserProfile> {
     // used only during testing
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public void resetSubscribers() {
-	String queryString = "update " + entityClass.getName() + " set subscribed=true where email LIKE '%_@__%.__%'";
+	String queryString = "update " + entityClass.getName()
+		+ " set newsletter_subscription=true where email LIKE '%_@__%.__%'";
 	logger.log(Level.FINE, "queryString: " + queryString);
 	Query q = entityManager.createQuery(queryString);
 	q.executeUpdate();
 	String queryString1 = "update " + entityClass.getName()
-		+ " set newsletter_sending_date=signup_date where subscribed = true";
+		+ " set newsletter_sending_date=signup_date where newsletter_subscription = true";
 	logger.log(Level.FINE, "queryString: " + queryString1);
 	Query q1 = entityManager.createQuery(queryString1);
 	q1.executeUpdate();
@@ -121,9 +123,23 @@ public class UserProfileDAO extends JpaDAO<Long, UserProfile> {
     // used only during testing
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public void unsubscribeAll() {
-	String queryString = "update " + entityClass.getName() + " set subscribed=false";
+	String queryString = "update " + entityClass.getName() + " set newsletter_subscription=false";
 	Query q = entityManager.createQuery(queryString);
 	q.executeUpdate();
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<UserProfile> findDigestUsers(DigestKindType digestKind) {
+	StringBuilder queryString = new StringBuilder();
+	queryString.append("SELECT u FROM " + entityClass.getName() + " u");
+	queryString.append(" WHERE digestSubscription='" + digestKind + "'");
+	queryString.append(" AND email LIKE '%_@__%.__%'");
+	logger.log(Level.INFO, "queryString: " + queryString.toString());
+	Query q = entityManager.createQuery(queryString.toString());
+	List<UserProfile> resultList = q.getResultList();
+
+	logger.log(Level.FINE, "resultList: " + resultList.size());
+	return resultList;
     }
 
 }

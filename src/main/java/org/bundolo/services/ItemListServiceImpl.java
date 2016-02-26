@@ -97,7 +97,7 @@ public class ItemListServiceImpl implements ItemListService {
 	    descriptionContent.setContentStatus(ContentStatusType.active);
 	    descriptionContent.setCreationDate(itemList.getCreationDate());
 	    descriptionContent.setKind(ContentKindType.item_list_description);
-	    descriptionContent.setLocale(Constants.DEFAULT_LOCALE);
+	    descriptionContent.setLocale(Constants.DEFAULT_LOCALE_NAME);
 	    descriptionContent.setLastActivity(itemList.getCreationDate());
 	    descriptionContent.setSlug(contentDAO.getNewSlug(descriptionContent));
 	    itemListDAO.persist(itemList);

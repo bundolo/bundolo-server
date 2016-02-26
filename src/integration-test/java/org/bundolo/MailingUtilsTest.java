@@ -114,7 +114,7 @@ public class MailingUtilsTest {
 	// simulate one subscriber
 	userProfileDAO.unsubscribeAll();
 	UserProfile user = userProfileDAO.findByField("email", "daniel.farkas0@gmail.com");
-	user.setSubscribed(true);
+	user.setNewsletterSubscription(true);
 	userProfileDAO.merge(user);
 
 	long dailyRecipientsBefore = userProfileDAO.dailyRecipientsCount(startTime.getTime());

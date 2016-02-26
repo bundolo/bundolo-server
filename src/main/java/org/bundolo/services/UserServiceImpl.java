@@ -28,6 +28,7 @@ import org.bundolo.model.User;
 import org.bundolo.model.UserProfile;
 import org.bundolo.model.enumeration.ContentKindType;
 import org.bundolo.model.enumeration.ContentStatusType;
+import org.bundolo.model.enumeration.DigestKindType;
 import org.bundolo.model.enumeration.RatingKindType;
 import org.bundolo.model.enumeration.RatingStatusType;
 import org.bundolo.model.enumeration.ReturnMessageType;
@@ -209,7 +210,10 @@ public class UserServiceImpl implements UserService {
 			descriptionContent.setAuthorUsername(userProfile.getUsername());
 			descriptionContent.setContentStatus(ContentStatusType.active);
 			descriptionContent.setSlug(contentDAO.getNewSlug(descriptionContent));
-			userProfile.setSubscribed(true);
+			userProfile.setNewsletterSubscription(true);
+			// TODO set to weekly once tests are done
+			// userProfile.setDigestSubscription(DigestKindType.weekly);
+			userProfile.setDigestSubscription(DigestKindType.none);
 			userProfileDAO.merge(userProfile);
 			result = ReturnMessageType.success;
 		    }
@@ -328,12 +332,13 @@ public class UserServiceImpl implements UserService {
 	    userProfile.setUserProfileStatus(UserProfileStatusType.pending);
 	    userProfile.setSignupDate(dateUtils.newDate());
 	    userProfile.setLastIp(getRemoteHost());
-	    userProfile.setSubscribed(false);
+	    userProfile.setNewsletterSubscription(false);
 	    userProfile.setNewsletterSendingDate(userProfile.getSignupDate());
+	    userProfile.setDigestSubscription(DigestKindType.none);
 
 	    Date creationDate = dateUtils.newDate();
 	    Content descriptionContent = new Content(null, null, ContentKindType.user_description, null, "",
-		    Constants.DEFAULT_LOCALE, creationDate, creationDate, ContentStatusType.pending, null, null,
+		    Constants.DEFAULT_LOCALE_NAME, creationDate, creationDate, ContentStatusType.pending, null, null,
 		    DigestUtils.md5Hex(email.toLowerCase().trim()));
 	    userProfile.setDescriptionContent(descriptionContent);
 
@@ -441,7 +446,8 @@ public class UserServiceImpl implements UserService {
 		    userProfileDB.setNewEmail(null);
 		}
 		userProfileDB.setShowPersonal(userProfile.getShowPersonal());
-		userProfileDB.setSubscribed(userProfile.getSubscribed());
+		userProfileDB.setNewsletterSubscription(userProfile.getNewsletterSubscription());
+		userProfileDB.setDigestSubscription(userProfile.getDigestSubscription());
 	    }
 
 	    userProfileDAO.merge(userProfileDB);

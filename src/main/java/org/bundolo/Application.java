@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.embedded.FilterRegistrationBean;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.web.filter.DelegatingFilterProxy;
@@ -37,6 +38,9 @@ public class Application {
 	System.out.println("bundolo " + System.getProperty("env") + " startup at " + new Date());
 	SpringApplication application = new SpringApplication(Application.class);
 	application.setShowBanner(false);
-	application.run(args);
+	ConfigurableApplicationContext applicationContext = application.run(args);
+
+	// MailingUtils mailingUtils = (MailingUtils) applicationContext.getBean("mailingUtils");
+	// mailingUtils.dailyDigestSender();
     }
 }

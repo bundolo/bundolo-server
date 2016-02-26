@@ -475,6 +475,8 @@ public class ListController {
 	    @RequestParam(required = false, defaultValue = "0") Integer start,
 	    @RequestParam(required = false, defaultValue = "0") Integer end,
 	    @RequestParam(required = false) String orderBy, @RequestParam(required = false) String filterBy) {
+	logger.log(Level.INFO, "authorInteractions, slug: " + slug + ", fromDate: " + fromDate + ", start: " + start
+		+ ", end: " + end + ", orderBy: " + orderBy + ", filterBy: " + filterBy);
 	List<String> orderByColumns = new ArrayList<String>();
 	List<String> orderByDirections = new ArrayList<String>();
 	if (StringUtils.isNotBlank(orderBy)) {
@@ -509,7 +511,6 @@ public class ListController {
 		fromDate = new GregorianCalendar(1970, 0, 1).getTime();
 	    }
 	}
-
 	return contentService.findAuthorInteractions(ContentKindType.user_description.getLocalizedName() + "/" + slug,
 		fromDate, start, end, orderByColumns.toArray(new String[orderByColumns.size()]),
 		orderByDirections.toArray(new String[orderByDirections.size()]),

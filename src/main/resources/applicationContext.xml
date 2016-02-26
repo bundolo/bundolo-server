@@ -93,4 +93,9 @@
     <bean id="freemarkerConfiguration" class="org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean">
 		<property name="templateLoaderPath" value="classpath:/freemarker/"/>
  	</bean>
+
+ 	<bean id="messages" class="org.springframework.context.support.ResourceBundleMessageSource">
+        <property name="basename" value="i18n/messages" />
+        <property name="defaultEncoding" value="UTF-8" />
+    </bean>
 </beans>

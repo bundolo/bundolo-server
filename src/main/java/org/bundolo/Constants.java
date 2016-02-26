@@ -1,8 +1,11 @@
 package org.bundolo;
 
+import java.util.Locale;
+
 public class Constants {
 
-    public static final String DEFAULT_LOCALE = "sr";
+    public static final String DEFAULT_LOCALE_NAME = "sr";
+    public static final Locale DEFAULT_LOCALE = new Locale(DEFAULT_LOCALE_NAME);
     public static final long DEFAULT_RATING_INCREMENT = 1l;
     public static final long DEFAULT_PERSONAL_RATING = 0l;
     public static final long MAX_PERSONAL_RATING = 3l;
@@ -46,6 +49,7 @@ public class Constants {
     public static final String REST_PATH_MESSAGE = "/message";
     public static final String REST_PATH_RECENT = "/recent";
     public static final String REST_PATH_RATING = "/rating";
+    public static final String REST_PATH_RESET_HISTORICAL_RATINGS = "/reset_historical";
     public static final String REST_PATH_ITEM_LISTS = "/item_lists";
     public static final String REST_PATH_ITEM_LIST = "/item_list";
     public static final String REST_PATH_METRICS = "/metrics";

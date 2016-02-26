@@ -49,4 +49,20 @@ public class RatingDAO extends JpaDAO<Long, Rating> {
 	}
     }
 
+    @SuppressWarnings("unchecked")
+    public void resetHistoricalRatings(String authorUsername) {
+	StringBuilder resetHistoricalRatingsQueryString = new StringBuilder();
+	resetHistoricalRatingsQueryString.append("update rating r set historical=general_rating.value from");
+	resetHistoricalRatingsQueryString
+		.append(" (select parent_content_id, value from rating r1 where r1.author_username is null and r1.kind='general') as general_rating");
+	resetHistoricalRatingsQueryString
+		.append(" where r.author_username=?1 and r.kind='personal' and r.rating_status='active'");
+	resetHistoricalRatingsQueryString.append(" and r.parent_content_id=general_rating.parent_content_id;");
+	logger.log(Level.INFO, "resetHistoricalRatingsQueryString: " + resetHistoricalRatingsQueryString.toString());
+	Query ratingsQuery = entityManager
+		.createNativeQuery(resetHistoricalRatingsQueryString.toString(), Rating.class);
+	ratingsQuery.setParameter(1, authorUsername);
+	ratingsQuery.executeUpdate();
+    }
+
 }

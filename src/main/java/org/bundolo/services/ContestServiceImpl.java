@@ -76,7 +76,7 @@ public class ContestServiceImpl implements ContestService {
 	    descriptionContent.setContentStatus(ContentStatusType.active);
 	    descriptionContent.setCreationDate(contest.getCreationDate());
 	    descriptionContent.setKind(ContentKindType.contest_description);
-	    descriptionContent.setLocale(Constants.DEFAULT_LOCALE);
+	    descriptionContent.setLocale(Constants.DEFAULT_LOCALE_NAME);
 	    descriptionContent.setLastActivity(dateUtils.newDate());
 	    descriptionContent.setSlug(contentDAO.getNewSlug(descriptionContent));
 	    contestDAO.persist(contest);

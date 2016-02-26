@@ -1,0 +1,1 @@
+Mesečni bundolo pregled za ${date}

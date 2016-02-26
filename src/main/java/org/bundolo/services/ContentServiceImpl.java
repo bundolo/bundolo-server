@@ -277,7 +277,7 @@ public class ContentServiceImpl implements ContentService {
 	    Date creationDate = dateUtils.newDate();
 	    content.setCreationDate(creationDate);
 	    content.setLastActivity(creationDate);
-	    content.setLocale(Constants.DEFAULT_LOCALE);
+	    content.setLocale(Constants.DEFAULT_LOCALE_NAME);
 	    if (ContentKindType.text.equals(content.getKind())) {
 		Content descriptionContent = (Content) content.getDescription().toArray()[0];
 		descriptionContent.setAuthorUsername(content.getAuthorUsername());
@@ -285,7 +285,7 @@ public class ContentServiceImpl implements ContentService {
 		descriptionContent.setCreationDate(content.getCreationDate());
 		descriptionContent.setLastActivity(creationDate);
 		descriptionContent.setKind(ContentKindType.text_description);
-		descriptionContent.setLocale(Constants.DEFAULT_LOCALE);
+		descriptionContent.setLocale(Constants.DEFAULT_LOCALE_NAME);
 		// no need to set slug and avatar
 	    }
 
@@ -435,6 +435,7 @@ public class ContentServiceImpl implements ContentService {
     }
 
     @Override
+    // @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public List<Content> findAuthorInteractions(String slug, Date fromDate, Integer start, Integer end,
 	    String[] orderBy, String[] order, String[] filterBy, String[] filter) {
 	return contentDAO.findAuthorInteractions(slug, fromDate, start, end, orderBy, order, filterBy, filter);
@@ -528,7 +529,11 @@ public class ContentServiceImpl implements ContentService {
 	}
     }
 
+    // TODO
+    // make sure this transactional is not needed for something
+    // when it's here, trimmed beans get saved in db
     @Override
+    // @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public List<Content> findRecent(Date fromDate, Integer limit) {
 	return contentDAO.findRecent(fromDate, limit);
     }

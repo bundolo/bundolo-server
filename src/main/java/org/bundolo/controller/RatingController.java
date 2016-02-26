@@ -5,9 +5,11 @@ import java.util.logging.Logger;
 
 import org.bundolo.Constants;
 import org.bundolo.model.Rating;
+import org.bundolo.model.enumeration.ContentKindType;
 import org.bundolo.model.enumeration.ReturnMessageType;
 import org.bundolo.services.RatingService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -37,6 +39,20 @@ public class RatingController {
 	ReturnMessageType result = ratingService.updateRating(rating);
 	// if (ReturnMessageType.success.equals(result)) {
 	// userService.clearSession();
+	// }
+	return result;
+    }
+
+    @RequestMapping(value = { Constants.REST_PATH_RESET_HISTORICAL_RATINGS + "/" + Constants.REST_PATH_AUTHOR
+	    + "/{slug}" }, method = RequestMethod.POST)
+    public @ResponseBody
+    ResponseEntity<String> resetHistoricalRatings(@PathVariable String slug) {
+	logger.log(Level.INFO, "resetHistoricalRatings, slug: " + ContentKindType.user_description.getLocalizedName()
+		+ "/" + slug);
+	ResponseEntity<String> result = ratingService.resetHistoricalRatings(ContentKindType.user_description
+		.getLocalizedName() + "/" + slug);
+	// if (HttpStatus.OK.equals(result.getStatusCode())) {
+	// ratingService.clearSession();
 	// }
 	return result;
     }

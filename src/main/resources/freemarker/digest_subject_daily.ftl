@@ -1,0 +1,1 @@
+Dnevni bundolo pregled za ${date}

@@ -17,6 +17,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
+import org.bundolo.model.enumeration.DigestKindType;
 import org.bundolo.model.enumeration.UserProfileGenderType;
 import org.bundolo.model.enumeration.UserProfileStatusType;
 
@@ -88,14 +89,18 @@ public class UserProfile implements java.io.Serializable {
     // @Transient
     private Content descriptionContent;
 
-    @Column(name = "subscribed")
-    private Boolean subscribed;
+    @Column(name = "newsletter_subscription")
+    private Boolean newsletterSubscription;
 
     @Column(name = "newsletter_sending_date")
     private Date newsletterSendingDate;
 
     @Column(name = "previous_activity")
     private Date previousActivity;
+
+    @Column(name = "digest_subscription")
+    @Enumerated(EnumType.STRING)
+    private DigestKindType digestSubscription;
 
     public UserProfile() {
 	super();
@@ -237,12 +242,12 @@ public class UserProfile implements java.io.Serializable {
 	this.descriptionContent = descriptionContent;
     }
 
-    public Boolean getSubscribed() {
-	return subscribed;
+    public Boolean getNewsletterSubscription() {
+	return newsletterSubscription;
     }
 
-    public void setSubscribed(Boolean subscribed) {
-	this.subscribed = subscribed;
+    public void setNewsletterSubscription(Boolean newsletterSubscription) {
+	this.newsletterSubscription = newsletterSubscription;
     }
 
     public Date getNewsletterSendingDate() {
@@ -261,6 +266,14 @@ public class UserProfile implements java.io.Serializable {
 	this.previousActivity = previousActivity;
     }
 
+    public DigestKindType getDigestSubscription() {
+	return digestSubscription;
+    }
+
+    public void setDigestSubscription(DigestKindType digestSubscription) {
+	this.digestSubscription = digestSubscription;
+    }
+
     @Override
     public String toString() {
 	return "UserProfile [userId=" + userId + ", username=" + username + ", password=" + password + ", salt=" + salt
@@ -268,7 +281,8 @@ public class UserProfile implements java.io.Serializable {
 		+ gender + ", email=" + email + ", showPersonal=" + showPersonal + ", signupDate=" + signupDate
 		+ ", lastLoginDate=" + lastLoginDate + ", lastIp=" + lastIp + ", userProfileStatus="
 		+ userProfileStatus + ", nonce=" + nonce + ", newEmail=" + newEmail + ", descriptionContent="
-		+ descriptionContent + ", subscribed=" + subscribed + ", newsletterSendingDate="
-		+ newsletterSendingDate + ", previousActivity=" + previousActivity + "]";
+		+ descriptionContent + ", newsletterSubscription=" + newsletterSubscription
+		+ ", newsletterSendingDate=" + newsletterSendingDate + ", previousActivity=" + previousActivity
+		+ ", digestSubscription=" + digestSubscription + "]";
     }
 }
