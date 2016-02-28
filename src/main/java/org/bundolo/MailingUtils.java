@@ -146,7 +146,7 @@ public class MailingUtils {
 	MimeMessage message = new MimeMessage(mailSession);
 
 	message.setSubject(subject, "UTF-8");
-	message.setContent(body, "text/plain;charset=utf-8");
+	message.setContent(body, "text/html;charset=utf-8");
 	message.setFrom(new InternetAddress(properties.getProperty("mail.from"), properties
 		.getProperty("mail.from.friendly")));
 	message.addRecipient(Message.RecipientType.TO, new InternetAddress(recipient));
@@ -168,7 +168,7 @@ public class MailingUtils {
 	MimeMessage message = new MimeMessage(mailSession);
 
 	message.setSubject(subject, "UTF-8");
-	message.setContent(body, "text/plain;charset=utf-8");
+	message.setContent(body, "text/html;charset=utf-8");
 	message.setFrom(new InternetAddress(properties.getProperty("mail.from"), properties
 		.getProperty("mail.from.friendly")));
 	message.addRecipient(Message.RecipientType.TO, new InternetAddress(recipient));
@@ -178,7 +178,7 @@ public class MailingUtils {
 	transport.close();
     }
 
-    @Scheduled(cron = "${systemProperties['newsletter.sender.schedule'] ?: 0 0 * * * *}")
+    // @Scheduled(cron = "${systemProperties['newsletter.sender.schedule'] ?: 0 0 * * * *}")
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public void newsletterSender() {
 	Calendar now = dateUtils.newCalendar();
