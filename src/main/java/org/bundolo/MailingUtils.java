@@ -88,9 +88,9 @@ public class MailingUtils {
 		sendEmailBundolo(body, subject, recipient);
 	    }
 	} else {
-	    // logger.log(Level.WARNING, "sendEmail\nrecipient: " + recipient + "\nsubject: " + subject + "\nbody: "
-	    // + body);
-	    logger.log(Level.WARNING, "sendEmail\nrecipient: " + recipient + "\nsubject: " + subject);
+	    logger.log(Level.WARNING, "sendEmail\nrecipient: " + recipient + "\nsubject: " + subject + "\nbody: "
+		    + body);
+	    // logger.log(Level.WARNING, "sendEmail\nrecipient: " + recipient + "\nsubject: " + subject);
 	}
     }
 
@@ -254,8 +254,8 @@ public class MailingUtils {
 	}
     }
 
-    @Scheduled(cron = "${systemProperties['dailyDigest.sender.schedule'] ?: 0 0 4 * * *}")
-    // @Scheduled(cron = "${systemProperties['dailyDigest.sender.schedule'] ?: 0 * * * * *}")
+    // @Scheduled(cron = "${systemProperties['dailyDigest.sender.schedule'] ?: 0 0 4 * * *}")
+    @Scheduled(cron = "${systemProperties['dailyDigest.sender.schedule'] ?: 0 * * * * *}")
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public void dailyDigestSender() {
 	sendDigests(DigestKindType.daily);
@@ -285,8 +285,8 @@ public class MailingUtils {
 	    Template bodyTemplate;
 	    Template subjectTemplate;
 	    try {
-		bodyTemplate = freemarkerConfiguration.getTemplate("digest_" + digestKind + ".ftl");
-		subjectTemplate = freemarkerConfiguration.getTemplate("digest_subject_" + digestKind + ".ftl");
+		bodyTemplate = freemarkerConfiguration.getTemplate("digest.ftl");
+		subjectTemplate = freemarkerConfiguration.getTemplate("digest_subject.ftl");
 	    } catch (IOException ex) {
 		logger.log(Level.SEVERE, "digest template retrieval exception: " + ex);
 		return;
@@ -295,16 +295,24 @@ public class MailingUtils {
 	    String formattedDate = dateFormat.format(now.getTime());
 
 	    StringBuilder updatesMessage = new StringBuilder("bilo je:");
+	    String periodMessage = "";
+	    String introMessage = "";
 	    Calendar from = (Calendar) now.clone();
 	    switch (digestKind) {
 	    case daily:
 		from.add(Calendar.DATE, -1);
+		periodMessage = "Dnevni";
+		introMessage = "U prethodnom danu";
 		break;
 	    case weekly:
 		from.add(Calendar.DATE, -7);
+		periodMessage = "Nedeljni";
+		introMessage = "U prethodnoj nedelji";
 		break;
 	    case monthly:
 		from.add(Calendar.MONTH, -1);
+		periodMessage = "Mesečni";
+		introMessage = "U prethodnom mesecu";
 		break;
 	    default:
 		break;
@@ -394,7 +402,9 @@ public class MailingUtils {
 		    }
 		    Map<String, Object> data = new HashMap<String, Object>();
 		    data.put("username", recipient.getUsername());
+		    data.put("period", periodMessage);
 		    data.put("date", formattedDate);
+		    data.put("intro", introMessage);
 		    data.put("updates", updatesMessage);
 		    data.put("interactions", interactionsMessage);
 		    String digestBody = FreeMarkerTemplateUtils.processTemplateIntoString(bodyTemplate, data);

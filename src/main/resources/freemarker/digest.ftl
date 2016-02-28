@@ -1,12 +1,12 @@
 <html>
     <head>
-        <title>Mesečni bundolo pregled za ${date}</title>
+        <title>${period} bundolo pregled za ${date}</title>
     </head>
     <body>
 
 Pozdrav, ${username},<br/>
 <br/>
-U prethodnom mesecu ${updates}
+${intro} ${updates}
 <br/>
 Za više detalja ulogujte se na <a style="color: #000;" href="http://www.bundolo.org/">bundolo</a> i idite na statistika>novosti.<br/><br/>
 Na vašim tekstovima od poslednje posete ${interactions}

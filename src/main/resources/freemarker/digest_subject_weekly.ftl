@@ -1,1 +1,0 @@
-Nedeljni bundolo pregled za ${date}
