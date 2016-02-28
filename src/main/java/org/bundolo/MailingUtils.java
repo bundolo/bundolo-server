@@ -254,8 +254,8 @@ public class MailingUtils {
 	}
     }
 
-    // @Scheduled(cron = "${systemProperties['dailyDigest.sender.schedule'] ?: 0 0 4 * * *}")
-    @Scheduled(cron = "${systemProperties['dailyDigest.sender.schedule'] ?: 0 * * * * *}")
+    @Scheduled(cron = "${systemProperties['dailyDigest.sender.schedule'] ?: 0 0 4 * * *}")
+    // @Scheduled(cron = "${systemProperties['dailyDigest.sender.schedule'] ?: 0 * * * * *}")
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public void dailyDigestSender() {
 	sendDigests(DigestKindType.daily);
@@ -417,6 +417,21 @@ public class MailingUtils {
 		}
 	    }
 	}
+    }
+
+    public void sendMessage(String title, String text, String senderUsername, String recipientEmailAddress)
+	    throws Exception {
+	Template bodyTemplate;
+	Template subjectTemplate;
+	bodyTemplate = freemarkerConfiguration.getTemplate("message.ftl");
+	subjectTemplate = freemarkerConfiguration.getTemplate("message_subject.ftl");
+	Map<String, Object> data = new HashMap<String, Object>();
+	data.put("username", senderUsername);
+	data.put("title", title);
+	data.put("text", text);
+	String digestBody = FreeMarkerTemplateUtils.processTemplateIntoString(bodyTemplate, data);
+	String digestSubject = FreeMarkerTemplateUtils.processTemplateIntoString(subjectTemplate, data);
+	sendEmail(digestBody, digestSubject, recipientEmailAddress);
     }
 
     private static TriggerContext getTriggerContext(Date lastCompletionTime) {

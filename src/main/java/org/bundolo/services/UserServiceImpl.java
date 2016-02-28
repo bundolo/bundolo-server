@@ -289,15 +289,7 @@ public class UserServiceImpl implements UserService {
 	    if (StringUtils.isBlank(senderUsername)) {
 		senderUsername = Constants.DEFAULT_GUEST_SLUG;
 	    }
-	    String emailSubject = "bundolo (NO REPLAY) privatna poruka od korisnika " + senderUsername + ": " + title;
-	    String emailBody = text
-		    + "<br/><br/>---<br/>"
-		    + "ovo je privatna poruka poslata sa stranice bundolo.org od korisnika "
-		    + senderUsername
-		    + ".<br/>"
-		    + "adrese korisnika su sakrivene, na poruku možete odgovoriti slanjem privatne poruke sa bundola, a NE povratnom porukom (replay).<br/><br/>"
-		    + "poštovanje,<br/>bundolo administracija";
-	    mailingUtils.sendEmail(emailBody, emailSubject, recipientEmailAddress);
+	    mailingUtils.sendMessage(title, text, senderUsername, recipientEmailAddress);
 	    return ReturnMessageType.success;
 	} catch (Exception ex) {
 	    logger.log(Level.SEVERE, "sendMessage exception: " + ex);
