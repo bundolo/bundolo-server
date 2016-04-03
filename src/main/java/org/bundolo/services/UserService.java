@@ -1,5 +1,6 @@
 package org.bundolo.services;
 
+import java.util.Date;
 import java.util.List;
 
 import org.bundolo.model.User;
@@ -29,5 +30,9 @@ public interface UserService {
     public void clearSession();
 
     public Long deleteUser(String slug);
+
+    public void updateNewsletterSendingDate(List<UserProfile> users, Date newsletterSendingDate);
+
+    public List<UserProfile> findNewsletterUsers(Date sendingStart, Date bulletinDate, Integer maxResults);
 
 }

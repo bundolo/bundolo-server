@@ -448,13 +448,13 @@ public class ContentServiceImpl implements ContentService {
 
     @Override
     public Long deleteAnnouncement(String slug) {
-	// TODO
+	// TODO backlog: deleteAnnouncement
 	return null;
     }
 
     @Override
     public Long deleteSerial(String slug) {
-	// TODO
+	// TODO backlog: deleteSerial
 	return null;
     }
 
@@ -506,7 +506,7 @@ public class ContentServiceImpl implements ContentService {
 
     @Override
     public Long deleteTopic(String slug) {
-	// TODO
+	// TODO backlog: deleteTopic
 	return null;
     }
 
@@ -529,8 +529,7 @@ public class ContentServiceImpl implements ContentService {
 	}
     }
 
-    // TODO
-    // make sure this transactional is not needed for something
+    // TODO make sure this transactional is not needed for something
     // when it's here, trimmed beans get saved in db
     @Override
     // @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)

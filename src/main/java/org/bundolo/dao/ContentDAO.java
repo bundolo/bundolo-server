@@ -532,7 +532,7 @@ public class ContentDAO extends JpaDAO<Long, Content> {
     @SuppressWarnings("unchecked")
     public List<Content> findAuthorInteractions(String slug, Date fromDate, Integer start, Integer end,
 	    String[] orderBy, String[] order, String[] filterBy, String[] filter) {
-	logger.log(Level.INFO, "findAuthorUpdates; slug: " + slug + ", start: " + start + ", max results: "
+	logger.log(Level.FINE, "findAuthorInteractions; slug: " + slug + ", start: " + start + ", max results: "
 		+ (end - start + 1) + ", orderBy: " + orderBy + ", order: " + order + ", filterBy: " + filterBy
 		+ ", filter: " + filter);
 	if (slug == null) {
@@ -562,7 +562,7 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	queryContentIdsString.append(" WHERE c.author_username=?1");
 	queryContentIdsString.append(" AND r.parent_content_id=c.content_id");
 	queryContentIdsString.append(" AND r.last_activity > ?2 AND r.kind='general'");
-	logger.log(Level.INFO, "queryContentIdsString: " + queryContentIdsString.toString());
+	logger.log(Level.FINE, "queryContentIdsString: " + queryContentIdsString.toString());
 	Query queryContentIds = entityManager.createNativeQuery(queryContentIdsString.toString());
 	queryContentIds.setParameter(1, user.getUsername());
 	queryContentIds.setParameter(2, fromDate);
@@ -608,7 +608,7 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 		    prefix = nextPrefix;
 		}
 	    }
-	    logger.log(Level.INFO, "queryString: " + queryString.toString() + ", start: " + start + ", max results: "
+	    logger.log(Level.FINE, "queryString: " + queryString.toString() + ", start: " + start + ", max results: "
 		    + (end - start + 1));
 	    Query q = entityManager.createQuery(queryString.toString());
 	    if (filterParamCounter > 0) {
@@ -637,7 +637,7 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 		ratingsQueryString
 			.append(", r.last_activity, r.historical FROM rating r WHERE r.kind='personal' AND r.author_username=?1");
 		ratingsQueryString.append(" AND r.parent_content_id IN (" + contentIds + ")");
-		logger.log(Level.INFO, "ratingsQueryString: " + ratingsQueryString.toString());
+		logger.log(Level.FINE, "ratingsQueryString: " + ratingsQueryString.toString());
 		Query ratingsQuery = entityManager.createNativeQuery(ratingsQueryString.toString(), Rating.class);
 		ratingsQuery.setParameter(1, user.getUsername());
 		List<Rating> ratingsResultList = ratingsQuery.getResultList();
@@ -652,6 +652,7 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 		    Iterator<Content> iterator = resultList.iterator();
 		    while (iterator.hasNext()) {
 			Content result = iterator.next();
+			logger.log(Level.FINE, "result: " + result);
 			// trimming
 			if (ContentKindType.forum_topic.equals(result.getKind())
 				|| ContentKindType.episode.equals(result.getKind())

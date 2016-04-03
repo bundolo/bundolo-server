@@ -15,7 +15,7 @@ apply plugin: 'spring-boot'
 
 jar {
     baseName = 'bundolo-server'
-    version =  '1.1.9'
+    version =  '1.2.0'
 }
 
 repositories {
@@ -81,10 +81,17 @@ dependencies {
     compile 'org.eclipse.persistence:javax.persistence:2.1.0'
     compile 'javax.validation:validation-api:1.0.0.GA'
 
-    compile 'org.hibernate:hibernate-validator:4.3.1.Final'
-    compile 'org.hibernate:hibernate-c3p0:4.1.5.SP1'
+	compile 'org.hibernate:hibernate-validator:4.3.1.Final'
+	compile 'org.hibernate:hibernate-c3p0:4.1.5.SP1'
 	compile 'org.hibernate:hibernate-entitymanager:4.1.5.SP1'
 	compile 'org.hibernate:hibernate-core:4.1.5.SP1'
+
+//TODO upgrading hibernate
+//this was tested, and it gave unique constraint exception on saving comment
+//  compile 'org.hibernate:hibernate-validator:5.1.0.Final'
+//  compile 'org.hibernate:hibernate-c3p0:5.1.0.Final'
+//	compile 'org.hibernate:hibernate-entitymanager:5.1.0.Final'
+//	compile 'org.hibernate:hibernate-core:5.1.0.Final'
 
     compile 'postgresql:postgresql:9.1-901.jdbc3'
     compile 'org.apache.commons:commons-lang3:3.3.2'

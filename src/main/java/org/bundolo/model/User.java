@@ -13,7 +13,6 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
-import org.bundolo.model.enumeration.DigestKindType;
 import org.bundolo.model.enumeration.UserProfileGenderType;
 
 @Entity
@@ -53,12 +52,8 @@ public class User implements java.io.Serializable {
     @JoinColumn(name = "description_content_id")
     private Content descriptionContent;
 
-    @Column(name = "newsletter_subscription")
-    private Boolean newsletterSubscription;
-
-    @Column(name = "digest_subscription")
-    @Enumerated(EnumType.STRING)
-    private DigestKindType digestSubscription;
+    @Column(name = "newsletter_subscriptions")
+    private String newsletterSubscriptions;
 
     public User() {
 	super();
@@ -136,19 +131,11 @@ public class User implements java.io.Serializable {
 	this.descriptionContent = descriptionContent;
     }
 
-    public Boolean getNewsletterSubscription() {
-	return newsletterSubscription;
+    public String getNewsletterSubscriptions() {
+	return newsletterSubscriptions;
     }
 
-    public void setNewsletterSubscription(Boolean newsletterSubscription) {
-	this.newsletterSubscription = newsletterSubscription;
-    }
-
-    public DigestKindType getDigestSubscription() {
-	return digestSubscription;
-    }
-
-    public void setDigestSubscription(DigestKindType digestSubscription) {
-	this.digestSubscription = digestSubscription;
+    public void setNewsletterSubscriptions(String newsletterSubscriptions) {
+	this.newsletterSubscriptions = newsletterSubscriptions;
     }
 }

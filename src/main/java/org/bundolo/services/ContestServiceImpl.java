@@ -187,7 +187,7 @@ public class ContestServiceImpl implements ContestService {
 
     @Override
     public Long deleteContest(String slug) {
-	// TODO
+	// TODO backlog: deleteContest
 	return null;
     }
 

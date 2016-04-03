@@ -8,6 +8,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -63,10 +64,9 @@ public class Content implements java.io.Serializable {
     @Enumerated(EnumType.STRING)
     private ContentStatusType contentStatus;
 
-    // TODO
-    // this eager is probably needed for newsletters, but make sure it doesn't break something else
-    // @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "parentContent")
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "parentContent")
+    // TODO this eager is probably needed for newsletters, but make sure it doesn't break something else
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "parentContent")
+    // @OneToMany(cascade = CascadeType.ALL, mappedBy = "parentContent")
     @Where(clause = "kind = 'general'")
     private Collection<Rating> rating;
 

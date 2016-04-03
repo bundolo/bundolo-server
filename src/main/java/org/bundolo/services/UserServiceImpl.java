@@ -3,6 +3,7 @@ package org.bundolo.services;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -28,7 +29,7 @@ import org.bundolo.model.User;
 import org.bundolo.model.UserProfile;
 import org.bundolo.model.enumeration.ContentKindType;
 import org.bundolo.model.enumeration.ContentStatusType;
-import org.bundolo.model.enumeration.DigestKindType;
+import org.bundolo.model.enumeration.NewsletterSubscriptionKindType;
 import org.bundolo.model.enumeration.RatingKindType;
 import org.bundolo.model.enumeration.RatingStatusType;
 import org.bundolo.model.enumeration.ReturnMessageType;
@@ -187,6 +188,7 @@ public class UserServiceImpl implements UserService {
 			userProfile.setNewEmail(null);
 			userProfile.setNonce(null);
 			// avatar has to be changed in all user content
+			// TODO this might consume too much memory!!!
 			String newAvatarUrl = DigestUtils.md5Hex(email.toLowerCase().trim());
 			List<Content> contents = contentDAO.findAllByUsername(userProfile.getUsername());
 			for (Content content : contents) {
@@ -210,10 +212,9 @@ public class UserServiceImpl implements UserService {
 			descriptionContent.setAuthorUsername(userProfile.getUsername());
 			descriptionContent.setContentStatus(ContentStatusType.active);
 			descriptionContent.setSlug(contentDAO.getNewSlug(descriptionContent));
-			userProfile.setNewsletterSubscription(true);
-			// TODO set to weekly once tests are done
-			// userProfile.setDigestSubscription(DigestKindType.weekly);
-			userProfile.setDigestSubscription(DigestKindType.none);
+			userProfile.setNewsletterSubscriptions(NewsletterSubscriptionKindType
+				.getStringRepresentation(Arrays.asList(NewsletterSubscriptionKindType.bulletin,
+					NewsletterSubscriptionKindType.weekly)));
 			userProfileDAO.merge(userProfile);
 			result = ReturnMessageType.success;
 		    }
@@ -324,9 +325,8 @@ public class UserServiceImpl implements UserService {
 	    userProfile.setUserProfileStatus(UserProfileStatusType.pending);
 	    userProfile.setSignupDate(dateUtils.newDate());
 	    userProfile.setLastIp(getRemoteHost());
-	    userProfile.setNewsletterSubscription(false);
+	    userProfile.setNewsletterSubscriptions("[]");
 	    userProfile.setNewsletterSendingDate(userProfile.getSignupDate());
-	    userProfile.setDigestSubscription(DigestKindType.none);
 
 	    Date creationDate = dateUtils.newDate();
 	    Content descriptionContent = new Content(null, null, ContentKindType.user_description, null, "",
@@ -438,8 +438,7 @@ public class UserServiceImpl implements UserService {
 		    userProfileDB.setNewEmail(null);
 		}
 		userProfileDB.setShowPersonal(userProfile.getShowPersonal());
-		userProfileDB.setNewsletterSubscription(userProfile.getNewsletterSubscription());
-		userProfileDB.setDigestSubscription(userProfile.getDigestSubscription());
+		userProfileDB.setNewsletterSubscriptions(userProfile.getNewsletterSubscriptions());
 	    }
 
 	    userProfileDAO.merge(userProfileDB);
@@ -480,8 +479,19 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Long deleteUser(String username) {
-	// TODO
+	// TODO backlog: deleteUser
 	return null;
+    }
+
+    @Override
+    // @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    public void updateNewsletterSendingDate(List<UserProfile> users, Date newsletterSendingDate) {
+	userProfileDAO.updateNewsletterSendingDate(users, newsletterSendingDate);
+    }
+
+    @Override
+    public List<UserProfile> findNewsletterUsers(Date sendingStart, Date bulletinDate, Integer maxResults) {
+	return userProfileDAO.findNewsletterUsers(sendingStart, bulletinDate, maxResults);
     }
 
     private String getRemoteHost() {

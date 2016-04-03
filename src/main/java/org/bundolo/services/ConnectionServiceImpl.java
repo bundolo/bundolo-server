@@ -199,7 +199,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 
     @Override
     public Long deleteConnection(String slug) {
-	// TODO
+	// TODO backlog: deleteConnection
 	return null;
     }
 

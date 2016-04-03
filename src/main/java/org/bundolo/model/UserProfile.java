@@ -17,7 +17,6 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
-import org.bundolo.model.enumeration.DigestKindType;
 import org.bundolo.model.enumeration.UserProfileGenderType;
 import org.bundolo.model.enumeration.UserProfileStatusType;
 
@@ -89,18 +88,18 @@ public class UserProfile implements java.io.Serializable {
     // @Transient
     private Content descriptionContent;
 
-    @Column(name = "newsletter_subscription")
-    private Boolean newsletterSubscription;
+    @Column(name = "newsletter_subscriptions")
+    // TODO instead of converting manually, this could be used:
+    // @Convert(converter = JpaConverterJson.class)
+    // it required JPA upgrade to 2.1 in persistence.xml, which required hibernate upgrade in build.gradle, which threw
+    // exceptions
+    private String newsletterSubscriptions;
 
     @Column(name = "newsletter_sending_date")
     private Date newsletterSendingDate;
 
     @Column(name = "previous_activity")
     private Date previousActivity;
-
-    @Column(name = "digest_subscription")
-    @Enumerated(EnumType.STRING)
-    private DigestKindType digestSubscription;
 
     public UserProfile() {
 	super();
@@ -242,16 +241,16 @@ public class UserProfile implements java.io.Serializable {
 	this.descriptionContent = descriptionContent;
     }
 
-    public Boolean getNewsletterSubscription() {
-	return newsletterSubscription;
-    }
-
-    public void setNewsletterSubscription(Boolean newsletterSubscription) {
-	this.newsletterSubscription = newsletterSubscription;
-    }
-
     public Date getNewsletterSendingDate() {
 	return newsletterSendingDate;
+    }
+
+    public String getNewsletterSubscriptions() {
+	return newsletterSubscriptions;
+    }
+
+    public void setNewsletterSubscriptions(String newsletterSubscriptions) {
+	this.newsletterSubscriptions = newsletterSubscriptions;
     }
 
     public void setNewsletterSendingDate(Date newsletterSendingDate) {
@@ -266,14 +265,6 @@ public class UserProfile implements java.io.Serializable {
 	this.previousActivity = previousActivity;
     }
 
-    public DigestKindType getDigestSubscription() {
-	return digestSubscription;
-    }
-
-    public void setDigestSubscription(DigestKindType digestSubscription) {
-	this.digestSubscription = digestSubscription;
-    }
-
     @Override
     public String toString() {
 	return "UserProfile [userId=" + userId + ", username=" + username + ", password=" + password + ", salt=" + salt
@@ -281,8 +272,7 @@ public class UserProfile implements java.io.Serializable {
 		+ gender + ", email=" + email + ", showPersonal=" + showPersonal + ", signupDate=" + signupDate
 		+ ", lastLoginDate=" + lastLoginDate + ", lastIp=" + lastIp + ", userProfileStatus="
 		+ userProfileStatus + ", nonce=" + nonce + ", newEmail=" + newEmail + ", descriptionContent="
-		+ descriptionContent + ", newsletterSubscription=" + newsletterSubscription
-		+ ", newsletterSendingDate=" + newsletterSendingDate + ", previousActivity=" + previousActivity
-		+ ", digestSubscription=" + digestSubscription + "]";
+		+ descriptionContent + ", newsletterSubscriptions=" + newsletterSubscriptions
+		+ ", newsletterSendingDate=" + newsletterSendingDate + ", previousActivity=" + previousActivity + "]";
     }
 }

@@ -41,6 +41,6 @@ public class Application {
 	ConfigurableApplicationContext applicationContext = application.run(args);
 
 	// MailingUtils mailingUtils = (MailingUtils) applicationContext.getBean("mailingUtils");
-	// mailingUtils.dailyDigestSender();
+	// mailingUtils.newsletterSender();
     }
 }
