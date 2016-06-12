@@ -13,6 +13,8 @@ apply plugin: 'eclipse'
 apply plugin: 'idea'
 apply plugin: 'spring-boot'
 
+mainClassName = "org.bundolo.Application"
+
 jar {
     baseName = 'bundolo-server'
     version =  '1.2.0'
