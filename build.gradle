@@ -5,6 +5,7 @@ buildscript {
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:1.0.2.RELEASE")
+        //classpath("org.springframework.boot:spring-boot-gradle-plugin:1.3.5.RELEASE")
     }
 }
 
@@ -19,6 +20,11 @@ jar {
     baseName = 'bundolo-server'
     version =  '1.2.0'
 }
+
+//tried this to get jar built as linux service. it required 1.3.5 spring-boot-gradle-plugin, which downloaded new spring, that didn't work with current setup.
+//springBoot {
+//    executable = true
+//}
 
 repositories {
     mavenCentral()
