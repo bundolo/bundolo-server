@@ -3,4 +3,5 @@
 /.settings
 /build
 src/main/resources/dev.properties
+src/main/resources/qa.properties
 src/main/resources/prod.properties
