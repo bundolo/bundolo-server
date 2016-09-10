@@ -3,7 +3,7 @@ package org.bundolo.model.enumeration;
 public enum TextColumnType {
     // TODO description
     author("authorUsername", ColumnDataType.text), title("name", ColumnDataType.text), text("text", ColumnDataType.text), date(
-	    "creationDate", ColumnDataType.date), activity("lastActivity", ColumnDataType.date);
+	    "creationDate", ColumnDataType.date), activity("lastActivity", ColumnDataType.date), distinct("distinct", ColumnDataType.text);
 
     private final String columnName;
     private final ColumnDataType columnDataType;
