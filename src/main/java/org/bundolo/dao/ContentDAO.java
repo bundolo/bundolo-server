@@ -74,7 +74,7 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 				prefix = nextPrefix;
 			}
 		}
-		logger.log(Level.WARNING, "queryString: " + queryString.toString() + ", start: " + start + ", max results: "
+		logger.log(Level.FINE, "queryString: " + queryString.toString() + ", start: " + start + ", max results: "
 				+ (end - start + 1));
 		Query q = entityManager.createQuery(queryString.toString());
 		if (filterParamCounter > 0) {
@@ -946,7 +946,7 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 		}
 		//TODO this is not generic, because main query orders by some fields. this query should consider that ordering
 		queryMaxCreationDateString.append("group by author_username order by last_creation_date desc");
-		logger.log(Level.WARNING, "queryMaxCreationDateString: " + queryMaxCreationDateString.toString() + ", start: " + start + ", max results: "
+		logger.log(Level.FINE, "queryMaxCreationDateString: " + queryMaxCreationDateString.toString() + ", start: " + start + ", max results: "
 				+ (end - start + 1));
 		Query q = entityManager.createQuery(queryMaxCreationDateString.toString());
 		if (filterParamCounter > 0) {
@@ -986,7 +986,7 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 				prefix = nextPrefix;
 			}
 		}
-		logger.log(Level.WARNING, "queryString: " + queryString.toString());
+		logger.log(Level.FINE, "queryString: " + queryString.toString());
 		Query q = entityManager.createQuery(queryString.toString());
 		// strip text to make the request run faster
 		List<Content> texts = q.getResultList();
