@@ -19,28 +19,28 @@ import org.springframework.web.filter.DelegatingFilterProxy;
 @ImportResource("/applicationContext.xml")
 public class Application {
 
-    @Bean
-    public FilterRegistrationBean springSecurityFilterChain() {
-	FilterRegistrationBean registrationBean = new FilterRegistrationBean();
-	DelegatingFilterProxy securityFilter = new DelegatingFilterProxy();
-	registrationBean.setFilter(securityFilter);
-	registrationBean.setOrder(1);
-	List<String> urlPatterns = new ArrayList<String>();
-	urlPatterns.add("/**");
-	registrationBean.setUrlPatterns(urlPatterns);
-	return registrationBean;
-    }
-
-    public static void main(String[] args) {
-	if (StringUtils.isBlank(System.getProperty("env"))) {
-	    System.setProperty("env", "dev");
+	@Bean
+	public FilterRegistrationBean springSecurityFilterChain() {
+		FilterRegistrationBean registrationBean = new FilterRegistrationBean();
+		DelegatingFilterProxy securityFilter = new DelegatingFilterProxy();
+		registrationBean.setFilter(securityFilter);
+		registrationBean.setOrder(1);
+		List<String> urlPatterns = new ArrayList<String>();
+		urlPatterns.add("/**");
+		registrationBean.setUrlPatterns(urlPatterns);
+		return registrationBean;
 	}
-	System.out.println("bundolo " + System.getProperty("env") + " startup at " + new Date());
-	SpringApplication application = new SpringApplication(Application.class);
-	application.setShowBanner(false);
-	ConfigurableApplicationContext applicationContext = application.run(args);
 
-	// MailingUtils mailingUtils = (MailingUtils) applicationContext.getBean("mailingUtils");
-	// mailingUtils.newsletterSender();
-    }
+	public static void main(String[] args) {
+		if (StringUtils.isBlank(System.getProperty("env"))) {
+			System.setProperty("env", "dev");
+		}
+		System.out.println("bundolo " + System.getProperty("env") + " startup at " + new Date());
+		SpringApplication application = new SpringApplication(Application.class);
+		application.setShowBanner(false);
+		ConfigurableApplicationContext applicationContext = application.run(args);
+
+		// MailingUtils mailingUtils = (MailingUtils) applicationContext.getBean("mailingUtils");
+		// mailingUtils.newsletterSender();
+	}
 }

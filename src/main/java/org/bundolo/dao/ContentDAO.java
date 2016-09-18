@@ -41,8 +41,10 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	public List<Content> findTexts(Integer start, Integer end, String[] orderBy, String[] order, String[] filterBy,
 			String[] filter) {
 		if (Arrays.asList(filterBy).contains(TextColumnType.distinct.getColumnName())) {
-			//special case, we want one text per author. first we retrieve max(creation_date) and use that
-			//TODO distinct can be general, for other fields, not just author. we can provide field name as filter text perhaps
+			// special case, we want one text per author. first we retrieve
+			// max(creation_date) and use that
+			// TODO distinct can be general, for other fields, not just author.
+			// we can provide field name as filter text perhaps
 			return findDistinctTexts(start, end, orderBy, order, filterBy, filter);
 		}
 		int filterParamCounter = 0;
@@ -74,8 +76,8 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 				prefix = nextPrefix;
 			}
 		}
-		logger.log(Level.FINE, "queryString: " + queryString.toString() + ", start: " + start + ", max results: "
-				+ (end - start + 1));
+		logger.log(Level.FINE,
+				"queryString: " + queryString.toString() + ", start: " + start + ", max results: " + (end - start + 1));
 		Query q = entityManager.createQuery(queryString.toString());
 		if (filterParamCounter > 0) {
 			for (int i = 0; i < filterBy.length; i++) {
@@ -125,8 +127,8 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 				prefix = nextPrefix;
 			}
 		}
-		logger.log(Level.FINE, "queryString: " + queryString.toString() + ", start: " + start + ", max results: "
-				+ (end - start + 1));
+		logger.log(Level.FINE,
+				"queryString: " + queryString.toString() + ", start: " + start + ", max results: " + (end - start + 1));
 		Query q = entityManager.createQuery(queryString.toString());
 		if (filterParamCounter > 0) {
 			for (int i = 0; i < filterBy.length; i++) {
@@ -171,8 +173,8 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 				prefix = nextPrefix;
 			}
 		}
-		logger.log(Level.FINE, "queryString: " + queryString.toString() + ", start: " + start + ", max results: "
-				+ (end - start + 1));
+		logger.log(Level.FINE,
+				"queryString: " + queryString.toString() + ", start: " + start + ", max results: " + (end - start + 1));
 		Query q = entityManager.createQuery(queryString.toString());
 		if (filterParamCounter > 0) {
 			for (int i = 0; i < filterBy.length; i++) {
@@ -191,10 +193,12 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 		StringBuilder queryString = new StringBuilder();
 		queryString.append("SELECT c FROM Content c WHERE kind='forum_topic'");
 		queryString.append(" AND contentStatus='active'");
-		// TODO archived topics are not visible. if we enable retrieving disabled content, we have to handle exceptions
+		// TODO archived topics are not visible. if we enable retrieving
+		// disabled content, we have to handle exceptions
 		// in editing, adding, comments...
 		// queryString
-		// .append(" AND (contentStatus='active' OR (parentContent.name='arhiva' AND contentStatus='disabled'))");
+		// .append(" AND (contentStatus='active' OR (parentContent.name='arhiva'
+		// AND contentStatus='disabled'))");
 		if (ArrayUtils.isNotEmpty(filterBy)) {
 			String prefix = " AND LOWER(";
 			String suffix = ") LIKE '%";
@@ -221,8 +225,8 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 				prefix = nextPrefix;
 			}
 		}
-		logger.log(Level.FINE, "queryString: " + queryString.toString() + ", start: " + start + ", max results: "
-				+ (end - start + 1));
+		logger.log(Level.FINE,
+				"queryString: " + queryString.toString() + ", start: " + start + ", max results: " + (end - start + 1));
 		Query q = entityManager.createQuery(queryString.toString());
 		if (filterParamCounter > 0) {
 			for (int i = 0; i < filterBy.length; i++) {
@@ -253,7 +257,8 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 		return result;
 	}
 
-	// TODO this should be replaced by findBySlug but it's still used to check uniqueness
+	// TODO this should be replaced by findBySlug but it's still used to check
+	// uniqueness
 	@SuppressWarnings("unchecked")
 	public Content findByTitle(String title, ContentKindType kind) {
 		logger.log(Level.FINE, "findByTitle: " + title + ", kind: " + kind);
@@ -312,7 +317,8 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 		}
 	}
 
-	// this should be replaced by findText(String slug), it's only used to check constraints
+	// this should be replaced by findText(String slug), it's only used to check
+	// constraints
 	@SuppressWarnings("unchecked")
 	public Content findText(String username, String title) {
 		if (username == null || title == null) {
@@ -362,8 +368,8 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	@SuppressWarnings("unchecked")
 	public List<Content> findConnectionGroups() {
 		StringBuilder queryString = new StringBuilder();
-		queryString
-		.append("SELECT c FROM Content c WHERE kind='connection_group' AND content_status='active' ORDER BY creation_date ASC");
+		queryString.append(
+				"SELECT c FROM Content c WHERE kind='connection_group' AND content_status='active' ORDER BY creation_date ASC");
 		logger.log(Level.FINE, "queryString: " + queryString.toString());
 		Query q = entityManager.createQuery(queryString.toString());
 		return q.getResultList();
@@ -372,8 +378,8 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	@SuppressWarnings("unchecked")
 	public List<Content> findTopicGroups() {
 		StringBuilder queryString = new StringBuilder();
-		queryString
-		.append("SELECT c FROM Content c WHERE kind='forum_group' AND content_status='active' ORDER BY creation_date ASC");
+		queryString.append(
+				"SELECT c FROM Content c WHERE kind='forum_group' AND content_status='active' ORDER BY creation_date ASC");
 		logger.log(Level.FINE, "queryString: " + queryString.toString());
 		Query q = entityManager.createQuery(queryString.toString());
 		return q.getResultList();
@@ -387,8 +393,8 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 		String queryString = "SELECT c FROM Content c WHERE kind='forum_post' AND content_status='active'";
 		queryString += " AND parent_content_id =?1";
 		queryString += " ORDER BY creationDate";
-		logger.log(Level.FINE, "queryString: " + queryString.toString() + ", start: " + start + ", max results: "
-				+ (end - start + 1));
+		logger.log(Level.FINE,
+				"queryString: " + queryString.toString() + ", start: " + start + ", max results: " + (end - start + 1));
 		Query q = entityManager.createQuery(queryString.toString());
 		q.setParameter(1, parentId);
 		q.setFirstResult(start);
@@ -404,8 +410,8 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 		String queryString = "SELECT c FROM Content c WHERE kind='episode' AND (content_status='active' OR content_status='pending')";
 		queryString += " AND parent_content_id =?1";
 		queryString += " ORDER BY creationDate";
-		logger.log(Level.FINE, "queryString: " + queryString.toString() + ", start: " + start + ", max results: "
-				+ (end - start + 1));
+		logger.log(Level.FINE,
+				"queryString: " + queryString.toString() + ", start: " + start + ", max results: " + (end - start + 1));
 		Query q = entityManager.createQuery(queryString.toString());
 		q.setParameter(1, parentId);
 		q.setFirstResult(start);
@@ -415,7 +421,8 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 		return q.getResultList();
 	}
 
-	// this should be replaced by findEpisode(String slug), it's only used to check constraints
+	// this should be replaced by findEpisode(String slug), it's only used to
+	// check constraints
 	@SuppressWarnings("unchecked")
 	public Content findEpisode(String serialTitle, String title) {
 		if (serialTitle == null || title == null) {
@@ -474,8 +481,8 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 		}
 		int filterParamCounter = 0;
 		StringBuilder queryString = new StringBuilder();
-		queryString
-		.append("SELECT c FROM User u, Content c join c.rating r WHERE u.descriptionContent.slug=?1 and c.authorUsername =u.username");
+		queryString.append(
+				"SELECT c FROM User u, Content c join c.rating r WHERE u.descriptionContent.slug=?1 and c.authorUsername =u.username");
 		queryString.append(" AND (c.kind='" + ContentKindType.text + "' OR c.kind='" + ContentKindType.episode + "'");
 
 		String senderUsername = SecurityUtils.getUsername();
@@ -511,8 +518,8 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 				prefix = nextPrefix;
 			}
 		}
-		logger.log(Level.FINE, "queryString: " + queryString.toString() + ", start: " + start + ", max results: "
-				+ (end - start + 1));
+		logger.log(Level.FINE,
+				"queryString: " + queryString.toString() + ", start: " + start + ", max results: " + (end - start + 1));
 		Query q = entityManager.createQuery(queryString.toString());
 		q.setParameter(1, slug);
 		if (filterParamCounter > 0) {
@@ -539,9 +546,10 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	@SuppressWarnings("unchecked")
 	public List<Content> findAuthorInteractions(String slug, Date fromDate, Integer start, Integer end,
 			String[] orderBy, String[] order, String[] filterBy, String[] filter) {
-		logger.log(Level.FINE, "findAuthorInteractions; slug: " + slug + ", start: " + start + ", max results: "
-				+ (end - start + 1) + ", orderBy: " + orderBy + ", order: " + order + ", filterBy: " + filterBy
-				+ ", filter: " + filter);
+		logger.log(Level.FINE,
+				"findAuthorInteractions; slug: " + slug + ", start: " + start + ", max results: " + (end - start + 1)
+						+ ", orderBy: " + orderBy + ", order: " + order + ", filterBy: " + filterBy + ", filter: "
+						+ filter);
 		if (slug == null) {
 			return null;
 		}
@@ -553,18 +561,20 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 		StringBuilder queryContentIdsString = new StringBuilder();
 
 		// this had to be native sql because of complexity
-		// having union of two selects has better performance than single select with OR
+		// having union of two selects has better performance than single select
+		// with OR
 		// wrapper select had to be added to enable filtering and sorting
-		// first subquery gives content with children that are author's which had recent activity
+		// first subquery gives content with children that are author's which
+		// had recent activity
 		// second subquery gives author's content with recent rating update
 		queryContentIdsString.append("SELECT c.content_id FROM content c, content c1");
 		queryContentIdsString.append(" WHERE c1.author_username=?1");
 		queryContentIdsString.append(" AND (c1.content_status='active' OR c1.content_status='pending')");
-		queryContentIdsString
-		.append(" AND (c1.last_activity > ?2 AND ((c1.kind LIKE '%comment' AND c.content_id=c1.ancestor_content_id)");
+		queryContentIdsString.append(
+				" AND (c1.last_activity > ?2 AND ((c1.kind LIKE '%comment' AND c.content_id=c1.ancestor_content_id)");
 		queryContentIdsString.append(" OR (c1.kind='forum_post' AND c.content_id=c1.parent_content_id)");
 		queryContentIdsString
-		.append(" OR (c1.kind!='forum_post' AND c1.kind NOT LIKE '%comment' AND c.content_id=c1.content_id)))");
+				.append(" OR (c1.kind!='forum_post' AND c1.kind NOT LIKE '%comment' AND c.content_id=c1.content_id)))");
 		queryContentIdsString.append(" UNION SELECT c.content_id FROM content c, rating r");
 		queryContentIdsString.append(" WHERE c.author_username=?1");
 		queryContentIdsString.append(" AND r.parent_content_id=c.content_id");
@@ -587,8 +597,8 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 			StringBuilder queryString = new StringBuilder();
 			queryString.append("SELECT c FROM Content c where contentId in (" + contentIds + ")");
 			queryString.append(" AND (content_status='active' OR content_status='pending')");
-			queryString
-			.append(" AND kind NOT LIKE '%comment' AND kind NOT IN ('forum_group', 'forum_post', 'text_description', 'connection_group')");
+			queryString.append(
+					" AND kind NOT LIKE '%comment' AND kind NOT IN ('forum_group', 'forum_post', 'text_description', 'connection_group')");
 			if (ArrayUtils.isNotEmpty(filterBy)) {
 				String prefix = " AND LOWER(";
 				String suffix = ") LIKE '%";
@@ -629,20 +639,21 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 			}
 			List<Content> resultList = q.getResultList();
 			if (resultList != null && resultList.size() > 0) {
-				// retrieve personal ratings and number of new comments for contents returned by previous query
+				// retrieve personal ratings and number of new comments for
+				// contents returned by previous query
 				// TODO sorting and filtering by these two fields
 				StringBuilder ratingsQueryString = new StringBuilder();
 				ratingsQueryString
-				.append("SELECT r.rating_id, r.author_username, r.parent_content_id, r.kind, r.rating_status,");
+						.append("SELECT r.rating_id, r.author_username, r.parent_content_id, r.kind, r.rating_status,");
 				ratingsQueryString
-				.append(" COALESCE((SELECT count(*) from rating r1, content c where r.rating_id=r1.rating_id");
+						.append(" COALESCE((SELECT count(*) from rating r1, content c where r.rating_id=r1.rating_id");
 				ratingsQueryString
-				.append(" and ((c.kind like '%comment' and c.ancestor_content_id=r1.parent_content_id)");
+						.append(" and ((c.kind like '%comment' and c.ancestor_content_id=r1.parent_content_id)");
 				ratingsQueryString.append(" or (c.kind = 'forum_post' and c.parent_content_id=r1.parent_content_id))");
-				ratingsQueryString
-				.append(" and c.content_status='active' and c.creation_date>r1.last_activity group by r1.rating_id), 0) AS value");
-				ratingsQueryString
-				.append(", r.last_activity, r.historical FROM rating r WHERE r.kind='personal' AND r.author_username=?1");
+				ratingsQueryString.append(
+						" and c.content_status='active' and c.creation_date>r1.last_activity group by r1.rating_id), 0) AS value");
+				ratingsQueryString.append(
+						", r.last_activity, r.historical FROM rating r WHERE r.kind='personal' AND r.author_username=?1");
 				ratingsQueryString.append(" AND r.parent_content_id IN (" + contentIds + ")");
 				logger.log(Level.FINE, "ratingsQueryString: " + ratingsQueryString.toString());
 				Query ratingsQuery = entityManager.createNativeQuery(ratingsQueryString.toString(), Rating.class);
@@ -655,7 +666,8 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 						ratingsMap.put(ratingResult.getParentContent().getContentId(), ratingResult);
 					}
 					// add personal ratings to content results as second rating
-					// this has to use iterator to be able to remove elements while looping over them
+					// this has to use iterator to be able to remove elements
+					// while looping over them
 					Iterator<Content> iterator = resultList.iterator();
 					while (iterator.hasNext()) {
 						Content result = iterator.next();
@@ -663,28 +675,32 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 						// trimming
 						if (ContentKindType.forum_topic.equals(result.getKind())
 								|| ContentKindType.episode.equals(result.getKind())
-								&& result.getParentContent() != null) {
+										&& result.getParentContent() != null) {
 							result.setParent(result.getParentContent());
 						}
 						result.setText("");
 						Rating generalRating = result.getRating().size() > 0 ? (Rating) result.getRating().toArray()[0]
 								: null;
 						Rating personalRating = ratingsMap.get(result.getContentId());
-						// TODO it's possible to have cases when personalRating is null but we want to include it in
+						// TODO it's possible to have cases when personalRating
+						// is null but we want to include it in
 						// interactions
 						if (generalRating != null && personalRating != null) {
-							// delta between current general rating and personal historical rating is number of new
+							// delta between current general rating and personal
+							// historical rating is number of new
 							// views
 							personalRating.setHistorical(generalRating.getValue() - personalRating.getHistorical());
 						}
 						if ((personalRating == null)
 								|| (personalRating.getHistorical() <= 0 && personalRating.getValue() <= 0)) {
-							// this result won't show anything but zeros (author visited own content, logged in, or
+							// this result won't show anything but zeros (author
+							// visited own content, logged in, or
 							// something like that)
 							// remove it from the list
 							iterator.remove();
 						} else {
-							// add personal rating filled with rating delta and number of new comments in rating
+							// add personal rating filled with rating delta and
+							// number of new comments in rating
 							// collection after general entry
 							result.getRating().add(personalRating);
 						}
@@ -707,7 +723,7 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 		queryString.append(" WHERE c2.contentId = ?1");
 		queryString.append(" AND c1.kind = c2.kind");
 		queryString
-		.append(" AND (c1.contentStatus='active' OR (c1.kind='episode_group' AND c1.contentStatus='pending'))");
+				.append(" AND (c1.contentStatus='active' OR (c1.kind='episode_group' AND c1.contentStatus='pending'))");
 		if (StringUtils.isNotBlank(fixBy)) {
 			queryString.append(" AND c1." + fixBy + "=c2." + fixBy);
 		}
@@ -756,8 +772,7 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 		if (fromDate != null) {
 			queryString.append(" AND last_activity >=?1");
 		}
-		queryString
-		.append(" AND (kind='text' OR kind='forum_topic' OR kind='connection_description' OR kind='news' "
+		queryString.append(" AND (kind='text' OR kind='forum_topic' OR kind='connection_description' OR kind='news' "
 				+ "OR kind='contest_description' OR kind='episode' OR kind='user_description' OR kind='episode_group')");
 		queryString.append(" ORDER BY last_activity desc");
 		logger.log(Level.INFO, "queryString: " + queryString + ", fromDate: " + fromDate + ", limit: " + limit);
@@ -793,7 +808,7 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 		StringBuilder queryString = new StringBuilder();
 		queryString.append("SELECT c FROM Content c");
 		queryString
-		.append(" WHERE (c.contentStatus='active' OR (c.kind='episode_group' AND c.contentStatus='pending'))");
+				.append(" WHERE (c.contentStatus='active' OR (c.kind='episode_group' AND c.contentStatus='pending'))");
 		queryString.append(" AND content_id IN " + itemListIds.replace("[", "(").replace("]", ")"));
 		if (ArrayUtils.isNotEmpty(filterBy)) {
 			String prefix = " AND LOWER(";
@@ -822,8 +837,8 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 			}
 		}
 		int maxResults = end - start + 1;
-		logger.log(Level.FINE, "queryString: " + queryString.toString() + ", start: " + start + ", max results: "
-				+ maxResults);
+		logger.log(Level.FINE,
+				"queryString: " + queryString.toString() + ", start: " + start + ", max results: " + maxResults);
 		Query q = entityManager.createQuery(queryString.toString());
 		if (filterParamCounter > 0) {
 			for (int i = 0; i < filterBy.length; i++) {
@@ -863,7 +878,8 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 			// slug is set directly in UserService, this is not going to be used
 			return getNewSlug(content.getAuthorUsername(), content.getKind().getLocalizedName(), 0);
 		case item_list_description:
-			// TODO username will have to be in the slug for non-public item lists
+			// TODO username will have to be in the slug for non-public item
+			// lists
 			return getNewSlug(content.getName(), content.getKind().getLocalizedName(), 0);
 		case text:
 			return getNewSlug(content.getName(),
@@ -890,18 +906,30 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 		// parent should be slugified already
 		String result = parent + "/" + slugifyUtils.slugify(name);
 
+		if ((counter == 0) && (result.equals(parent + "/"))) {
+			// if slugify removed all characters, force attaching counter
+			counter = 1;
+		}
 		if (counter == 0) {
 			// if counter should not be attached, check for result length
 			if (result.length() > Constants.SLUG_MAX_LENGTH) {
 				result = result.substring(0, Constants.SLUG_MAX_LENGTH);
 			}
 		} else {
-			// if counter should be attached, check for total length, trim text, to make space for counter
-			if (result.length() + String.valueOf(counter).length() + 1 > Constants.SLUG_MAX_LENGTH) {
-				result = result.substring(0, Constants.SLUG_MAX_LENGTH - (String.valueOf(counter).length() + 1));
+			// if counter should be attached, check for total length
+			// trim text if needed, to make space for counter
+			String suffix;
+			if (result.equals(parent + "/")) {
+				// don't add dash if slugify removed all characters
+				suffix = String.valueOf(counter);
+			} else {
+				suffix = "-" + counter;
+			}
+			if (result.length() + suffix.length() > Constants.SLUG_MAX_LENGTH) {
+				result = result.substring(0, Constants.SLUG_MAX_LENGTH - suffix.length());
 			}
 			// add counter
-			result += "-" + counter;
+			result += suffix;
 		}
 		Content content = findBySlug(result);
 		if (content != null) {
@@ -921,14 +949,15 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 		q.setParameter(1, username);
 		return q.getResultList();
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private String getMaxCreationDates(Integer start, Integer end, String[] orderBy, String[] order, String[] filterBy,
 			String[] filter) {
 		String result = "";
 		int filterParamCounter = 0;
 		StringBuilder queryMaxCreationDateString = new StringBuilder();
-		queryMaxCreationDateString.append("SELECT authorUsername, max(creationDate) AS last_creation_date FROM Content c WHERE kind='text' AND content_status='active'");
+		queryMaxCreationDateString.append(
+				"SELECT authorUsername, max(creationDate) AS last_creation_date FROM Content c WHERE kind='text' AND content_status='active'");
 		if (ArrayUtils.isNotEmpty(filterBy)) {
 			String prefix = " AND LOWER(";
 			String suffix = ") LIKE '%";
@@ -944,10 +973,11 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 				}
 			}
 		}
-		//TODO this is not generic, because main query orders by some fields. this query should consider that ordering
+		// TODO this is not generic, because main query orders by some fields.
+		// this query should consider that ordering
 		queryMaxCreationDateString.append("group by author_username order by last_creation_date desc");
-		logger.log(Level.FINE, "queryMaxCreationDateString: " + queryMaxCreationDateString.toString() + ", start: " + start + ", max results: "
-				+ (end - start + 1));
+		logger.log(Level.FINE, "queryMaxCreationDateString: " + queryMaxCreationDateString.toString() + ", start: "
+				+ start + ", max results: " + (end - start + 1));
 		Query q = entityManager.createQuery(queryMaxCreationDateString.toString());
 		if (filterParamCounter > 0) {
 			for (int i = 0; i < filterBy.length; i++) {
@@ -966,10 +996,10 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 		}
 		return result;
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	public List<Content> findDistinctTexts(Integer start, Integer end, String[] orderBy, String[] order, String[] filterBy,
-			String[] filter) {
+	public List<Content> findDistinctTexts(Integer start, Integer end, String[] orderBy, String[] order,
+			String[] filterBy, String[] filter) {
 		StringBuilder queryString = new StringBuilder();
 		queryString.append("SELECT c FROM Content c WHERE kind='text' AND content_status='active' ");
 		queryString.append("AND (" + getMaxCreationDates(start, end, orderBy, order, filterBy, filter) + ")");
