@@ -12,68 +12,69 @@ import org.hibernate.Session;
 
 public abstract class JpaDAO<K, E> {
 
-    @PersistenceContext(unitName = "BundoloPostgresPersistenceUnit", type = PersistenceContextType.TRANSACTION)
-    protected EntityManager entityManager;
+	@PersistenceContext(unitName = "BundoloPostgresPersistenceUnit", type = PersistenceContextType.TRANSACTION)
+	protected EntityManager entityManager;
 
-    protected Class<E> entityClass;
+	protected Class<E> entityClass;
 
-    @SuppressWarnings("unchecked")
-    public JpaDAO() {
-	ParameterizedType genericSuperclass = (ParameterizedType) getClass().getGenericSuperclass();
-	this.entityClass = (Class<E>) genericSuperclass.getActualTypeArguments()[1];
-    }
+	@SuppressWarnings("unchecked")
+	public JpaDAO() {
+		ParameterizedType genericSuperclass = (ParameterizedType) getClass().getGenericSuperclass();
+		this.entityClass = (Class<E>) genericSuperclass.getActualTypeArguments()[1];
+	}
 
-    public void persist(E entity) {
-	entityManager.persist(entity);
-    }
+	public void persist(E entity) {
+		entityManager.persist(entity);
+	}
 
-    public void remove(E entity) {
-	entityManager.remove(entity);
-    }
+	public void remove(E entity) {
+		entityManager.remove(entity);
+	}
 
-    public E merge(E entity) {
-	return entityManager.merge(entity);
-    }
+	public E merge(E entity) {
+		return entityManager.merge(entity);
+	}
 
-    public void refresh(E entity) {
-	entityManager.refresh(entity);
-    }
+	public void refresh(E entity) {
+		entityManager.refresh(entity);
+	}
 
-    public E findById(K id) {
-	return entityManager.find(entityClass, id);
-    }
+	public E findById(K id) {
+		return entityManager.find(entityClass, id);
+	}
 
-    public E flush(E entity) {
-	entityManager.flush();
-	return entity;
-    }
+	public E flush(E entity) {
+		entityManager.flush();
+		return entity;
+	}
 
-    @SuppressWarnings("unchecked")
-    public List<E> findAll() {
-	Query q = entityManager.createQuery("SELECT h FROM " + entityClass.getName() + " h");
-	return q.getResultList();
-    }
+	@SuppressWarnings("unchecked")
+	public List<E> findAll() {
+		Query q = entityManager.createQuery("SELECT h FROM " + entityClass.getName() + " h");
+		return q.getResultList();
+	}
 
-    // TODO this is not generic
-    @SuppressWarnings("unchecked")
-    public List<E> findAllPaged(int start, int maxResults) {
-	// Query q = entityManager.createQuery("SELECT h FROM " + entityClass.getName() + " h");
-	Query q = entityManager.createQuery("SELECT h FROM " + entityClass.getName() + " h order by contentId");
-	q.setFirstResult(start);
-	q.setMaxResults(maxResults);
-	return q.getResultList();
-    }
+	// TODO this is not generic
+	@SuppressWarnings("unchecked")
+	public List<E> findAllPaged(int start, int maxResults) {
+		// Query q = entityManager.createQuery("SELECT h FROM " +
+		// entityClass.getName() + " h");
+		Query q = entityManager.createQuery("SELECT h FROM " + entityClass.getName() + " h order by contentId");
+		q.setFirstResult(start);
+		q.setMaxResults(maxResults);
+		return q.getResultList();
+	}
 
-    public Integer removeAll() {
-	Query q = entityManager.createQuery("DELETE FROM " + entityClass.getName() + " h");
-	return q.executeUpdate();
-    }
+	public Integer removeAll() {
+		Query q = entityManager.createQuery("DELETE FROM " + entityClass.getName() + " h");
+		return q.executeUpdate();
+	}
 
-    public void clear() {
-	// clear() forces reading from database instead of cache
-	// it can be optimised to clear only when needed
-	Session session = entityManager.unwrap(Session.class);
-	session.clear();
-    }
+	public void clear() {
+		// clear() forces reading from database instead of cache
+		// it can be optimised to clear only when needed
+		Session session = entityManager.unwrap(Session.class);
+		session.clear();
+	}
 
 }

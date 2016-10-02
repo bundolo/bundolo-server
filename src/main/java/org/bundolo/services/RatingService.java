@@ -6,10 +6,10 @@ import org.springframework.http.ResponseEntity;
 
 public interface RatingService {
 
-    public Rating findPersonalRating(Long contentId);
+	public Rating findPersonalRating(Long contentId);
 
-    public ReturnMessageType updateRating(Rating rating);
+	public ReturnMessageType updateRating(Rating rating);
 
-    public ResponseEntity<String> resetHistoricalRatings(String slug);
+	public ResponseEntity<String> resetHistoricalRatings(String slug);
 
 }

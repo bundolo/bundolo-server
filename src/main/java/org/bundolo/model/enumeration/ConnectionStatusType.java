@@ -1,10 +1,10 @@
 package org.bundolo.model.enumeration;
 
 public enum ConnectionStatusType {
-    active, disabled, pending;
+	active, disabled, pending;
 
-    @Override
-    public String toString() {
-	return super.toString();
-    }
+	@Override
+	public String toString() {
+		return super.toString();
+	}
 }

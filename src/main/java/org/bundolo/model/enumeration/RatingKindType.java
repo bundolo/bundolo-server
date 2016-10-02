@@ -1,10 +1,10 @@
 package org.bundolo.model.enumeration;
 
 public enum RatingKindType {
-    general, personal;
+	general, personal;
 
-    @Override
-    public String toString() {
-	return super.toString();
-    }
+	@Override
+	public String toString() {
+		return super.toString();
+	}
 }

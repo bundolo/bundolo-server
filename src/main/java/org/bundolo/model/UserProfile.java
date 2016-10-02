@@ -26,253 +26,254 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 @Table(name = "user_profile")
 public class UserProfile implements java.io.Serializable {
 
-    private static final long serialVersionUID = -4042511031705727688L;
+	private static final long serialVersionUID = -4042511031705727688L;
 
-    @Id
-    @Column(name = "user_id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "user_id_seq")
-    @SequenceGenerator(name = "user_id_seq", sequenceName = "user_id_seq")
-    private Long userId;
+	@Id
+	@Column(name = "user_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY, generator = "user_id_seq")
+	@SequenceGenerator(name = "user_id_seq", sequenceName = "user_id_seq")
+	private Long userId;
 
-    @Column(name = "username")
-    @NotNull
-    private String username;
+	@Column(name = "username")
+	@NotNull
+	private String username;
 
-    @Column(name = "password")
-    private String password;
+	@Column(name = "password")
+	private String password;
 
-    @Column(name = "salt")
-    private String salt;
+	@Column(name = "salt")
+	private String salt;
 
-    @Column(name = "first_name")
-    private String firstName;
+	@Column(name = "first_name")
+	private String firstName;
 
-    @Column(name = "last_name")
-    private String lastName;
+	@Column(name = "last_name")
+	private String lastName;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd.MM.yyyy.")
-    @Column(name = "birth_date")
-    private Date birthDate;
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd.MM.yyyy.")
+	@Column(name = "birth_date")
+	private Date birthDate;
 
-    @Column(name = "gender")
-    @Enumerated(EnumType.STRING)
-    private UserProfileGenderType gender;
+	@Column(name = "gender")
+	@Enumerated(EnumType.STRING)
+	private UserProfileGenderType gender;
 
-    @Column(name = "email")
-    private String email;
+	@Column(name = "email")
+	private String email;
 
-    @Column(name = "show_personal")
-    private Boolean showPersonal;
+	@Column(name = "show_personal")
+	private Boolean showPersonal;
 
-    @Column(name = "signup_date")
-    private Date signupDate;
+	@Column(name = "signup_date")
+	private Date signupDate;
 
-    @Column(name = "last_login_date")
-    private Date lastLoginDate;
+	@Column(name = "last_login_date")
+	private Date lastLoginDate;
 
-    @Column(name = "last_ip")
-    private String lastIp;
+	@Column(name = "last_ip")
+	private String lastIp;
 
-    @Column(name = "user_profile_status")
-    @Enumerated(EnumType.STRING)
-    private UserProfileStatusType userProfileStatus;
+	@Column(name = "user_profile_status")
+	@Enumerated(EnumType.STRING)
+	private UserProfileStatusType userProfileStatus;
 
-    @Column(name = "nonce")
-    private String nonce;
+	@Column(name = "nonce")
+	private String nonce;
 
-    @Column(name = "new_email")
-    private String newEmail;
+	@Column(name = "new_email")
+	private String newEmail;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "description_content_id")
-    // @Transient
-    private Content descriptionContent;
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@JoinColumn(name = "description_content_id")
+	// @Transient
+	private Content descriptionContent;
 
-    @Column(name = "newsletter_subscriptions")
-    // TODO instead of converting manually, this could be used:
-    // @Convert(converter = JpaConverterJson.class)
-    // it required JPA upgrade to 2.1 in persistence.xml, which required hibernate upgrade in build.gradle, which threw
-    // exceptions
-    private String newsletterSubscriptions;
+	@Column(name = "newsletter_subscriptions")
+	// TODO instead of converting manually, this could be used:
+	// @Convert(converter = JpaConverterJson.class)
+	// it required JPA upgrade to 2.1 in persistence.xml, which required
+	// hibernate upgrade in build.gradle, which threw
+	// exceptions
+	private String newsletterSubscriptions;
 
-    @Column(name = "newsletter_sending_date")
-    private Date newsletterSendingDate;
+	@Column(name = "newsletter_sending_date")
+	private Date newsletterSendingDate;
 
-    @Column(name = "previous_activity")
-    private Date previousActivity;
+	@Column(name = "previous_activity")
+	private Date previousActivity;
 
-    public UserProfile() {
-	super();
-    }
+	public UserProfile() {
+		super();
+	}
 
-    public Long getUserId() {
-	return userId;
-    }
+	public Long getUserId() {
+		return userId;
+	}
 
-    public void setUserId(Long userId) {
-	this.userId = userId;
-    }
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
 
-    public String getUsername() {
-	return username;
-    }
+	public String getUsername() {
+		return username;
+	}
 
-    public void setUsername(String username) {
-	this.username = username;
-    }
+	public void setUsername(String username) {
+		this.username = username;
+	}
 
-    public String getPassword() {
-	return password;
-    }
+	public String getPassword() {
+		return password;
+	}
 
-    public void setPassword(String password) {
-	this.password = password;
-    }
+	public void setPassword(String password) {
+		this.password = password;
+	}
 
-    public String getSalt() {
-	return salt;
-    }
+	public String getSalt() {
+		return salt;
+	}
 
-    public void setSalt(String salt) {
-	this.salt = salt;
-    }
+	public void setSalt(String salt) {
+		this.salt = salt;
+	}
 
-    public String getFirstName() {
-	return firstName;
-    }
+	public String getFirstName() {
+		return firstName;
+	}
 
-    public void setFirstName(String firstName) {
-	this.firstName = firstName;
-    }
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
 
-    public String getLastName() {
-	return lastName;
-    }
+	public String getLastName() {
+		return lastName;
+	}
 
-    public void setLastName(String lastName) {
-	this.lastName = lastName;
-    }
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
 
-    public UserProfileGenderType getGender() {
-	return gender;
-    }
+	public UserProfileGenderType getGender() {
+		return gender;
+	}
 
-    public void setGender(UserProfileGenderType gender) {
-	this.gender = gender;
-    }
+	public void setGender(UserProfileGenderType gender) {
+		this.gender = gender;
+	}
 
-    public String getEmail() {
-	return email;
-    }
+	public String getEmail() {
+		return email;
+	}
 
-    public void setEmail(String email) {
-	this.email = email;
-    }
+	public void setEmail(String email) {
+		this.email = email;
+	}
 
-    public Boolean getShowPersonal() {
-	return showPersonal;
-    }
+	public Boolean getShowPersonal() {
+		return showPersonal;
+	}
 
-    public void setShowPersonal(Boolean showPersonal) {
-	this.showPersonal = showPersonal;
-    }
+	public void setShowPersonal(Boolean showPersonal) {
+		this.showPersonal = showPersonal;
+	}
 
-    public Date getSignupDate() {
-	return signupDate;
-    }
+	public Date getSignupDate() {
+		return signupDate;
+	}
 
-    public void setSignupDate(Date signupDate) {
-	this.signupDate = signupDate;
-    }
+	public void setSignupDate(Date signupDate) {
+		this.signupDate = signupDate;
+	}
 
-    public Date getLastLoginDate() {
-	return lastLoginDate;
-    }
+	public Date getLastLoginDate() {
+		return lastLoginDate;
+	}
 
-    public void setLastLoginDate(Date lastLoginDate) {
-	this.lastLoginDate = lastLoginDate;
-    }
+	public void setLastLoginDate(Date lastLoginDate) {
+		this.lastLoginDate = lastLoginDate;
+	}
 
-    public String getLastIp() {
-	return lastIp;
-    }
+	public String getLastIp() {
+		return lastIp;
+	}
 
-    public void setLastIp(String lastIp) {
-	this.lastIp = lastIp;
-    }
+	public void setLastIp(String lastIp) {
+		this.lastIp = lastIp;
+	}
 
-    public UserProfileStatusType getUserProfileStatus() {
-	return userProfileStatus;
-    }
+	public UserProfileStatusType getUserProfileStatus() {
+		return userProfileStatus;
+	}
 
-    public void setUserProfileStatus(UserProfileStatusType userProfileStatus) {
-	this.userProfileStatus = userProfileStatus;
-    }
+	public void setUserProfileStatus(UserProfileStatusType userProfileStatus) {
+		this.userProfileStatus = userProfileStatus;
+	}
 
-    public Date getBirthDate() {
-	return birthDate;
-    }
+	public Date getBirthDate() {
+		return birthDate;
+	}
 
-    public void setBirthDate(Date birthDate) {
-	this.birthDate = birthDate;
-    }
+	public void setBirthDate(Date birthDate) {
+		this.birthDate = birthDate;
+	}
 
-    public String getNonce() {
-	return nonce;
-    }
+	public String getNonce() {
+		return nonce;
+	}
 
-    public void setNonce(String nonce) {
-	this.nonce = nonce;
-    }
+	public void setNonce(String nonce) {
+		this.nonce = nonce;
+	}
 
-    public String getNewEmail() {
-	return newEmail;
-    }
+	public String getNewEmail() {
+		return newEmail;
+	}
 
-    public void setNewEmail(String newEmail) {
-	this.newEmail = newEmail;
-    }
+	public void setNewEmail(String newEmail) {
+		this.newEmail = newEmail;
+	}
 
-    public Content getDescriptionContent() {
-	return descriptionContent;
-    }
+	public Content getDescriptionContent() {
+		return descriptionContent;
+	}
 
-    public void setDescriptionContent(Content descriptionContent) {
-	this.descriptionContent = descriptionContent;
-    }
+	public void setDescriptionContent(Content descriptionContent) {
+		this.descriptionContent = descriptionContent;
+	}
 
-    public Date getNewsletterSendingDate() {
-	return newsletterSendingDate;
-    }
+	public Date getNewsletterSendingDate() {
+		return newsletterSendingDate;
+	}
 
-    public String getNewsletterSubscriptions() {
-	return newsletterSubscriptions;
-    }
+	public String getNewsletterSubscriptions() {
+		return newsletterSubscriptions;
+	}
 
-    public void setNewsletterSubscriptions(String newsletterSubscriptions) {
-	this.newsletterSubscriptions = newsletterSubscriptions;
-    }
+	public void setNewsletterSubscriptions(String newsletterSubscriptions) {
+		this.newsletterSubscriptions = newsletterSubscriptions;
+	}
 
-    public void setNewsletterSendingDate(Date newsletterSendingDate) {
-	this.newsletterSendingDate = newsletterSendingDate;
-    }
+	public void setNewsletterSendingDate(Date newsletterSendingDate) {
+		this.newsletterSendingDate = newsletterSendingDate;
+	}
 
-    public Date getPreviousActivity() {
-	return previousActivity;
-    }
+	public Date getPreviousActivity() {
+		return previousActivity;
+	}
 
-    public void setPreviousActivity(Date previousActivity) {
-	this.previousActivity = previousActivity;
-    }
+	public void setPreviousActivity(Date previousActivity) {
+		this.previousActivity = previousActivity;
+	}
 
-    @Override
-    public String toString() {
-	return "UserProfile [userId=" + userId + ", username=" + username + ", password=" + password + ", salt=" + salt
-		+ ", firstName=" + firstName + ", lastName=" + lastName + ", birthDate=" + birthDate + ", gender="
-		+ gender + ", email=" + email + ", showPersonal=" + showPersonal + ", signupDate=" + signupDate
-		+ ", lastLoginDate=" + lastLoginDate + ", lastIp=" + lastIp + ", userProfileStatus="
-		+ userProfileStatus + ", nonce=" + nonce + ", newEmail=" + newEmail + ", descriptionContent="
-		+ descriptionContent + ", newsletterSubscriptions=" + newsletterSubscriptions
-		+ ", newsletterSendingDate=" + newsletterSendingDate + ", previousActivity=" + previousActivity + "]";
-    }
+	@Override
+	public String toString() {
+		return "UserProfile [userId=" + userId + ", username=" + username + ", password=" + password + ", salt=" + salt
+				+ ", firstName=" + firstName + ", lastName=" + lastName + ", birthDate=" + birthDate + ", gender="
+				+ gender + ", email=" + email + ", showPersonal=" + showPersonal + ", signupDate=" + signupDate
+				+ ", lastLoginDate=" + lastLoginDate + ", lastIp=" + lastIp + ", userProfileStatus=" + userProfileStatus
+				+ ", nonce=" + nonce + ", newEmail=" + newEmail + ", descriptionContent=" + descriptionContent
+				+ ", newsletterSubscriptions=" + newsletterSubscriptions + ", newsletterSendingDate="
+				+ newsletterSendingDate + ", previousActivity=" + previousActivity + "]";
+	}
 }

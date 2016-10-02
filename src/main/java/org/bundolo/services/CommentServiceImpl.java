@@ -22,72 +22,72 @@ import org.springframework.transaction.annotation.Transactional;
 @Service("commentService")
 public class CommentServiceImpl implements CommentService {
 
-    private static final Logger logger = Logger.getLogger(CommentServiceImpl.class.getName());
+	private static final Logger logger = Logger.getLogger(CommentServiceImpl.class.getName());
 
-    @Autowired
-    private CommentDAO commentDAO;
+	@Autowired
+	private CommentDAO commentDAO;
 
-    @Autowired
-    private UserDAO userDAO;
+	@Autowired
+	private UserDAO userDAO;
 
-    @PostConstruct
-    public void init() {
-    }
-
-    @PreDestroy
-    public void destroy() {
-    }
-
-    @Override
-    public List<Comment> findCommentsByParentId(Long parentId) {
-	return commentDAO.findCommentsByParentId(parentId);
-    }
-
-    @Override
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public ReturnMessageType saveComment(Comment comment) {
-	try {
-	    // TODO check if comment exists
-	    comment.setContentStatus(ContentStatusType.active);
-	    comment.setLocale("sr");
-	    comment.setAuthorUsername(SecurityUtils.getUsername());
-	    if (comment.getAuthorUsername() != null) {
-		User user = userDAO.findById(comment.getAuthorUsername());
-		comment.setAvatarUrl(user.getDescriptionContent().getAvatarUrl());
-	    }
-	    commentDAO.persist(comment);
-	    return ReturnMessageType.success;
-	} catch (Exception ex) {
-	    logger.log(Level.SEVERE, "saveComment exception: " + ex);
-	    return ReturnMessageType.exception;
+	@PostConstruct
+	public void init() {
 	}
-    }
 
-    @Override
-    public void clearSession() {
-	commentDAO.clear();
-    }
-
-    @Override
-    public List<Comment> findComments(Integer start, Integer end, String[] orderBy, String[] order, String[] filterBy,
-	    String[] filter) {
-	return commentDAO.findCommentsWithParents(start, end, orderBy, order, filterBy, filter);
-    }
-
-    @Override
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public Boolean deleteCommentsByParentId(Long parentId) {
-	// TODO this could be transformed to use ancestor id
-	try {
-	    List<Comment> comments = commentDAO.findCommentsByParentId(parentId);
-	    for (Comment comment : comments) {
-		comment.setContentStatus(ContentStatusType.disabled);
-		commentDAO.merge(comment);
-	    }
-	    return true;
-	} catch (Exception ex) {
-	    return false;
+	@PreDestroy
+	public void destroy() {
 	}
-    }
+
+	@Override
+	public List<Comment> findCommentsByParentId(Long parentId) {
+		return commentDAO.findCommentsByParentId(parentId);
+	}
+
+	@Override
+	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+	public ReturnMessageType saveComment(Comment comment) {
+		try {
+			// TODO check if comment exists
+			comment.setContentStatus(ContentStatusType.active);
+			comment.setLocale("sr");
+			comment.setAuthorUsername(SecurityUtils.getUsername());
+			if (comment.getAuthorUsername() != null) {
+				User user = userDAO.findById(comment.getAuthorUsername());
+				comment.setAvatarUrl(user.getDescriptionContent().getAvatarUrl());
+			}
+			commentDAO.persist(comment);
+			return ReturnMessageType.success;
+		} catch (Exception ex) {
+			logger.log(Level.SEVERE, "saveComment exception: " + ex);
+			return ReturnMessageType.exception;
+		}
+	}
+
+	@Override
+	public void clearSession() {
+		commentDAO.clear();
+	}
+
+	@Override
+	public List<Comment> findComments(Integer start, Integer end, String[] orderBy, String[] order, String[] filterBy,
+			String[] filter) {
+		return commentDAO.findCommentsWithParents(start, end, orderBy, order, filterBy, filter);
+	}
+
+	@Override
+	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+	public Boolean deleteCommentsByParentId(Long parentId) {
+		// TODO this could be transformed to use ancestor id
+		try {
+			List<Comment> comments = commentDAO.findCommentsByParentId(parentId);
+			for (Comment comment : comments) {
+				comment.setContentStatus(ContentStatusType.disabled);
+				commentDAO.merge(comment);
+			}
+			return true;
+		} catch (Exception ex) {
+			return false;
+		}
+	}
 
 }

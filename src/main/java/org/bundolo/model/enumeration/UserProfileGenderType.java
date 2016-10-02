@@ -1,10 +1,10 @@
 package org.bundolo.model.enumeration;
 
 public enum UserProfileGenderType {
-    male, female, other;
+	male, female, other;
 
-    @Override
-    public String toString() {
-	return super.toString();
-    }
+	@Override
+	public String toString() {
+		return super.toString();
+	}
 }

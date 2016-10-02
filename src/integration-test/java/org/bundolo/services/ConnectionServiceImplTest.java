@@ -20,15 +20,15 @@ import org.springframework.test.context.transaction.TransactionConfiguration;
 @TransactionConfiguration(defaultRollback = true, transactionManager = "transactionManager")
 public class ConnectionServiceImplTest {
 
-    @Autowired
-    private ConnectionService connectionService;
+	@Autowired
+	private ConnectionService connectionService;
 
-    @Test
-    public void findConnections() {
-	List<Connection> connections = connectionService.findConnections(0, 4, null, null, new String[] {
-		ConnectionColumnType.url.getColumnName(), ConnectionColumnType.title.getColumnName() }, new String[] {
-		".hr", "borg" });
-	assertEquals("Filtering returned unexpected number of results", connections.size(), 1);
-    }
+	@Test
+	public void findConnections() {
+		List<Connection> connections = connectionService.findConnections(0, 4, null, null,
+				new String[] { ConnectionColumnType.url.getColumnName(), ConnectionColumnType.title.getColumnName() },
+				new String[] { ".hr", "borg" });
+		assertEquals("Filtering returned unexpected number of results", connections.size(), 1);
+	}
 
 }

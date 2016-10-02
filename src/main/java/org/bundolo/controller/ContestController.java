@@ -20,32 +20,30 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 public class ContestController {
 
-    private static final Logger logger = Logger.getLogger(ContestController.class.getName());
+	private static final Logger logger = Logger.getLogger(ContestController.class.getName());
 
-    @Autowired
-    private ContestService contestService;
+	@Autowired
+	private ContestService contestService;
 
-    @RequestMapping(value = Constants.REST_PATH_CONTEST + "/{slug}", method = RequestMethod.GET)
-    public @ResponseBody
-    Contest contest(@PathVariable String slug) {
-	return contestService.findContest(ContentKindType.contest_description.getLocalizedName() + "/" + slug);
-    }
-
-    @RequestMapping(value = Constants.REST_PATH_CONTEST + "{slug}", method = RequestMethod.DELETE)
-    public @ResponseBody
-    Boolean delete(@PathVariable String slug) {
-	return contestService.deleteContest(ContentKindType.contest_description.getLocalizedName() + "/" + slug) != null;
-    }
-
-    @RequestMapping(value = Constants.REST_PATH_CONTEST, method = RequestMethod.POST)
-    public @ResponseBody
-    ResponseEntity<String> saveOrUpdate(@RequestBody final Contest contest) {
-	logger.log(Level.INFO, "saveOrUpdate, contest: " + contest);
-	ResponseEntity<String> result = contestService.saveOrUpdateContest(contest);
-	if (HttpStatus.OK.equals(result.getStatusCode())) {
-	    contestService.clearSession();
+	@RequestMapping(value = Constants.REST_PATH_CONTEST + "/{slug}", method = RequestMethod.GET)
+	public @ResponseBody Contest contest(@PathVariable String slug) {
+		return contestService.findContest(ContentKindType.contest_description.getLocalizedName() + "/" + slug);
 	}
-	return result;
-    }
+
+	@RequestMapping(value = Constants.REST_PATH_CONTEST + "{slug}", method = RequestMethod.DELETE)
+	public @ResponseBody Boolean delete(@PathVariable String slug) {
+		return contestService
+				.deleteContest(ContentKindType.contest_description.getLocalizedName() + "/" + slug) != null;
+	}
+
+	@RequestMapping(value = Constants.REST_PATH_CONTEST, method = RequestMethod.POST)
+	public @ResponseBody ResponseEntity<String> saveOrUpdate(@RequestBody final Contest contest) {
+		logger.log(Level.INFO, "saveOrUpdate, contest: " + contest);
+		ResponseEntity<String> result = contestService.saveOrUpdateContest(contest);
+		if (HttpStatus.OK.equals(result.getStatusCode())) {
+			contestService.clearSession();
+		}
+		return result;
+	}
 
 }

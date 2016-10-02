@@ -25,124 +25,125 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 @Table(name = "contest")
 public class Contest implements java.io.Serializable {
 
-    private static final long serialVersionUID = 7440297955003302414L;
+	private static final long serialVersionUID = 7440297955003302414L;
 
-    @Id
-    @Column(name = "contest_id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "contest_id_seq")
-    @SequenceGenerator(name = "contest_id_seq", sequenceName = "contest_id_seq")
-    private Long contestId;
+	@Id
+	@Column(name = "contest_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY, generator = "contest_id_seq")
+	@SequenceGenerator(name = "contest_id_seq", sequenceName = "contest_id_seq")
+	private Long contestId;
 
-    @Column(name = "author_username")
-    private String authorUsername;
+	@Column(name = "author_username")
+	private String authorUsername;
 
-    // @Column(name = "description_content_id")
-    // private Long descriptionContentId;
+	// @Column(name = "description_content_id")
+	// private Long descriptionContentId;
 
-    @Column(name = "kind")
-    @Enumerated(EnumType.STRING)
-    private ContestKindType kind;
+	@Column(name = "kind")
+	@Enumerated(EnumType.STRING)
+	private ContestKindType kind;
 
-    @Column(name = "creation_date")
-    private Date creationDate;
+	@Column(name = "creation_date")
+	private Date creationDate;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd.MM.yyyy.")
-    @Column(name = "expiration_date")
-    private Date expirationDate;
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd.MM.yyyy.")
+	@Column(name = "expiration_date")
+	private Date expirationDate;
 
-    @Column(name = "contest_status")
-    @Enumerated(EnumType.STRING)
-    private ContestStatusType contestStatus;
+	@Column(name = "contest_status")
+	@Enumerated(EnumType.STRING)
+	private ContestStatusType contestStatus;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "description_content_id")
-    // @Transient
-    private Content descriptionContent;
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@JoinColumn(name = "description_content_id")
+	// @Transient
+	private Content descriptionContent;
 
-    public Contest() {
-	super();
-    }
+	public Contest() {
+		super();
+	}
 
-    public Contest(Long contestId, String authorUsername, /*Long descriptionContentId,*/ContestKindType kind,
-	    Date creationDate, Date expirationDate, ContestStatusType contestStatus, Content descriptionContent) {
-	super();
-	this.contestId = contestId;
-	this.authorUsername = authorUsername;
-	this.kind = kind;
-	this.creationDate = creationDate;
-	this.expirationDate = expirationDate;
-	this.contestStatus = contestStatus;
-	this.descriptionContent = descriptionContent;
-    }
+	public Contest(Long contestId, String authorUsername,
+			/* Long descriptionContentId, */ContestKindType kind, Date creationDate, Date expirationDate,
+			ContestStatusType contestStatus, Content descriptionContent) {
+		super();
+		this.contestId = contestId;
+		this.authorUsername = authorUsername;
+		this.kind = kind;
+		this.creationDate = creationDate;
+		this.expirationDate = expirationDate;
+		this.contestStatus = contestStatus;
+		this.descriptionContent = descriptionContent;
+	}
 
-    public Long getContestId() {
-	return contestId;
-    }
+	public Long getContestId() {
+		return contestId;
+	}
 
-    public void setContestId(Long contestId) {
-	this.contestId = contestId;
-    }
+	public void setContestId(Long contestId) {
+		this.contestId = contestId;
+	}
 
-    public String getAuthorUsername() {
-	return authorUsername;
-    }
+	public String getAuthorUsername() {
+		return authorUsername;
+	}
 
-    public void setAuthorUsername(String authorUsername) {
-	this.authorUsername = authorUsername;
-    }
+	public void setAuthorUsername(String authorUsername) {
+		this.authorUsername = authorUsername;
+	}
 
-    // public Long getDescriptionContentId() {
-    // return descriptionContentId;
-    // }
-    //
-    // public void setDescriptionContentId(Long descriptionContentId) {
-    // this.descriptionContentId = descriptionContentId;
-    // }
+	// public Long getDescriptionContentId() {
+	// return descriptionContentId;
+	// }
+	//
+	// public void setDescriptionContentId(Long descriptionContentId) {
+	// this.descriptionContentId = descriptionContentId;
+	// }
 
-    public ContestKindType getKind() {
-	return kind;
-    }
+	public ContestKindType getKind() {
+		return kind;
+	}
 
-    public void setKind(ContestKindType kind) {
-	this.kind = kind;
-    }
+	public void setKind(ContestKindType kind) {
+		this.kind = kind;
+	}
 
-    public Date getCreationDate() {
-	return creationDate;
-    }
+	public Date getCreationDate() {
+		return creationDate;
+	}
 
-    public void setCreationDate(Date creationDate) {
-	this.creationDate = creationDate;
-    }
+	public void setCreationDate(Date creationDate) {
+		this.creationDate = creationDate;
+	}
 
-    public Date getExpirationDate() {
-	return expirationDate;
-    }
+	public Date getExpirationDate() {
+		return expirationDate;
+	}
 
-    public void setExpirationDate(Date expirationDate) {
-	this.expirationDate = expirationDate;
-    }
+	public void setExpirationDate(Date expirationDate) {
+		this.expirationDate = expirationDate;
+	}
 
-    public ContestStatusType getContestStatus() {
-	return contestStatus;
-    }
+	public ContestStatusType getContestStatus() {
+		return contestStatus;
+	}
 
-    public void setContestStatus(ContestStatusType contestStatus) {
-	this.contestStatus = contestStatus;
-    }
+	public void setContestStatus(ContestStatusType contestStatus) {
+		this.contestStatus = contestStatus;
+	}
 
-    public Content getDescriptionContent() {
-	return descriptionContent;
-    }
+	public Content getDescriptionContent() {
+		return descriptionContent;
+	}
 
-    public void setDescriptionContent(Content descriptionContent) {
-	this.descriptionContent = descriptionContent;
-    }
+	public void setDescriptionContent(Content descriptionContent) {
+		this.descriptionContent = descriptionContent;
+	}
 
-    @Override
-    public String toString() {
-	return "Contest [contestId=" + contestId + ", authorUsername=" + authorUsername + ", kind=" + kind
-		+ ", creationDate=" + creationDate + ", expirationDate=" + expirationDate + ", contestStatus="
-		+ contestStatus + ", descriptionContent=" + descriptionContent + "]";
-    }
+	@Override
+	public String toString() {
+		return "Contest [contestId=" + contestId + ", authorUsername=" + authorUsername + ", kind=" + kind
+				+ ", creationDate=" + creationDate + ", expirationDate=" + expirationDate + ", contestStatus="
+				+ contestStatus + ", descriptionContent=" + descriptionContent + "]";
+	}
 }

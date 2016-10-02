@@ -1,30 +1,30 @@
 package org.bundolo.model.enumeration;
 
 public enum ContestColumnType {
-    author("authorUsername", ColumnDataType.text), date("creationDate", ColumnDataType.date), url("url",
-	    ColumnDataType.text), expirationDate("expirationDate", ColumnDataType.text), description(
-	    "descriptionContent.text", ColumnDataType.text), title("descriptionContent.name", ColumnDataType.text), activity(
-	    "descriptionContent.lastActivity", ColumnDataType.date);
-    // TODO url is probably not needed
+	author("authorUsername", ColumnDataType.text), date("creationDate", ColumnDataType.date), url("url",
+			ColumnDataType.text), expirationDate("expirationDate", ColumnDataType.text), description(
+					"descriptionContent.text", ColumnDataType.text), title("descriptionContent.name",
+							ColumnDataType.text), activity("descriptionContent.lastActivity", ColumnDataType.date);
+	// TODO url is probably not needed
 
-    private final String columnName;
-    private final ColumnDataType columnDataType;
+	private final String columnName;
+	private final ColumnDataType columnDataType;
 
-    private ContestColumnType(String columnName, ColumnDataType columnDataType) {
-	this.columnName = columnName;
-	this.columnDataType = columnDataType;
-    }
+	private ContestColumnType(String columnName, ColumnDataType columnDataType) {
+		this.columnName = columnName;
+		this.columnDataType = columnDataType;
+	}
 
-    public String getColumnName() {
-	return columnName;
-    }
+	public String getColumnName() {
+		return columnName;
+	}
 
-    public ColumnDataType getColumnDataType() {
-	return columnDataType;
-    }
+	public ColumnDataType getColumnDataType() {
+		return columnDataType;
+	}
 
-    @Override
-    public String toString() {
-	return name() + ": " + getColumnName();
-    }
+	@Override
+	public String toString() {
+		return name() + ": " + getColumnName();
+	}
 }

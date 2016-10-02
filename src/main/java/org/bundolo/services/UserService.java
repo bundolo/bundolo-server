@@ -10,29 +10,29 @@ import org.springframework.http.ResponseEntity;
 
 public interface UserService {
 
-    public User findUser(String slug);
+	public User findUser(String slug);
 
-    public List<User> findUsers(Integer start, Integer end, String[] orderBy, String[] order, String[] filterBy,
-	    String[] filter);
+	public List<User> findUsers(Integer start, Integer end, String[] orderBy, String[] order, String[] filterBy,
+			String[] filter);
 
-    public ResponseEntity<String> authenticateUser(String username, String password);
+	public ResponseEntity<String> authenticateUser(String username, String password);
 
-    public ReturnMessageType activateUserEmailAddress(String email, String nonce);
+	public ReturnMessageType activateUserEmailAddress(String email, String nonce);
 
-    public ReturnMessageType sendMessage(String title, String text, String slug);
+	public ReturnMessageType sendMessage(String title, String text, String slug);
 
-    public ReturnMessageType sendNewPassword(String username, String email);
+	public ReturnMessageType sendNewPassword(String username, String email);
 
-    public ResponseEntity<String> saveOrUpdateUser(UserProfile userProfile);
+	public ResponseEntity<String> saveOrUpdateUser(UserProfile userProfile);
 
-    public User findNext(String username, String orderBy, String fixBy, boolean ascending);
+	public User findNext(String username, String orderBy, String fixBy, boolean ascending);
 
-    public void clearSession();
+	public void clearSession();
 
-    public Long deleteUser(String slug);
+	public Long deleteUser(String slug);
 
-    public void updateNewsletterSendingDate(List<UserProfile> users, Date newsletterSendingDate);
+	public void updateNewsletterSendingDate(List<UserProfile> users, Date newsletterSendingDate);
 
-    public List<UserProfile> findNewsletterUsers(Date sendingStart, Date bulletinDate, Integer maxResults);
+	public List<UserProfile> findNewsletterUsers(Date sendingStart, Date bulletinDate, Integer maxResults);
 
 }

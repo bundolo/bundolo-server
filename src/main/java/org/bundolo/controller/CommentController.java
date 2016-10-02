@@ -31,140 +31,142 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @Controller
 public class CommentController {
 
-    private static final Logger logger = Logger.getLogger(CommentController.class.getName());
+	private static final Logger logger = Logger.getLogger(CommentController.class.getName());
 
-    @Autowired
-    private CommentService commentService;
+	@Autowired
+	private CommentService commentService;
 
-    @Autowired
-    private ContentService contentService;
+	@Autowired
+	private ContentService contentService;
 
-    @Autowired
-    private UserService userService;
+	@Autowired
+	private UserService userService;
 
-    @Autowired
-    private ContestService contestService;
+	@Autowired
+	private ContestService contestService;
 
-    @Autowired
-    private ConnectionService connectionService;
+	@Autowired
+	private ConnectionService connectionService;
 
-    @Autowired
-    private DateUtils dateUtils;
+	@Autowired
+	private DateUtils dateUtils;
 
-    @RequestMapping(value = Constants.REST_PATH_PARENT_COMMENTS + "/{parentId}", method = RequestMethod.GET)
-    public @ResponseBody
-    List<Comment> comments(@PathVariable Long parentId) {
-	return commentService.findCommentsByParentId(parentId);
-    }
-
-    // TODO this should eventually become put method, to avoid saving the same comment twice, but it's going to be a
-    // problem finding unique url format for them
-    // should use slug
-    @RequestMapping(value = Constants.REST_PATH_COMMENT, method = RequestMethod.POST)
-    @ResponseStatus(HttpStatus.CREATED)
-    public @ResponseBody
-    ReturnMessageType save(@RequestBody final Comment comment) {
-	if (comment == null || StringUtils.isBlank(comment.getText())) {
-	    // TODO do proper validation and return messages
-	    return null;
+	@RequestMapping(value = Constants.REST_PATH_PARENT_COMMENTS + "/{parentId}", method = RequestMethod.GET)
+	public @ResponseBody List<Comment> comments(@PathVariable Long parentId) {
+		return commentService.findCommentsByParentId(parentId);
 	}
-	logger.log(Level.INFO, "saving comment: " + comment);
-	// TODO this could be nicer, move this logic to service. the problem with that is calling content update from
-	// comment save method. transactions collide.
-	Date creationDate = dateUtils.newDate();
-	comment.setCreationDate(creationDate);
-	comment.setLastActivity(creationDate);
-	Content rootCommentAncestor = contentService.findContent(comment.getParentContent().getContentId());
-	// make list of ancestors, so that all comments ancestors are updated
-	List<Content> commentAncestors = new ArrayList<Content>();
-	// while (rootCommentAncestor != null && rootCommentAncestor.getKind().name().contains("comment")) {
-	while (rootCommentAncestor != null && rootCommentAncestor.getParentContent() != null) {
-	    commentAncestors.add(rootCommentAncestor);
-	    rootCommentAncestor = rootCommentAncestor.getParentContent();
-	}
-	commentAncestors.add(rootCommentAncestor);
-	comment.setKind(getCommentContentKind(rootCommentAncestor.getKind()));
-	comment.setAncestorContent(rootCommentAncestor);
-	ReturnMessageType result = commentService.saveComment(comment);
-	if (ReturnMessageType.success.equals(result)) {
-	    // logger.log(Level.INFO, "saving comment; result not null: " + result);
-	    for (Content commentAncestor : commentAncestors) {
-		contentService.updateLastActivity(commentAncestor.getContentId(), creationDate);
-	    }
-	    commentService.clearSession();
-	    switch (rootCommentAncestor.getKind()) {
-	    case connection_description:
-		connectionService.clearSession();
-		break;
-	    case contest_description:
-		contestService.clearSession();
-		break;
-	    case user_description:
-		userService.clearSession();
-		break;
-	    default:
-		contentService.clearSession();
-	    }
 
-	}
-	// logger.log(Level.INFO, "saving comment; result: " + result);
-	return result;
-    }
+	// TODO this should eventually become put method, to avoid saving the same
+	// comment twice, but it's going to be a
+	// problem finding unique url format for them
+	// should use slug
+	@RequestMapping(value = Constants.REST_PATH_COMMENT, method = RequestMethod.POST)
+	@ResponseStatus(HttpStatus.CREATED)
+	public @ResponseBody ReturnMessageType save(@RequestBody final Comment comment) {
+		if (comment == null || StringUtils.isBlank(comment.getText())) {
+			// TODO do proper validation and return messages
+			return null;
+		}
+		logger.log(Level.INFO, "saving comment: " + comment);
+		// TODO this could be nicer, move this logic to service. the problem
+		// with that is calling content update from
+		// comment save method. transactions collide.
+		Date creationDate = dateUtils.newDate();
+		comment.setCreationDate(creationDate);
+		comment.setLastActivity(creationDate);
+		Content rootCommentAncestor = contentService.findContent(comment.getParentContent().getContentId());
+		// make list of ancestors, so that all comments ancestors are updated
+		List<Content> commentAncestors = new ArrayList<Content>();
+		// while (rootCommentAncestor != null &&
+		// rootCommentAncestor.getKind().name().contains("comment")) {
+		while (rootCommentAncestor != null && rootCommentAncestor.getParentContent() != null) {
+			commentAncestors.add(rootCommentAncestor);
+			rootCommentAncestor = rootCommentAncestor.getParentContent();
+		}
+		commentAncestors.add(rootCommentAncestor);
+		comment.setKind(getCommentContentKind(rootCommentAncestor.getKind()));
+		comment.setAncestorContent(rootCommentAncestor);
+		ReturnMessageType result = commentService.saveComment(comment);
+		if (ReturnMessageType.success.equals(result)) {
+			// logger.log(Level.INFO, "saving comment; result not null: " +
+			// result);
+			for (Content commentAncestor : commentAncestors) {
+				contentService.updateLastActivity(commentAncestor.getContentId(), creationDate);
+			}
+			commentService.clearSession();
+			switch (rootCommentAncestor.getKind()) {
+			case connection_description:
+				connectionService.clearSession();
+				break;
+			case contest_description:
+				contestService.clearSession();
+				break;
+			case user_description:
+				userService.clearSession();
+				break;
+			default:
+				contentService.clearSession();
+			}
 
-    private ContentKindType getCommentContentKind(ContentKindType parentContentKind) {
-	ContentKindType result = ContentKindType.page_comment;
-	if (parentContentKind != null) {
-	    switch (parentContentKind) {
-	    case page_description:
-	    case page_comment:
-		result = ContentKindType.page_comment;
-		break;
-	    case text:
-	    case text_comment:
-		result = ContentKindType.text_comment;
-		break;
-	    case episode_group:
-	    case episode_group_comment:
-		result = ContentKindType.episode_group_comment;
-		break;
-	    case episode:
-	    case episode_comment:
-		result = ContentKindType.episode_comment;
-		break;
-	    case item_list_description:
-	    case item_list_comment:
-		result = ContentKindType.item_list_comment;
-		break;
-	    case connection_description:
-	    case connection_comment:
-		result = ContentKindType.connection_comment;
-		break;
-	    case news:
-	    case news_comment:
-		result = ContentKindType.news_comment;
-		break;
-	    case contest_description:
-	    case contest_comment:
-		result = ContentKindType.contest_comment;
-		break;
-	    case event:
-	    case event_comment:
-		result = ContentKindType.event_comment;
-		break;
-	    case label:
-	    case label_comment:
-		result = ContentKindType.label_comment;
-		break;
-	    case user_description:
-	    case user_comment:
-		result = ContentKindType.user_comment;
-		break;
-	    default:
-		result = ContentKindType.page_comment;
-		break;
-	    }
+		}
+		// logger.log(Level.INFO, "saving comment; result: " + result);
+		return result;
 	}
-	return result;
-    }
+
+	private ContentKindType getCommentContentKind(ContentKindType parentContentKind) {
+		ContentKindType result = ContentKindType.page_comment;
+		if (parentContentKind != null) {
+			switch (parentContentKind) {
+			case page_description:
+			case page_comment:
+				result = ContentKindType.page_comment;
+				break;
+			case text:
+			case text_comment:
+				result = ContentKindType.text_comment;
+				break;
+			case episode_group:
+			case episode_group_comment:
+				result = ContentKindType.episode_group_comment;
+				break;
+			case episode:
+			case episode_comment:
+				result = ContentKindType.episode_comment;
+				break;
+			case item_list_description:
+			case item_list_comment:
+				result = ContentKindType.item_list_comment;
+				break;
+			case connection_description:
+			case connection_comment:
+				result = ContentKindType.connection_comment;
+				break;
+			case news:
+			case news_comment:
+				result = ContentKindType.news_comment;
+				break;
+			case contest_description:
+			case contest_comment:
+				result = ContentKindType.contest_comment;
+				break;
+			case event:
+			case event_comment:
+				result = ContentKindType.event_comment;
+				break;
+			case label:
+			case label_comment:
+				result = ContentKindType.label_comment;
+				break;
+			case user_description:
+			case user_comment:
+				result = ContentKindType.user_comment;
+				break;
+			default:
+				result = ContentKindType.page_comment;
+				break;
+			}
+		}
+		return result;
+	}
 
 }

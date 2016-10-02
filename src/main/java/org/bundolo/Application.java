@@ -40,7 +40,8 @@ public class Application {
 		application.setShowBanner(false);
 		ConfigurableApplicationContext applicationContext = application.run(args);
 
-		// MailingUtils mailingUtils = (MailingUtils) applicationContext.getBean("mailingUtils");
+		// MailingUtils mailingUtils = (MailingUtils)
+		// applicationContext.getBean("mailingUtils");
 		// mailingUtils.newsletterSender();
 	}
 }

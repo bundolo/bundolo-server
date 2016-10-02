@@ -1,10 +1,10 @@
 package org.bundolo.model.enumeration;
 
 public enum ConnectionKindType {
-    general;
+	general;
 
-    @Override
-    public String toString() {
-	return super.toString();
-    }
+	@Override
+	public String toString() {
+		return super.toString();
+	}
 }

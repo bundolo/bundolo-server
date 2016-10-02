@@ -1,10 +1,10 @@
 package org.bundolo.model.enumeration;
 
 public enum ItemListKindType {
-    general, elected, personal;
+	general, elected, personal;
 
-    @Override
-    public String toString() {
-	return super.toString();
-    }
+	@Override
+	public String toString() {
+		return super.toString();
+	}
 }

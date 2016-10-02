@@ -17,27 +17,25 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 public class PageController {
 
-    private static final Logger logger = Logger.getLogger(PageController.class.getName());
+	private static final Logger logger = Logger.getLogger(PageController.class.getName());
 
-    @Autowired
-    private ContentService contentService;
+	@Autowired
+	private ContentService contentService;
 
-    // TODO this should return complete page in the future, not just description
-    @RequestMapping(value = { Constants.REST_PATH_PAGE + "/{pageKind}",
-	    Constants.REST_PATH_PAGE + "/{pageKind}" + Constants.BOT_REQUEST_SUFFIX,
-	    Constants.REST_PATH_PAGE + "/{pageKind}" + Constants.BOT_REQUEST_SUFFIX_ESCAPED }, method = RequestMethod.GET)
-    public @ResponseBody
-    Content page(@PathVariable PageKindType pageKind) {
-	// logger.log(Level.WARNING, "page, pageKind: " + pageKind);
-	return contentService.getPageDescriptionContent(pageKind);
-    }
+	// TODO this should return complete page in the future, not just description
+	@RequestMapping(value = { Constants.REST_PATH_PAGE + "/{pageKind}",
+			Constants.REST_PATH_PAGE + "/{pageKind}" + Constants.BOT_REQUEST_SUFFIX, Constants.REST_PATH_PAGE
+					+ "/{pageKind}" + Constants.BOT_REQUEST_SUFFIX_ESCAPED }, method = RequestMethod.GET)
+	public @ResponseBody Content page(@PathVariable PageKindType pageKind) {
+		// logger.log(Level.WARNING, "page, pageKind: " + pageKind);
+		return contentService.getPageDescriptionContent(pageKind);
+	}
 
-    // TODO backlog: define and retrieve metrics
-    // take date range
-    @RequestMapping(value = Constants.REST_PATH_METRICS + "/{pageKind}", method = RequestMethod.GET)
-    public @ResponseBody
-    HashMap metrics(@PathVariable PageKindType pageKind) {
-	return null;
-    }
+	// TODO backlog: define and retrieve metrics
+	// take date range
+	@RequestMapping(value = Constants.REST_PATH_METRICS + "/{pageKind}", method = RequestMethod.GET)
+	public @ResponseBody HashMap metrics(@PathVariable PageKindType pageKind) {
+		return null;
+	}
 
 }
