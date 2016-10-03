@@ -93,9 +93,9 @@ public class MailingUtils {
 				sendEmailBundolo(body, subject, recipient);
 			}
 		} else {
-			// logger.log(Level.WARNING, "sendEmail\nrecipient: " + recipient +
-			// "\nsubject: " + subject + "\nbody: "
-			// + body);
+			// logger.log(Level.WARNING,
+			// "sendEmail\nrecipient: " + recipient + "\nsubject: " + subject +
+			// "\nbody: " + body);
 			logger.log(Level.WARNING, "sendEmail\nrecipient: " + recipient + "\nsubject: " + subject);
 		}
 	}
@@ -397,6 +397,22 @@ public class MailingUtils {
 		data.put("username", senderUsername);
 		data.put("title", title);
 		data.put("text", text);
+		String digestBody = FreeMarkerTemplateUtils.processTemplateIntoString(bodyTemplate, data);
+		String digestSubject = FreeMarkerTemplateUtils.processTemplateIntoString(subjectTemplate, data);
+		sendEmail(digestBody, digestSubject, recipientEmailAddress);
+	}
+
+	public void sendRecommendation(String title, String slug, String senderUsername, String recipientUsername,
+			String recipientEmailAddress) throws Exception {
+		Template bodyTemplate;
+		Template subjectTemplate;
+		bodyTemplate = freemarkerConfiguration.getTemplate("recommendation.ftl");
+		subjectTemplate = freemarkerConfiguration.getTemplate("recommendation_subject.ftl");
+		Map<String, Object> data = new HashMap<String, Object>();
+		data.put("sender", senderUsername);
+		data.put("title", title);
+		data.put("slug", slug);
+		data.put("recipient", recipientUsername);
 		String digestBody = FreeMarkerTemplateUtils.processTemplateIntoString(bodyTemplate, data);
 		String digestSubject = FreeMarkerTemplateUtils.processTemplateIntoString(subjectTemplate, data);
 		sendEmail(digestBody, digestSubject, recipientEmailAddress);

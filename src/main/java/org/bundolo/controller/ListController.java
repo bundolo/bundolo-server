@@ -403,7 +403,6 @@ public class ListController {
 					StringUtils.isNotBlank(fixBy) ? EpisodeColumnType.valueOf(fixBy).getColumnName() : null, ascending);
 			break;
 		}
-		// logger.log(Level.INFO, "next, result: " + result);
 		return result;
 	}
 

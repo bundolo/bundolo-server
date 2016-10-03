@@ -35,4 +35,6 @@ public interface UserService {
 
 	public List<UserProfile> findNewsletterUsers(Date sendingStart, Date bulletinDate, Integer maxResults);
 
+	public ReturnMessageType recommend(Long contentId, String recipientSlug);
+
 }

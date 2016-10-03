@@ -501,4 +501,44 @@ public class UserServiceImpl implements UserService {
 		ServletRequestAttributes sra = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
 		return sra.getRequest().getRemoteHost();
 	}
+
+	@Override
+	public ReturnMessageType recommend(Long contentId, String recipientSlug) {
+		logger.log(Level.INFO, "recommend: " + contentId + ", " + recipientSlug);
+		try {
+			String senderUsername = SecurityUtils.getUsername();
+			if (StringUtils.isNotBlank(recipientSlug)) {
+				if (StringUtils.isBlank(senderUsername)) {
+					// guests can't send messages to users
+					return ReturnMessageType.anonymous_not_allowed;
+				}
+				UserProfile recipientUserProfile = userProfileDAO.findByField("descriptionContent.slug", recipientSlug);
+				if (recipientUserProfile != null) {
+					Content content = contentDAO.findById(contentId);
+					if (content == null || content.getSlug() == null
+							|| !ContentStatusType.active.equals(content.getContentStatus())) {
+						// content does not exist
+						return ReturnMessageType.not_found;
+					}
+					String title;
+					if (ContentKindType.user_description.equals(content.getKind())) {
+						title = content.getAuthorUsername();
+					} else {
+						title = content.getName();
+					}
+					mailingUtils.sendRecommendation(title, content.getSlug(), senderUsername,
+							recipientUserProfile.getUsername(), recipientUserProfile.getEmail());
+					return ReturnMessageType.success;
+				} else {
+					// recipient does not exist
+					return ReturnMessageType.not_found;
+				}
+			} else {
+				return ReturnMessageType.not_found;
+			}
+		} catch (Exception ex) {
+			logger.log(Level.SEVERE, "recommend exception: " + ex);
+			return ReturnMessageType.exception;
+		}
+	}
 }

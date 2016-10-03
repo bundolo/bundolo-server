@@ -93,4 +93,12 @@ public class AuthorController {
 		logger.log(Level.INFO, "messageToBundolo, message: " + message);
 		return userService.sendMessage(message.get("title"), message.get("text"), null);
 	}
+
+	@RequestMapping(value = Constants.REST_PATH_RECOMMEND + "/" + Constants.REST_PATH_AUTHOR
+			+ "/{slug}", method = RequestMethod.POST)
+	public @ResponseBody ReturnMessageType message(@PathVariable String slug,
+			@RequestParam(required = true) Long contentId) {
+		logger.log(Level.INFO, "recommend, slug: " + slug + ", contentId: " + contentId);
+		return userService.recommend(contentId, ContentKindType.user_description.getLocalizedName() + "/" + slug);
+	}
 }

@@ -47,6 +47,7 @@ public class Constants {
 	public static final String REST_PATH_USER_ITEMS = "/user_items";
 	public static final String REST_PATH_NEXT = "/next";
 	public static final String REST_PATH_MESSAGE = "/message";
+	public static final String REST_PATH_RECOMMEND = "/recommend";
 	public static final String REST_PATH_RECENT = "/recent";
 	public static final String REST_PATH_RATING = "/rating";
 	public static final String REST_PATH_RESET_HISTORICAL_RATINGS = "/reset_historical";

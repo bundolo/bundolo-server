@@ -1,0 +1,1 @@
+bundolo (NO REPLAY) preporuka od korisnika ${sender}: ${title}

@@ -740,6 +740,13 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 					|| ContentKindType.episode.equals(result.getKind())) {
 				result.setParent(result.getParentContent());
 			}
+
+			// strip to make the request run faster
+			if (!ContentKindType.user_description.equals(result.getKind())) {
+				result.setText("");
+			}
+			result.setRating(null);
+			result.setDescription(null);
 			return result;
 		} else {
 			return null;
