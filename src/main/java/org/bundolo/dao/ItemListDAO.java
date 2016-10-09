@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 import javax.persistence.Query;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.bundolo.SecurityUtils;
 import org.bundolo.model.ItemList;
 import org.bundolo.model.enumeration.ContentKindType;
 import org.bundolo.model.enumeration.ItemListKindType;
@@ -18,31 +19,23 @@ public class ItemListDAO extends JpaDAO<Long, ItemList> {
 
 	private static final Logger logger = Logger.getLogger(ItemListDAO.class.getName());
 
+	// used only during saving to validate
 	@SuppressWarnings("unchecked")
 	public ItemList findItemList(String username, String title) {
-		if (title == null) {
+		if (username == null || title == null) {
 			return null;
 		}
 		StringBuilder queryString = new StringBuilder();
 		queryString.append("SELECT i FROM ItemList i, Content c");
 		queryString.append(" WHERE i.itemListStatus='" + ItemListStatusType.active + "'");
-		if (username == null) {
-			queryString.append(" AND (i.kind = '" + ItemListKindType.general + "' OR i.kind = '"
-					+ ItemListKindType.elected + "')");
-		} else {
-			queryString.append(" AND (i.kind = '" + ItemListKindType.general + "' OR i.kind = '"
-					+ ItemListKindType.elected + "' OR (i.kind = '" + ItemListKindType.personal
-					+ "' AND i.authorUsername ='" + username + "'))");
-		}
+		queryString.append(" AND i.authorUsername =?1");
 		queryString.append(" AND i.descriptionContent.contentId=c.contentId");
 		queryString.append(" AND c.kind = '" + ContentKindType.item_list_description + "'");
-		queryString.append(" AND c.name =?1");
-		queryString.append(" ORDER BY i.kind DESC");
-		// if they have the same title, personal item lists have the highest
-		// priority, then elected, then general
+		queryString.append(" AND c.name =?2");
 		logger.log(Level.INFO, "queryString: " + queryString.toString() + ", title: " + title);
 		Query q = entityManager.createQuery(queryString.toString());
-		q.setParameter(1, title);
+		q.setParameter(1, username);
+		q.setParameter(2, title);
 		q.setMaxResults(1);
 		List<ItemList> resultList = q.getResultList();
 		if (resultList != null && resultList.size() > 0) {
@@ -61,14 +54,20 @@ public class ItemListDAO extends JpaDAO<Long, ItemList> {
 		queryString.append("SELECT i FROM ItemList i, Content c");
 		queryString.append(" WHERE i.itemListStatus='" + ItemListStatusType.active + "'");
 		queryString.append(" AND (i.kind = '" + ItemListKindType.general + "' OR i.kind = '" + ItemListKindType.elected
-				+ "' OR i.kind = '" + ItemListKindType.personal + "')");
+				+ "' OR i.kind = '" + ItemListKindType.named + "'");
+		String senderUsername = SecurityUtils.getUsername();
+		if (senderUsername != null) {
+			queryString.append(
+					" OR (i.kind = '" + ItemListKindType.personal + "' AND i.authorUsername='" + senderUsername + "')");
+		}
+		queryString.append(")");
 		queryString.append(" AND i.descriptionContent.contentId=c.contentId");
 		queryString.append(" AND c.kind = '" + ContentKindType.item_list_description + "'");
 		queryString.append(" AND c.slug =?1");
 		queryString.append(" ORDER BY i.kind DESC");
 		// if they have the same title, personal item lists have the highest
-		// priority, then elected, then general
-		logger.log(Level.INFO, "queryString: " + queryString.toString() + ", slug: " + slug);
+		// priority. then named, general and elected
+		logger.log(Level.FINE, "queryString: " + queryString.toString() + ", slug: " + slug);
 		Query q = entityManager.createQuery(queryString.toString());
 		q.setParameter(1, slug);
 		q.setMaxResults(1);
@@ -86,6 +85,14 @@ public class ItemListDAO extends JpaDAO<Long, ItemList> {
 		int filterParamCounter = 0;
 		StringBuilder queryString = new StringBuilder();
 		queryString.append("SELECT i FROM ItemList i WHERE item_list_status='active'");
+		queryString.append(" AND (i.kind = '" + ItemListKindType.general + "' OR i.kind = '" + ItemListKindType.elected
+				+ "' OR i.kind = '" + ItemListKindType.named + "'");
+		String senderUsername = SecurityUtils.getUsername();
+		if (senderUsername != null) {
+			queryString.append(
+					" OR (i.kind = '" + ItemListKindType.personal + "' AND i.authorUsername='" + senderUsername + "')");
+		}
+		queryString.append(")");
 		if (ArrayUtils.isNotEmpty(filterBy)) {
 			String prefix = " AND LOWER(";
 			String suffix = ") LIKE '%";

@@ -72,25 +72,26 @@ public class ItemListServiceImpl implements ItemListService {
 			}
 			itemList.setItemListStatus(ItemListStatusType.active);
 			itemList.setCreationDate(dateUtils.newDate());
-
-			if (itemList.getKind() != null && ItemListKindType.general.equals(itemList.getKind())) {
+			if (itemList.getKind() == null) {
+				itemList.setKind(ItemListKindType.personal);
+			}
+			if (ItemListKindType.general.equals(itemList.getKind())) {
 				// there can be only one general item list
 				List<ItemList> generalItemLists = itemListDAO.findItemLists(0, 0, new String[0], new String[0],
 						new String[] { "kind" }, new String[] { "general" });
 				if (!generalItemLists.isEmpty()) {
 					itemList.setKind(ItemListKindType.personal);
 				}
-			}
-			if (itemList.getKind() != null && ItemListKindType.elected.equals(itemList.getKind())) {
+			} else if (ItemListKindType.elected.equals(itemList.getKind())) {
 				// there can be only one elected item list
 				List<ItemList> electedItemLists = itemListDAO.findItemLists(0, 0, new String[0], new String[0],
 						new String[] { "kind" }, new String[] { "elected" });
 				if (!electedItemLists.isEmpty()) {
 					itemList.setKind(ItemListKindType.personal);
 				}
-			}
-			if (itemList.getKind() == null) {
-				itemList.setKind(ItemListKindType.personal);
+			} else if (ItemListKindType.named.equals(itemList.getKind())) {
+				// saving named list is not allowed
+				return new ResponseEntity<String>(ReturnMessageType.wrong_value.name(), HttpStatus.BAD_REQUEST);
 			}
 
 			Content descriptionContent = itemList.getDescriptionContent();
@@ -188,20 +189,25 @@ public class ItemListServiceImpl implements ItemListService {
 						descriptionContentDB.setLastActivity(dateUtils.newDate());
 						itemListDB.setQuery(itemList.getQuery());
 						itemListDB.setKind(ItemListKindType.personal);
-						if (itemList.getKind() != null && ItemListKindType.general.equals(itemList.getKind())) {
-							// there can be only one general item list
-							List<ItemList> generalItemLists = itemListDAO.findItemLists(0, 0, new String[0],
-									new String[0], new String[] { "kind" }, new String[] { "general" });
-							if (generalItemLists.isEmpty()) {
-								itemListDB.setKind(ItemListKindType.general);
-							}
-						}
-						if (itemList.getKind() != null && ItemListKindType.elected.equals(itemList.getKind())) {
-							// there can be only one elected item list
-							List<ItemList> electedItemLists = itemListDAO.findItemLists(0, 0, new String[0],
-									new String[0], new String[] { "kind" }, new String[] { "elected" });
-							if (electedItemLists.isEmpty()) {
-								itemListDB.setKind(ItemListKindType.elected);
+						if (itemList.getKind() != null) {
+							if (ItemListKindType.general.equals(itemList.getKind())) {
+								// there can be only one general item list
+								List<ItemList> generalItemLists = itemListDAO.findItemLists(0, 0, new String[0],
+										new String[0], new String[] { "kind" }, new String[] { "general" });
+								if (generalItemLists.isEmpty()) {
+									itemListDB.setKind(ItemListKindType.general);
+								}
+							} else if (ItemListKindType.elected.equals(itemList.getKind())) {
+								// there can be only one elected item list
+								List<ItemList> electedItemLists = itemListDAO.findItemLists(0, 0, new String[0],
+										new String[0], new String[] { "kind" }, new String[] { "elected" });
+								if (electedItemLists.isEmpty()) {
+									itemListDB.setKind(ItemListKindType.elected);
+								}
+							} else if (ItemListKindType.named.equals(itemList.getKind())) {
+								// saving named list is not allowed
+								return new ResponseEntity<String>(ReturnMessageType.wrong_value.name(),
+										HttpStatus.BAD_REQUEST);
 							}
 						}
 						itemListDAO.merge(itemListDB);
@@ -212,7 +218,9 @@ public class ItemListServiceImpl implements ItemListService {
 				return new ResponseEntity<String>(ReturnMessageType.anonymous_not_allowed.name(),
 						HttpStatus.BAD_REQUEST);
 			}
-		} catch (Exception ex) {
+		} catch (
+
+		Exception ex) {
 			logger.log(Level.SEVERE, "saveOrUpdateItemList exception: " + ex);
 			return new ResponseEntity<String>(ReturnMessageType.exception.name(), HttpStatus.BAD_REQUEST);
 		}

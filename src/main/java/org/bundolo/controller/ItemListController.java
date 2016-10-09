@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 import org.bundolo.Constants;
 import org.bundolo.model.ItemList;
 import org.bundolo.model.enumeration.ContentKindType;
+import org.bundolo.model.enumeration.ItemListKindType;
 import org.bundolo.services.ContentService;
 import org.bundolo.services.ItemListService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,11 +32,15 @@ public class ItemListController {
 
 	@RequestMapping(value = Constants.REST_PATH_ITEM_LIST + "/{slug}", method = RequestMethod.GET)
 	public @ResponseBody ItemList itemList(@PathVariable String slug) {
-		logger.log(Level.INFO, "itemList, slug: " + slug);
+		logger.log(Level.FINE, "itemList, slug: " + slug);
 		ItemList result = itemListService
 				.findItemList(ContentKindType.item_list_description.getLocalizedName() + "/" + slug);
 		if (result != null) {
-			result.setItems(contentService.findItemListItems(result.getQuery(), 0, -1, null, null, null, null));
+			if (ItemListKindType.named.equals(result.getKind())) {
+				result.setItems(contentService.findNamedItemListItems(result.getQuery()));
+			} else {
+				result.setItems(contentService.findItemListItems(result.getQuery(), 0, -1, null, null, null, null));
+			}
 		}
 		return result;
 	}

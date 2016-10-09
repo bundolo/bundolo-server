@@ -22,9 +22,11 @@
 	</bean>
 
 	<bean id="properties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+		<property name="ignoreResourceNotFound" value="true" />
   		<property name="locations">
             <list>
                 <value>classpath:#{systemProperties.env}.properties</value>
+                <value>file:${user.home}/projects/bundolo/server/application.properties</value>
             </list>
         </property>
 	</bean>

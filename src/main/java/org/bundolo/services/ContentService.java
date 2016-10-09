@@ -26,16 +26,8 @@ public interface ContentService {
 	public List<Content> findTopics(Integer start, Integer end, String[] orderBy, String[] order, String[] filterBy,
 			String[] filter);
 
-	public Content getPageDescriptionContent(PageKindType pageKind); // to
-																		// simplify
-																		// things,
-																		// pages
-																		// are
-																		// out
-																		// of
-																		// scope
-																		// in
-	// the first release
+	// to simplify things, pages are out of scope in the first release
+	public Content getPageDescriptionContent(PageKindType pageKind);
 
 	public List<Content> findConnectionGroups();
 
@@ -85,5 +77,7 @@ public interface ContentService {
 
 	public List<Content> findItemListItems(String itemListIds, Integer start, Integer end, String[] orderBy,
 			String[] order, String[] filterBy, String[] filter);
+
+	public List<Content> findNamedItemListItems(String namedQuery);
 
 }

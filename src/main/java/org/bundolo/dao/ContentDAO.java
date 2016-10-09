@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -24,12 +25,17 @@ import org.bundolo.model.enumeration.ContentStatusType;
 import org.bundolo.model.enumeration.PageKindType;
 import org.bundolo.model.enumeration.TextColumnType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
 @Repository("contentDAO")
 public class ContentDAO extends JpaDAO<Long, Content> {
 
 	private static final Logger logger = Logger.getLogger(ContentDAO.class.getName());
+
+	@Autowired
+	@Qualifier("properties")
+	private Properties properties;
 
 	@Autowired
 	private SlugifyUtils slugifyUtils;
@@ -808,9 +814,11 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 	@SuppressWarnings("unchecked")
 	public List<Content> findItemListItems(String itemListIds, Integer start, Integer end, String[] orderBy,
 			String[] order, String[] filterBy, String[] filter) {
+		logger.log(Level.INFO, "itemListIds: " + itemListIds);
 		if (StringUtils.isBlank(itemListIds) || "[]".equals(itemListIds)) {
 			return null;
 		}
+		// ownership check is not needed, it's done when item list is retrieved
 		int filterParamCounter = 0;
 		StringBuilder queryString = new StringBuilder();
 		queryString.append("SELECT c FROM Content c");
@@ -857,8 +865,8 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 			q.setMaxResults(maxResults);
 		}
 		// strip to make the request run faster
-		List<Content> recentContent = q.getResultList();
-		for (Content content : recentContent) {
+		List<Content> itemListItems = q.getResultList();
+		for (Content content : itemListItems) {
 			if (!ContentKindType.page_description.equals(content.getKind()) && maxResults != 1) {
 				content.setText("");
 			}
@@ -868,7 +876,35 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 				content.setParent(content.getParentContent());
 			}
 		}
-		return recentContent;
+		return itemListItems;
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<Content> findNamedItemListItems(String namedQuery) {
+		logger.log(Level.INFO, "namedQuery: " + namedQuery);
+		if (StringUtils.isBlank(namedQuery)) {
+			return null;
+		}
+		// ownership check is not needed, it's done when item list is retrieved
+		String queryString = properties.getProperty(namedQuery);
+		if (StringUtils.isBlank(queryString)) {
+			return null;
+		}
+		logger.log(Level.FINE, "queryString: " + queryString);
+		Query q = entityManager.createNativeQuery(queryString.toString(), Content.class);
+		// strip to make the request run faster
+		List<Content> itemListItems = q.getResultList();
+		for (Content content : itemListItems) {
+			if (!ContentKindType.page_description.equals(content.getKind())) {
+				content.setText("");
+			}
+			content.setRating(null);
+			content.setDescription(null);
+			if (ContentKindType.episode.equals(content.getKind())) {
+				content.setParent(content.getParentContent());
+			}
+		}
+		return itemListItems;
 	}
 
 	public String getNewSlug(Content content) {

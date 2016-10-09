@@ -553,4 +553,9 @@ public class ContentServiceImpl implements ContentService {
 		return contentDAO.findItemListItems(itemListIds, start, end, orderBy, order, filterBy, filter);
 	}
 
+	@Override
+	public List<Content> findNamedItemListItems(String namedQuery) {
+		return contentDAO.findNamedItemListItems(namedQuery);
+	}
+
 }
