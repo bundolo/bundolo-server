@@ -90,7 +90,7 @@ public class CommentDAO extends JpaDAO<Long, Comment> {
 				prefix = nextPrefix;
 			}
 		}
-		logger.log(Level.WARNING,
+		logger.log(Level.FINE,
 				"queryString: " + queryString.toString() + ", start: " + start + ", max results: " + (end - start + 1));
 		Query q = entityManager.createQuery(queryString.toString());
 		if (filterParamCounter > 0) {
