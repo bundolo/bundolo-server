@@ -80,4 +80,6 @@ public interface ContentService {
 
 	public List<Content> findNamedItemListItems(String namedQuery);
 
+	public ResponseEntity<String> verify();
+
 }

@@ -558,4 +558,9 @@ public class ContentServiceImpl implements ContentService {
 		return contentDAO.findNamedItemListItems(namedQuery);
 	}
 
+	@Override
+	public ResponseEntity<String> verify() {
+		return new ResponseEntity<String>(contentDAO.verify().toString(), HttpStatus.OK);
+	}
+
 }

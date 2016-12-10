@@ -71,7 +71,7 @@ public class AuthorController {
 	@RequestMapping(value = Constants.REST_PATH_VALIDATE + "/{nonce}", method = RequestMethod.POST)
 	public @ResponseBody ReturnMessageType validate(@PathVariable String nonce,
 			@RequestParam(required = true) String email) {
-		logger.log(Level.INFO, "activate, nonce: " + nonce + ", email: " + email);
+		logger.log(Level.INFO, "validate, nonce: " + nonce + ", email: " + email);
 		ReturnMessageType result = userService.activateUserEmailAddress(email, nonce);
 		if (ReturnMessageType.success.equals(result)) {
 			userService.clearSession();

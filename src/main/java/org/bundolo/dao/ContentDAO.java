@@ -1069,4 +1069,51 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 		}
 		return texts;
 	}
+
+	@SuppressWarnings("unchecked")
+	public Boolean verify() {
+		String senderUsername = SecurityUtils.getUsername();
+		if (senderUsername == null) {
+			return false;
+		}
+		StringBuilder queryLastTextString = new StringBuilder();
+		queryLastTextString.append("SELECT c FROM Content c WHERE kind ='text' AND contentStatus='active'");
+		queryLastTextString.append(" AND authorUsername='" + senderUsername + "'");
+		queryLastTextString.append(" ORDER BY creationDate DESC");
+
+		logger.log(Level.FINE, "queryLastTextString: " + queryLastTextString.toString());
+
+		Query queryLastText = entityManager.createQuery(queryLastTextString.toString());
+		queryLastText.setMaxResults(1);
+
+		Content lastText = null;
+		List<Content> lastTextList = queryLastText.getResultList();
+		if (lastTextList != null && lastTextList.size() > 0) {
+			lastText = lastTextList.get(0);
+		}
+		if (lastText == null) {
+			return true;
+		}
+		StringBuilder queryActivityItemString = new StringBuilder();
+		queryActivityItemString.append("SELECT c FROM Content c WHERE authorUsername='" + senderUsername + "'");
+		queryActivityItemString.append(
+				" AND (kind like '%comment' OR kind = 'forum_post' OR kind = 'connection_description' OR kind = 'contest_description' OR kind = 'news' OR kind = 'forum_topic')");
+		queryActivityItemString.append(" AND contentStatus='active'  ORDER BY creationDate DESC");
+
+		logger.log(Level.FINE, "queryActivityItemString: " + queryActivityItemString.toString());
+
+		Query queryActivityItem = entityManager.createQuery(queryActivityItemString.toString());
+		queryActivityItem.setFirstResult(4);
+		queryActivityItem.setMaxResults(1);
+
+		Content activityItem = null;
+		List<Content> activityItemList = queryActivityItem.getResultList();
+		if (activityItemList != null && activityItemList.size() > 0) {
+			activityItem = activityItemList.get(0);
+		}
+		if (activityItem == null) {
+			return false;
+		}
+		return activityItem.getCreationDate().after(lastText.getCreationDate());
+	}
 }

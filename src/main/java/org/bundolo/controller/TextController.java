@@ -60,4 +60,9 @@ public class TextController {
 		return result;
 	}
 
+	@RequestMapping(value = Constants.REST_PATH_VERIFY + "/" + Constants.REST_PATH_TEXT, method = RequestMethod.GET)
+	public @ResponseBody ResponseEntity<String> verify() {
+		return contentService.verify();
+	}
+
 }
