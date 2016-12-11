@@ -23,6 +23,7 @@ import org.bundolo.model.User;
 import org.bundolo.model.enumeration.ContentKindType;
 import org.bundolo.model.enumeration.ContentStatusType;
 import org.bundolo.model.enumeration.PageKindType;
+import org.bundolo.model.enumeration.PostColumnType;
 import org.bundolo.model.enumeration.TextColumnType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -241,6 +242,7 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 		}
 		q.setFirstResult(start);
 		q.setMaxResults(end - start + 1);
+		//TODO rating can be stripped probably
 		return q.getResultList();
 	}
 
@@ -388,23 +390,6 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 				"SELECT c FROM Content c WHERE kind='forum_group' AND content_status='active' ORDER BY creation_date ASC");
 		logger.log(Level.FINE, "queryString: " + queryString.toString());
 		Query q = entityManager.createQuery(queryString.toString());
-		return q.getResultList();
-	}
-
-	@SuppressWarnings("unchecked")
-	public List<Content> findPosts(Long parentId, Integer start, Integer end) {
-		if (parentId == null) {
-			return null;
-		}
-		String queryString = "SELECT c FROM Content c WHERE kind='forum_post' AND content_status='active'";
-		queryString += " AND parent_content_id =?1";
-		queryString += " ORDER BY creationDate";
-		logger.log(Level.FINE,
-				"queryString: " + queryString.toString() + ", start: " + start + ", max results: " + (end - start + 1));
-		Query q = entityManager.createQuery(queryString.toString());
-		q.setParameter(1, parentId);
-		q.setFirstResult(start);
-		q.setMaxResults(end - start + 1);
 		return q.getResultList();
 	}
 
@@ -1115,5 +1100,67 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 			return false;
 		}
 		return activityItem.getCreationDate().after(lastText.getCreationDate());
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<Content> findPosts(Integer start, Integer end, String[] orderBy, String[] order, String[] filterBy,
+			String[] filter) {
+		int filterParamCounter = 0;
+		StringBuilder queryString = new StringBuilder();
+		queryString.append("SELECT c FROM Content c WHERE kind='forum_post'");
+		queryString.append(" AND contentStatus='active'");
+		if (ArrayUtils.isNotEmpty(filterBy)) {
+			String prefix = " AND LOWER(";
+			String suffix = ") LIKE '%";
+			String postfix = "%'";
+			for (int i = 0; i < filterBy.length; i++) {
+				if ("to_char(parentContent.lastActivity, 'DD.MM.YYYY.')".equals(filterBy[i])) {
+					// special case, if we are filtering by parent last activity, it means we want posts from distinct topics
+					queryString.append(" AND c.lastActivity = c.parentContent.lastActivity");
+				} else {
+					queryString.append(prefix);
+					queryString.append(filterBy[i]);
+					queryString.append(suffix);
+					filterParamCounter++;
+					queryString.append("'||?" + filterParamCounter + "||'");
+					queryString.append(postfix);
+				}
+			}
+		}
+		if (ArrayUtils.isNotEmpty(orderBy) && ArrayUtils.isSameLength(orderBy, order)) {
+			String firstPrefix = " ORDER BY ";
+			String nextPrefix = ", ";
+			String prefix = firstPrefix;
+			String suffix = " ";
+			for (int i = 0; i < orderBy.length; i++) {
+				queryString.append(prefix);
+				queryString.append(orderBy[i]);
+				queryString.append(suffix);
+				queryString.append(order[i]);
+				prefix = nextPrefix;
+			}
+		}
+		logger.log(Level.FINE,
+				"queryString: " + queryString.toString() + ", start: " + start + ", max results: " + (end - start + 1));
+		Query q = entityManager.createQuery(queryString.toString());
+		if (filterParamCounter > 0) {
+			for (int i = 0; i < filterBy.length; i++) {
+				q.setParameter(i + 1, filter[i].toLowerCase());
+			}
+		}
+		q.setFirstResult(start);
+		q.setMaxResults(end - start + 1);
+
+		List<Content> resultList = q.getResultList();
+		ArrayUtils.contains(filterBy, PostColumnType.topic.getColumnName());
+		// TODO trim
+		// no need to set parent if this was a search by parent
+		if (resultList != null && resultList.size() > 0
+				&& !ArrayUtils.contains(filterBy, PostColumnType.topic.getColumnName())) {
+			for (Content result : resultList) {
+				result.setParent(result.getParentContent());
+			}
+		}
+		return resultList;
 	}
 }

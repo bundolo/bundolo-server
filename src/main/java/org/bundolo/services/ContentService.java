@@ -26,6 +26,9 @@ public interface ContentService {
 	public List<Content> findTopics(Integer start, Integer end, String[] orderBy, String[] order, String[] filterBy,
 			String[] filter);
 
+	public List<Content> findPosts(Integer start, Integer end, String[] orderBy, String[] order, String[] filterBy,
+			String[] filter);
+
 	// to simplify things, pages are out of scope in the first release
 	public Content getPageDescriptionContent(PageKindType pageKind);
 
@@ -44,8 +47,6 @@ public interface ContentService {
 	public Content findText(String slug);
 
 	public Content findTopic(String slug);
-
-	public List<Content> findPosts(Long parentId, Integer start, Integer end);
 
 	public List<Content> findAuthorItems(String slug, Integer start, Integer end, String[] orderBy, String[] order,
 			String[] filterBy, String[] filter);

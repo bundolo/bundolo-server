@@ -95,6 +95,12 @@ public class ContentServiceImpl implements ContentService {
 	}
 
 	@Override
+	public List<Content> findPosts(Integer start, Integer end, String[] orderBy, String[] order, String[] filterBy,
+			String[] filter) {
+		return contentDAO.findPosts(start, end, orderBy, order, filterBy, filter);
+	}
+
+	@Override
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 	public Content getPageDescriptionContent(PageKindType pageKind) {
 		Content pageDescriptionContent = contentDAO.getPageDescriptionContent(pageKind);
@@ -278,16 +284,19 @@ public class ContentServiceImpl implements ContentService {
 			if (content.getContentStatus() == null) {
 				content.setContentStatus(ContentStatusType.active);
 			}
-			Date creationDate = dateUtils.newDate();
-			content.setCreationDate(creationDate);
-			content.setLastActivity(creationDate);
+			if (content.getCreationDate() == null) {
+				content.setCreationDate(dateUtils.newDate());
+			}
+			if (content.getLastActivity() == null) {
+				content.setLastActivity(content.getCreationDate());
+			}
 			content.setLocale(Constants.DEFAULT_LOCALE_NAME);
 			if (ContentKindType.text.equals(content.getKind())) {
 				Content descriptionContent = (Content) content.getDescription().toArray()[0];
 				descriptionContent.setAuthorUsername(content.getAuthorUsername());
 				descriptionContent.setContentStatus(ContentStatusType.active);
 				descriptionContent.setCreationDate(content.getCreationDate());
-				descriptionContent.setLastActivity(creationDate);
+				descriptionContent.setLastActivity(content.getCreationDate());
 				descriptionContent.setKind(ContentKindType.text_description);
 				descriptionContent.setLocale(Constants.DEFAULT_LOCALE_NAME);
 				// no need to set slug and avatar
@@ -328,8 +337,7 @@ public class ContentServiceImpl implements ContentService {
 						// user is not the owner
 						return new ResponseEntity<String>(ReturnMessageType.not_owner.name(), HttpStatus.BAD_REQUEST);
 					}
-					// TODO if serial is active, don't allow editing and
-					// deleting episodes except last
+					// TODO if serial is active, don't allow editing and deleting episodes except last
 					if (!contentDB.getName().equals(content.getName())) {
 						content.setAuthorUsername(contentDB.getAuthorUsername());
 						if (contentViolatesDBConstraints(content)) {
@@ -346,8 +354,7 @@ public class ContentServiceImpl implements ContentService {
 					}
 					contentDB.setText(content.getText());
 					if (content.getLastActivity() != null) {
-						// this normally will not happen, we want last activity
-						// to be updated
+						// sometimes we want to set last activity from outside, to make it equal with other fields (like parent last activity)
 						contentDB.setLastActivity(content.getLastActivity());
 					} else {
 						contentDB.setLastActivity(dateUtils.newDate());
@@ -378,11 +385,6 @@ public class ContentServiceImpl implements ContentService {
 	@Override
 	public List<Content> findTopicGroups() {
 		return contentDAO.findTopicGroups();
-	}
-
-	@Override
-	public List<Content> findPosts(Long parentId, Integer start, Integer end) {
-		return contentDAO.findPosts(parentId, start, end);
 	}
 
 	@Override

@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
@@ -59,13 +58,6 @@ public class TopicController {
 		return result;
 	}
 
-	@RequestMapping(Constants.REST_PATH_POSTS)
-	public @ResponseBody List<Content> posts(@RequestParam(required = true) Long parentId,
-			@RequestParam(required = false, defaultValue = "0") Integer start,
-			@RequestParam(required = false, defaultValue = "-1") Integer end) {
-		return contentService.findPosts(parentId, start, end);
-	}
-
 	// TODO this should eventually become put method, to avoid saving the same
 	// post twice, but it's going to be a
 	// problem finding unique url format for them
@@ -75,6 +67,7 @@ public class TopicController {
 	public @ResponseBody ResponseEntity<String> save(@RequestBody final Content post) {
 		logger.log(Level.INFO, "saving post: " + post);
 		Date creationDate = dateUtils.newDate();
+		post.setCreationDate(creationDate);
 		post.setLastActivity(creationDate);
 		post.setKind(ContentKindType.forum_post);
 		ResponseEntity<String> result = contentService.saveOrUpdateContent(post, true);

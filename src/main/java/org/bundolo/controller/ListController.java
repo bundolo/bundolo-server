@@ -30,6 +30,7 @@ import org.bundolo.model.enumeration.ContestColumnType;
 import org.bundolo.model.enumeration.EpisodeColumnType;
 import org.bundolo.model.enumeration.ItemListColumnType;
 import org.bundolo.model.enumeration.ItemListItemsColumnType;
+import org.bundolo.model.enumeration.PostColumnType;
 import org.bundolo.model.enumeration.SerialColumnType;
 import org.bundolo.model.enumeration.TextColumnType;
 import org.bundolo.model.enumeration.TopicColumnType;
@@ -289,6 +290,39 @@ public class ListController {
 			}
 		}
 		return contentService.findTopics(start, end, orderByColumns.toArray(new String[orderByColumns.size()]),
+				orderByDirections.toArray(new String[orderByDirections.size()]),
+				filterByColumns.toArray(new String[filterByColumns.size()]),
+				filterByTexts.toArray(new String[filterByTexts.size()]));
+	}
+
+	@RequestMapping(value = { Constants.REST_PATH_POSTS, Constants.REST_PATH_POSTS + Constants.BOT_REQUEST_SUFFIX,
+			Constants.REST_PATH_POSTS + Constants.BOT_REQUEST_SUFFIX_ESCAPED }, method = RequestMethod.GET)
+	public @ResponseBody List<Content> posts(@RequestParam(required = false, defaultValue = "0") Integer start,
+			@RequestParam(required = false, defaultValue = "0") Integer end,
+			@RequestParam(required = false) String orderBy, @RequestParam(required = false) String filterBy) {
+		logger.log(Level.FINE,
+				"posts, start: " + start + ", end: " + end + ", orderBy: " + orderBy + ", filterBy: " + filterBy);
+		List<String> orderByColumns = new ArrayList<String>();
+		List<String> orderByDirections = new ArrayList<String>();
+		if (StringUtils.isNotBlank(orderBy)) {
+			String[] params = orderBy.split(",");
+			for (int i = 0; i < params.length; i += 2) {
+				orderByColumns.add(PostColumnType.valueOf(params[i]).getColumnName());
+				orderByDirections.add(getOrderByDirection(params[i + 1]));
+			}
+		}
+		List<String> filterByColumns = new ArrayList<String>();
+		List<String> filterByTexts = new ArrayList<String>();
+		if (StringUtils.isNotBlank(filterBy)) {
+			String[] params = filterBy.split(",");
+			for (int i = 0; i < params.length; i += 2) {
+				PostColumnType postColumnType = PostColumnType.valueOf(params[i]);
+				filterByColumns
+						.add(getFilterByColumn(postColumnType.getColumnName(), postColumnType.getColumnDataType()));
+				filterByTexts.add(params[i + 1]);
+			}
+		}
+		return contentService.findPosts(start, end, orderByColumns.toArray(new String[orderByColumns.size()]),
 				orderByDirections.toArray(new String[orderByDirections.size()]),
 				filterByColumns.toArray(new String[filterByColumns.size()]),
 				filterByTexts.toArray(new String[filterByTexts.size()]));

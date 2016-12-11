@@ -1,14 +1,14 @@
 package org.bundolo.model.enumeration;
 
-public enum TopicColumnType {
-	author("authorUsername", ColumnDataType.text), title("name", ColumnDataType.text), date("creationDate",
-			ColumnDataType.date), activity("lastActivity", ColumnDataType.date), group("parentContent.name",
-					ColumnDataType.text);
+public enum PostColumnType {
+	author("authorUsername", ColumnDataType.text), text("text", ColumnDataType.text), date("creationDate",
+			ColumnDataType.date), topic("parentContent.slug",
+					ColumnDataType.text), parentActivity("parentContent.lastActivity", ColumnDataType.date);
 
 	private final String columnName;
 	private final ColumnDataType columnDataType;
 
-	private TopicColumnType(String columnName, ColumnDataType columnDataType) {
+	private PostColumnType(String columnName, ColumnDataType columnDataType) {
 		this.columnName = columnName;
 		this.columnDataType = columnDataType;
 	}
