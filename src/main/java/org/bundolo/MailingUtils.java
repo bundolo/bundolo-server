@@ -203,7 +203,7 @@ public class MailingUtils {
 						if (subscriptions.contains(NewsletterSubscriptionKindType.bulletin)
 								&& recipient.getNewsletterSendingDate().before(bulletinDate)
 								&& bulletinDate.before(now.getTime())) {
-							sendBulletin(now, bulletinDate, recipient);
+							sendBulletin(recipient);
 						}
 						if (subscriptions.contains(NewsletterSubscriptionKindType.daily) && DateUtils
 								.getDateDiff(recipient.getNewsletterSendingDate(), now.getTime(), TimeUnit.DAYS) >= 1) {
@@ -228,12 +228,13 @@ public class MailingUtils {
 		}
 	}
 
-	private void sendBulletin(Calendar sendingStart, Date newsletterDate, UserProfile recipient) {
+	private void sendBulletin(UserProfile recipient) {
 		if (bodyTemplateBulletin == null || subjectTemplateBulletin == null) {
 			try {
-				bodyTemplateBulletin = freemarkerConfiguration.getTemplate("bulletin_" + newsletterDate + ".ftl");
+				bodyTemplateBulletin = freemarkerConfiguration
+						.getTemplate("bulletin_" + properties.getProperty("bulletin.date") + ".ftl");
 				subjectTemplateBulletin = freemarkerConfiguration
-						.getTemplate("bulletin_subject_" + newsletterDate + ".ftl");
+						.getTemplate("bulletin_subject_" + properties.getProperty("bulletin.date") + ".ftl");
 			} catch (IOException ex) {
 				logger.log(Level.SEVERE, "newsletter template retrieval exception: " + ex);
 				return;
