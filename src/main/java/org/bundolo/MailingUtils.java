@@ -91,6 +91,8 @@ public class MailingUtils {
 				sendEmailGoDaddy(body, subject, recipient);
 			} else if ("bundolo".equals(properties.getProperty("mail.service"))) {
 				sendEmailBundolo(body, subject, recipient);
+			} else if ("amazon".equals(properties.getProperty("mail.service"))) {
+				sendEmailAmazon(body, subject, recipient);
 			}
 		} else {
 			// logger.log(Level.WARNING,
@@ -181,6 +183,32 @@ public class MailingUtils {
 		transport.connect(properties.getProperty("mail.host"), Integer.valueOf(properties.getProperty("mail.port")),
 				properties.getProperty("mail.username"), properties.getProperty("mail.password"));
 		transport.sendMessage(message, message.getRecipients(Message.RecipientType.TO));
+		transport.close();
+	}
+
+	private void sendEmailAmazon(String body, String subject, String recipient)
+			throws MessagingException, UnsupportedEncodingException {
+		Properties props = System.getProperties();
+		props.put("mail.transport.protocol", "smtps");
+		props.put("mail.smtp.port", properties.getProperty("mail.port"));
+		props.put("mail.smtp.auth", "true");
+		props.put("mail.smtp.starttls.enable", "true");
+		props.put("mail.smtp.starttls.required", "true");
+
+		Session mailSession = Session.getDefaultInstance(props);
+		//session.setDebug(true);
+
+		MimeMessage message = new MimeMessage(mailSession);
+		message.setFrom(
+				new InternetAddress(properties.getProperty("mail.from"), properties.getProperty("mail.from.friendly")));
+		message.setRecipient(Message.RecipientType.TO, new InternetAddress(recipient));
+		message.setSubject(subject, "UTF-8");
+		message.setContent(body, "text/html;charset=utf-8");
+
+		Transport transport = mailSession.getTransport();
+		transport.connect(properties.getProperty("mail.host"), properties.getProperty("mail.username"),
+				properties.getProperty("mail.password"));
+		transport.sendMessage(message, message.getAllRecipients());
 		transport.close();
 	}
 
@@ -419,6 +447,7 @@ public class MailingUtils {
 		sendEmail(digestBody, digestSubject, recipientEmailAddress);
 	}
 
+	//TODO make sure this is not used and remove
 	private static TriggerContext getTriggerContext(Date lastCompletionTime) {
 		SimpleTriggerContext context = new SimpleTriggerContext();
 		context.update(null, null, lastCompletionTime);
