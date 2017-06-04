@@ -1055,12 +1055,18 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 		return texts;
 	}
 
+	/**
+	 * @return true if user is allowed to add another content. only text at the
+	 *         moment.
+	 */
 	@SuppressWarnings("unchecked")
 	public Boolean verify() {
 		String senderUsername = SecurityUtils.getUsername();
 		if (senderUsername == null) {
+			//only logged in users are allowed
 			return false;
 		}
+		//get user's last text
 		StringBuilder queryLastTextString = new StringBuilder();
 		queryLastTextString.append("SELECT c FROM Content c WHERE kind ='text' AND contentStatus='active'");
 		queryLastTextString.append(" AND authorUsername='" + senderUsername + "'");
@@ -1077,8 +1083,10 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 			lastText = lastTextList.get(0);
 		}
 		if (lastText == null) {
+			//no texts found, user is allowed
 			return true;
 		}
+		//get third last comment, post, connection, contest, news or topic
 		StringBuilder queryActivityItemString = new StringBuilder();
 		queryActivityItemString.append("SELECT c FROM Content c WHERE authorUsername='" + senderUsername + "'");
 		queryActivityItemString.append(
@@ -1088,7 +1096,7 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 		logger.log(Level.FINE, "queryActivityItemString: " + queryActivityItemString.toString());
 
 		Query queryActivityItem = entityManager.createQuery(queryActivityItemString.toString());
-		queryActivityItem.setFirstResult(4);
+		queryActivityItem.setFirstResult(2);
 		queryActivityItem.setMaxResults(1);
 
 		Content activityItem = null;
@@ -1097,8 +1105,10 @@ public class ContentDAO extends JpaDAO<Long, Content> {
 			activityItem = activityItemList.get(0);
 		}
 		if (activityItem == null) {
+			//if there is no such activity, user is not allowed
 			return false;
 		}
+		//user is allowed if third last activity is later than last text
 		return activityItem.getCreationDate().after(lastText.getCreationDate());
 	}
 
