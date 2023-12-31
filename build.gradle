@@ -2,6 +2,7 @@ buildscript {
     repositories {
         maven { url "http://repo.spring.io/libs-snapshot" }
         mavenLocal()
+        mavenCentral()
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:1.0.2.RELEASE")
@@ -134,4 +135,3 @@ test {
 task wrapper(type: Wrapper) {
     gradleVersion = '2.10'
 }
-

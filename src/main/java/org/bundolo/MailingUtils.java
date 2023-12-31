@@ -190,6 +190,7 @@ public class MailingUtils {
 			throws MessagingException, UnsupportedEncodingException {
 		Properties props = System.getProperties();
 		props.put("mail.transport.protocol", "smtps");
+		properties.put("mail.smtp.ssl.protocols", "TLSv1.2");
 		props.put("mail.smtp.port", properties.getProperty("mail.port"));
 		props.put("mail.smtp.auth", "true");
 		props.put("mail.smtp.starttls.enable", "true");
