@@ -2,6 +2,7 @@ package org.bundolo;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -25,6 +26,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
+import javax.net.ssl.SSLContext;
 
 import org.bundolo.model.Content;
 import org.bundolo.model.Rating;
@@ -190,11 +192,12 @@ public class MailingUtils {
 			throws MessagingException, UnsupportedEncodingException {
 		Properties props = System.getProperties();
 		props.put("mail.transport.protocol", "smtps");
-		properties.put("mail.smtp.ssl.protocols", "TLSv1.2");
+		props.put("mail.smtp.ssl.protocols", "TLSv1.2");
 		props.put("mail.smtp.port", properties.getProperty("mail.port"));
 		props.put("mail.smtp.auth", "true");
 		props.put("mail.smtp.starttls.enable", "true");
 		props.put("mail.smtp.starttls.required", "true");
+		props.put("mail.smtp.ssl.trust", "datoris.com");
 
 		Session mailSession = Session.getDefaultInstance(props);
 		//session.setDebug(true);

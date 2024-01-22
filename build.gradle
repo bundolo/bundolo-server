@@ -85,7 +85,7 @@ dependencies {
     compile("org.springframework.security:spring-security-config")
 
     compile("com.fasterxml.jackson.core:jackson-databind")
-    compile 'com.sun.mail:javax.mail:1.5.1'
+    compile 'com.sun.mail:javax.mail:1.6.2'
     compile 'commons-codec:commons-codec:1.7'
     compile 'org.eclipse.persistence:javax.persistence:2.1.0'
     compile 'javax.validation:validation-api:1.0.0.GA'
